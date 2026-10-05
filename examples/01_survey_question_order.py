@@ -5,7 +5,6 @@
    test and a BIC model comparison, as one would on real survey counts.
 Simulated counts are labelled as such; only the four rates are human data."""
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))  # run without installing
-import itertools
 import numpy as np
 from scipy.optimize import least_squares
 from qlcog.core import compare

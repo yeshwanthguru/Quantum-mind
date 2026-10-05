@@ -4,35 +4,43 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qlcog"
-version = "1.0.0"
-description = "Quantum-like models of cognition and decision with classical baselines and Qiskit circuits"
+version = "1.1.0"
+description = "Quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a 3D Bloch-sphere viewer"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [
   {name = "Yeshwanth Guru", email = "g_yeshwanth@ch.students.amrita.edu"},
 ]
-keywords = ["quantum cognition", "robotics", "human-robot interaction", "quantum probability", "decision making", "order effects",
-            "Bayesian networks", "qiskit", "cognitive modelling"]
+keywords = ["quantum cognition", "quantum-like models", "quantum machine learning", "quantum-inspired algorithms", "robotics",
+            "human-robot interaction", "quantum probability", "decision making", "qiskit", "QAOA", "VQE",
+            "tensor networks", "Bloch sphere", "visualization", "cognitive modelling"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: Apache Software License",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
   "Topic :: Scientific/Engineering :: Physics",
   "Topic :: Scientific/Engineering :: Human Machine Interfaces",
+  "Topic :: Scientific/Engineering :: Visualization",
   "Intended Audience :: Science/Research",
+  "Intended Audience :: Education",
+  "Development Status :: 4 - Beta",
 ]
 dependencies = ["numpy>=1.24", "scipy>=1.10"]
 
 [project.urls]
 Homepage = "https://github.com/yeshwanthguru/quantum-cognition-robotics"
 Issues = "https://github.com/yeshwanthguru/quantum-cognition-robotics/issues"
+Documentation = "https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/docs/concepts.md"
+Changelog = "https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 qiskit = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40"]
 cloud = ["qiskit-ibm-runtime>=0.40", "amazon-braket-sdk>=1.80"]
-all = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40", "amazon-braket-sdk>=1.80"]
-dev = ["pytest>=8"]
+viz = ["matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8"]
+all = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40", "amazon-braket-sdk>=1.80",
+       "matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8"]
+dev = ["pytest>=8", "ruff>=0.5"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -42,3 +50,15 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E701", "E702", "E731", "E741", "E402", "E401"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+"examples/*" = ["E501"]

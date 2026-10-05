@@ -1,0 +1,43 @@
+# Quantum models (`qlcog.quantum`)
+
+Gate-model quantum machine learning and quantum algorithms. Every model is trained or optimised on a
+fast built-in state-vector simulator (pure NumPy, batched over samples and over parameter shifts), and
+every circuit exports to Qiskit with `to_qiskit()`, so it runs unchanged on Aer, on IBM Quantum and on
+Amazon Braket through `qlcog.circuits.run`.
+
+| Model | What it does | Typical use | Reference |
+|---|---|---|---|
+| `VariationalClassifier` | Data re-uploading classifier, any number of classes, exact parameter-shift gradients | Classification from a few features (triage, user intent, acceptance of a robot's offer) | Pérez-Salinas et al., *Quantum* 4, 226 (2020) |
+| `QuantumKernel`, `QuantumKernelClassifier` | Fidelity kernel of the ZZ feature map; kernel ridge classifier; kernel matrix for any kernel method | Small-data classification; kernel for scikit-learn `SVC(kernel='precomputed')` | Havlíček et al., *Nature* 567, 209 (2019) |
+| `QAOA` | Quantum Approximate Optimisation Algorithm for any `qlcog.problems.Qubo` | Task allocation, scheduling, MaxCut, portfolios | Farhi, Goldstone and Gutmann, arXiv:1411.4028 (2014) |
+| `VQE`, `Hamiltonian` | Variational Quantum Eigensolver for weighted Pauli strings (or a QUBO as an Ising Hamiltonian) | Ground states of spin models and small molecules | Peruzzo et al., *Nat. Commun.* 5, 4213 (2014) |
+| `grover` | Grover search with a phase oracle from a list of solutions or a predicate | Constraint satisfaction, unstructured search | Grover, *STOC* (1996) |
+
+Building blocks: `Circuit` (gates `h x y z s sdg rx ry rz p cx cz swap rzz`, `unitary`, `diagonal`;
+angles are numbers, trainable weights `W(k)`, features `X(j)` or products `XX(i, j)`),
+`angle_encoding`, `zz_feature_map`, `hardware_efficient` (CZ or CX entanglers, ring or linear),
+`parameter_shift`, `shifted_weights`.
+
+```python
+from qlcog.quantum import VariationalClassifier, QAOA, VQE, Hamiltonian, grover
+from qlcog.problems import task_allocation
+from qlcog.circuits import run
+
+clf = VariationalClassifier(layers=3).fit(X_train, y_train)
+print(clf.score(X_test, y_test))
+counts = run(clf.to_qiskit(X_test[0]), 'aer:FakeTorino', shots=4000)    # same circuit, IBM noise model
+
+res = QAOA(task_allocation(costs), p=3).run()                          # res.x, res.energy, res.p_optimal
+vqe = VQE(Hamiltonian([(-1, 'ZZ'), (-0.5, 'XI'), (-0.5, 'IX')]), rotations=('ry',)).run()
+g = grover(5, lambda x: sum(x) == 2)                                   # g.success, g.to_qiskit()
+```
+
+**Verification.** The simulator is tested gate by gate against Qiskit's `Statevector`; the
+parameter-shift gradients against finite differences; the exported QAOA circuit against the simulated
+distribution; and a trained classifier circuit against an Aer run (`tests/test_quantum.py`).
+
+**Honest expectations.** These are small, exactly simulable models (up to about 12–16 qubits on a
+laptop). There is no proven quantum advantage for them on classical data, and at low depth QAOA often
+misses the optimum (see `examples/15_portfolio_selection.py`). They belong in the package so that
+quantum, quantum-like and quantum-inspired approaches can be compared on the same tasks, and so the
+circuits can be studied on real hardware.

@@ -17,7 +17,6 @@ Returns a dict of bit strings to counts in Qiskit's convention (highest classica
 decode functions of builders.py work unchanged for every backend."""
 from __future__ import annotations
 
-import numpy as np
 
 __all__ = ['run', 'to_qasm3']
 

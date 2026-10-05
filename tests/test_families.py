@@ -1,7 +1,5 @@
-import itertools
 import numpy as np
-import pytest
-from qlcog.core import fit, compare
+from qlcog.core import fit
 from qlcog.data import CLINTON_GORE, TWO_STAGE_GAMBLE, proportions_to_counts
 
 
@@ -14,7 +12,8 @@ def test_order_effects_qq_and_nesting():
                   QuantumOrderModel4D(t1=rng.uniform(0, 3), t2=rng.uniform(0, 3), t3=rng.uniform(0, 3), phi=rng.uniform(0, 3))):
             p = m.predict()
             assert np.isclose(p['AB'].sum(), 1) and abs(qq_statistic(p['AB'], p['BA'])) < 1e-10
-    b = BayesOrderModel(pA=0.3, pB=0.6, rho=0.4).predict()
+    b = rates(BayesOrderModel(pA=0.3, pB=0.6, rho=0.4).predict())          # Bayes: no order effect
+    assert np.isclose(b[0], b[2]) and np.isclose(b[1], b[3])
     q = QuantumOrderModel4D(phi=0.0)
     # phi = 0 has no order effect
     pq = q.predict(); r = rates(pq)

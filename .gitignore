@@ -3,3 +3,6 @@ build/
 dist/
 __pycache__/
 .pytest_cache/
+examples/output/
+.ipynb_checkpoints/
+.ruff_cache/

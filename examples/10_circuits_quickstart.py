@@ -3,8 +3,7 @@ Aer simulator, on Aer with the FakeTorino (IBM Heron) noise model, and on the Br
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))  # run without installing
 import numpy as np
 from qlcog.core import tvd
-from qlcog.circuits import (run, order_effects_circuit, interference_circuit, qlbn_circuit, walk_circuit, belief_circuit,
-                            conjunction_circuit, similarity_circuit)
+from qlcog.circuits import (run, order_effects_circuit, interference_circuit, qlbn_circuit, walk_circuit, belief_circuit)
 from qlcog.families.order_effects import QuantumOrderModel
 from qlcog.families.interference import InterferenceModel
 from qlcog.families.qlbn import BayesNet, quantum_like_marginal

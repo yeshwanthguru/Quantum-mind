@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.1.0 — 5 October 2026
+
+Three pillars in one package: quantum-like, quantum and quantum-inspired, plus a 3D Bloch-sphere
+viewer. Backward compatible with 1.0.0.
+
+- **Quantum (`qlcog.quantum`)**: batched NumPy state-vector simulator for parameterised circuits
+  (checked gate by gate against Qiskit), `to_qiskit()` export; angle encoding, ZZ feature map,
+  hardware-efficient ansatz (CZ or CX entanglers); exact parameter-shift gradients evaluated in one
+  batch; `VariationalClassifier` (data re-uploading, multi-class), `QuantumKernel` and
+  `QuantumKernelClassifier`, `QAOA` for any QUBO, `VQE` with `Hamiltonian` (Pauli strings or a QUBO),
+  `grover`.
+- **Quantum-inspired (`qlcog.inspired`)**: `QIEA`, `QPSO`, `SQA` (path-integral Monte Carlo),
+  `simulated_annealing` baseline, `MPSClassifier` (matrix product state with polynomial local feature
+  maps and exact gradients).
+- **Problems (`qlcog.problems`)**: `Qubo` with energies, brute force and Ising conversion; builders for
+  MaxCut, knapsack, multi-robot task allocation, portfolio selection and Ising models.
+- **Viewer (`qlcog.viz`)**: Bloch vectors of every qubit (reduced states), `circuit_trajectory` for any
+  Qiskit circuit, `belief_trajectory` for the trust model, `bloch_tomography` on any backend;
+  Matplotlib spheres and GIF/MP4 animation; Plotly interactive figures and HTML animations;
+  `LiveBloch` for real-time updates in Jupyter or a window; dark and light themes.
+- Eight new examples (13–20) in medicine, robotics, finance, physics, scheduling, control and
+  visualisation; 16 new tests (35 in total); concepts page; README with banner, animations and
+  catalogue; `docs/make_assets.py` regenerates every figure from the package.
+- Extras: `[viz]`; `[dev]` adds ruff. CI installs the viewer, runs the tests, lints and smoke-tests
+  the examples.
+
 ## 1.0.0 — 5 October 2026
 
 First release.

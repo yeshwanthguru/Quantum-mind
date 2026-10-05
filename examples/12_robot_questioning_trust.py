@@ -6,8 +6,7 @@
 All data are simulated from the illustrative domain populations."""
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))  # run without installing
 import numpy as np
-from qlcog.applications.robotics import (domain_models, estimate_unprimed_rates, HumanModelEnsemble, TRUST_PROTOCOL,
-                                         TRUST_MODELS, TRUST_EVENTS)
+from qlcog.applications.robotics import (domain_models, estimate_unprimed_rates, HumanModelEnsemble, TRUST_MODELS, TRUST_EVENTS)
 from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel
 from qlcog.families.dynamics import question_effect
 
