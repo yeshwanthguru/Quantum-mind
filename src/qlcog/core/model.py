@@ -25,6 +25,7 @@ class Param:
     hi: float = 1.0
 
     def to_free(self, v):
+        """Map a parameter value to the unconstrained real line used by the optimiser."""
         if self.kind == 'prob':
             return float(logit(np.clip(v, 1e-9, 1 - 1e-9)))
         if self.kind == 'positive':
@@ -34,6 +35,7 @@ class Param:
         return float(v)
 
     def from_free(self, x):
+        """Inverse of to_free: unconstrained value -> parameter value."""
         if self.kind == 'prob':
             return float(expit(x))
         if self.kind == 'positive':
@@ -43,6 +45,7 @@ class Param:
         return float(x)
 
     def random_free(self, rng):
+        """Random starting point (unconstrained) for multi-start fitting."""
         if self.kind == 'angle':
             return rng.uniform(0, np.pi)
         return rng.normal(0, 1.0)
@@ -63,27 +66,34 @@ class Model:
     # ------------------------------------------------------------------ parameters
     @classmethod
     def free_params(cls):
+        """Parameters that are fitted (kind other than fixed)."""
         return [p for p in cls.PARAMS if p.kind != 'fixed']
 
     @property
     def params(self):
+        """Current parameter values as a dict."""
         return {p.name: getattr(self, p.name) for p in self.PARAMS}
 
     def to_vector(self):
+        """Unconstrained vector of the fitted parameters (inverse of from_vector)."""
         return np.array([p.to_free(getattr(self, p.name)) for p in self.free_params()])
 
     @classmethod
     def from_vector(cls, x, **options):
+        """Model from an unconstrained parameter vector plus structural options (used by fit)."""
         kw = {p.name: p.from_free(v) for p, v in zip(cls.free_params(), x)}
         kw.update(options)
         return cls(**kw)
 
     @property
     def n_params(self):
+        """Number of fitted parameters."""
         return len(self.free_params())
 
     # ------------------------------------------------------------------ predictions and data
     def predict(self, design):
+        """Predictions for every condition of the design: {condition: probability vector (or predicted
+        values)}."""
         raise NotImplementedError
 
     def loglik(self, data, design):
@@ -96,6 +106,7 @@ class Model:
         return ll
 
     def sse(self, data, design):
+        """Sum of squared errors between predicted and observed values (judgement models)."""
         pred = self.predict(design)
         return float(sum(np.sum((np.asarray(pred[c], float) - np.asarray(v, float)) ** 2) for c, v in data.items()))
 

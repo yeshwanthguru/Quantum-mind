@@ -7,9 +7,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0"></a>
   <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white" alt="Python 3.10-3.12">
   <img src="https://img.shields.io/badge/Qiskit-2.x-6929C4?logo=qiskit&logoColor=white" alt="Qiskit 2.x">
-  <img src="https://img.shields.io/badge/IBM%20Quantum-ready-052FAD" alt="IBM Quantum">
-  <img src="https://img.shields.io/badge/Amazon%20Braket-ready-FF9900" alt="Amazon Braket">
-  <img src="https://img.shields.io/badge/tests-35%20passing-2ea44f" alt="35 tests">
+  <img src="https://img.shields.io/badge/coverage-%E2%89%A580%25%20enforced-2ea44f" alt="coverage enforced in CI">
+  <a href="docs/API.md"><img src="https://img.shields.io/badge/docs-API%20reference-0969da" alt="API reference"></a>
 </p>
 
 <p align="center">
@@ -19,6 +18,9 @@
   <b><a href="#catalogue">Catalogue</a></b> ·
   <b><a href="#examples">Examples</a></b> ·
   <b><a href="#hardware">Hardware</a></b> ·
+  <b><a href="#status">Status</a></b> ·
+  <b><a href="notebooks/">Notebooks</a></b> ·
+  <b><a href="docs/API.md">API</a></b> ·
   <b><a href="docs/concepts.md">Concepts</a></b>
 </p>
 
@@ -126,8 +128,9 @@ LiveBloch(2).show().play(traj)                     # real time in Jupyter or a M
 bloch_tomography(qc, 'aer:FakeTorino')             # Bloch vectors measured under IBM device noise
 ```
 
-Interactive versions of both animations are in [`docs/assets/`](docs/assets): download the `.html`
-files and open them in a browser. The [viewer README](src/qlcog/viz/README.md) covers everything else.
+Interactive versions of both animations (rotate, zoom, play, slider) are written by
+[`examples/19`](examples/19_bloch_sphere_viewer.py) and [`examples/20`](examples/20_trust_on_the_bloch_sphere.py),
+and shown inline in the [notebooks](notebooks/). The [viewer README](src/qlcog/viz/README.md) covers everything else.
 
 <a id="quick-start"></a>
 
@@ -281,8 +284,9 @@ src/qlcog/
 ├── circuits/       Qiskit circuits of the families · run() on Aer, IBM Quantum, Amazon Braket
 ├── viz/            🌐 Bloch vectors, trajectories, tomography · Matplotlib and Plotly viewers · LiveBloch
 └── data/           published aggregate data sets
-examples/           20 scripts across domains        docs/   concepts, assets, make_assets.py
-tests/              35 tests                         .github/  CI, issue and pull-request templates
+examples/           21 scripts across domains        docs/       concepts, API reference, assets
+notebooks/          2 Jupyter notebooks              tests/      44 tests
+.github/            CI, release, CODEOWNERS, issue and pull-request templates
 ```
 
 <a id="examples"></a>
@@ -311,13 +315,19 @@ tests/              35 tests                         .github/  CI, issue and pul
 | 18 | Control, robotics | ✨ | [PID tuning with QPSO](examples/18_qpso_controller_tuning.py) |
 | 19 | Visualisation | 🌐 | [Bloch-sphere viewer, HTML, GIF, live, tomography](examples/19_bloch_sphere_viewer.py) |
 | 20 | Robotics, HRI | 🧠🌐 | [trust on the Bloch sphere](examples/20_trust_on_the_bloch_sphere.py) |
+| 21 | Robotics | 🧠 | [when to ask for help: ensemble uncertainty and `ask_or_act`](examples/21_robot_ask_for_help.py) |
 
-Results printed by the examples (simulated data, this version):
+Notebooks: [`01_bloch_sphere_live`](notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
+tomography under device noise) and [`02_robot_questioning_and_trust`](notebooks/02_robot_questioning_and_trust.ipynb)
+(order effects, ensemble, ask-or-act, trust on the sphere). Both run in CI.
+
+Results printed by the examples (simulated data, this version). They illustrate the methods on small
+problems; they are not a benchmark, and on the classification task a well-specified classical model wins:
 
 | Task | Result |
 |---|---|
-| Triage classification (test accuracy) | MPS 0.91 · VQC 0.84 · logistic regression 0.83 · quantum kernel 0.79 |
-| Robot task allocation (3 × 3) | QAOA, SQA, QIEA and SA all reach the optimum; QAOA P(optimal) 0.043 ideal, 0.028 under FakeTorino noise, against 0.002 uniform |
+| Triage classification, test accuracy, mean ± sd over 10 seeds | **classical logistic regression on quadratic features 0.926 ± 0.016** · MPS 0.915 ± 0.015 · VQC 0.870 ± 0.033 · linear logistic regression 0.814 ± 0.041 · quantum kernel 0.781 ± 0.040 |
+| Robot task allocation (3 × 3) | QAOA, SQA, QIEA and SA all reach the optimum; QAOA P(optimal) 0.04 ideal, 0.03 under FakeTorino noise (sampled), against 0.002 uniform |
 | Portfolio, 3 of 8 assets | QAOA (p = 2), SQA, QIEA and SA all optimal; QAOA P(optimal) 0.014 against 0.004 uniform |
 | VQE, 4-spin Ising chain | error below 1e-8 against exact diagonalisation |
 | Grover, 9 of 32 schedules valid | P(valid) 0.99 after one iteration (random 0.28) |
@@ -336,7 +346,39 @@ python3 examples/11_cloud_run.py --backend braket:arn:aws:braket:us-east-1::devi
 `run(circuit, backend)` accepts `aer`, `aer:<FakeBackend>`, `braket_local`, `braket_dm:<p>`,
 `ibm:<device>` and `braket:<ARN>`. Every `to_qiskit()` circuit in `qlcog.quantum` and every builder
 in `qlcog.circuits` works with it. Hardware runs cost queue time or money. Report their results
-exactly as measured, with backend, date and job identifier. The package ships no hardware results.
+exactly as measured, with backend, date and job identifier.
+
+| Backend | Status |
+|---|---|
+| Aer (ideal), Aer with IBM device noise models, Braket local and density-matrix simulators | tested in CI |
+| IBM Quantum hardware (`ibm:<device>`) | submission code tested in CI against a fake IBM device (same transpilation, SamplerV2 call and result parsing); **not yet run on hardware** |
+| Amazon Braket QPUs (`braket:<ARN>`) | submission code tested in CI with the local simulator as the device (same OpenQASM 3 program and `device.run` call); **not yet run on hardware** |
+
+No hardware results are included in the package. Known issue: `SamplerV2` is deprecated as of
+qiskit-ibm-runtime 0.50 and will be replaced by its successor in a later release.
+
+<a id="status"></a>
+
+## 🔎 Status, scope and honest limits
+
+| Area | What exists | What does not (yet) |
+|---|---|---|
+| Quantum-like models | 8 families with classical baselines, fitting, BIC/AIC, recovery studies; published aggregate data | individual-level (hierarchical) fitting |
+| Robotics | simulated human populations for three question domains, questioning designs, trust protocol, `HumanModelEnsemble`, `ask_or_act` decision rule | robot middleware integration (no ROS 2 package), data from human–robot studies |
+| Quantum models | VQC, quantum kernel, QAOA, VQE, Grover on an exact simulator with adjoint gradients; Qiskit export | quantum advantage (none claimed); noise-aware training |
+| Quantum-inspired | QIEA and MPS classifier (simplified variants, documented), QPSO, SQA, simulated-annealing baseline | DMRG training of MPS; Han and Kim's full lookup table |
+| Viewer | trajectories, animations, interactive HTML, live widget, tomography | Q-sphere and multi-qubit (entanglement) views |
+
+**Sizes.** The simulator holds 2ⁿ amplitudes per sample, at most 22 qubits. Measured on a laptop
+CPU: the variational classifier trains 8 features × 400 samples in about 80 s (151 L-BFGS steps,
+85 MB); QAOA on 9 variables takes seconds; brute-force QUBO solutions are limited to 22 variables.
+Grover's gate-level export needs about 360 CNOTs per iteration at 8 qubits and 660 at 10, against
+510 and 2,040 for the diagonal-gate export, which grows exponentially.
+
+**Name.** `qlcog` began as the quantum-like cognition library and keeps that name for stability; the
+quantum and quantum-inspired toolkits sit beside it so that all three can be compared on the same
+problems. The repository name reflects the main application, robots that work with people.
+
 
 ## 📦 Installation
 
@@ -350,9 +392,9 @@ pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition
 | (core) | numpy, scipy | quantum-like families, quantum simulator, quantum-inspired solvers, problems |
 | `[qiskit]` | qiskit, qiskit-aer, qiskit-ibm-runtime | circuits, Aer, IBM fake-backend noise, `circuit_trajectory` |
 | `[cloud]` | qiskit-ibm-runtime, amazon-braket-sdk | IBM Quantum and Amazon Braket hardware |
-| `[viz]` | matplotlib, plotly, ipywidgets | Bloch-sphere viewer, animations, live widget |
+| `[viz]` | matplotlib, plotly, ipywidgets, anywidget | Bloch-sphere viewer, animations, live widget |
 | `[all]` | all of the above | |
-| `[dev]` | pytest, ruff | tests and linting |
+| `[dev]` | pytest, pytest-cov, ruff, nbclient, build, twine | tests, coverage, linting, notebooks, packaging |
 
 From a clone: `pip install -e ".[all,dev]"`. Python 3.10 or later. Examples and tests also run
 without installing, because they add `src/` to the path.
@@ -370,12 +412,14 @@ without installing, because they add `src/` to the path.
    every example does.
 
 ```bash
-python3 -m pytest -q tests     # 35 tests: core, families, robotics, circuits, quantum, inspired, problems, viz
+python3 -m pytest -q --cov=qlcog     # 44 tests, about 90% line coverage (CI requires at least 80%)
 ```
 
-The tests check the simulator against Qiskit gate by gate, parameter-shift gradients against finite
-differences, exported circuits against simulation, circuit builders against the analytic models, and
-Bloch trajectories against Qiskit's partial trace and the trust model.
+The tests check the simulator against Qiskit gate by gate, adjoint and parameter-shift gradients
+against finite differences, exported circuits against simulation, circuit builders against the
+analytic models, the IBM and Braket submission code against local stand-ins, Bloch trajectories
+against Qiskit's partial trace and the trust model, input validation and size limits. CI also lints,
+checks that the API reference is current, runs the examples and notebooks, and builds the wheel.
 
 ## ⚠️ Limitations
 
@@ -383,8 +427,9 @@ Bloch trajectories against Qiskit's partial trace and the trust model.
   quantum-like structure.
 - Several quantum-like models have been challenged by further tests, for example the Grand Reciprocity
   equations and conjunction-fallacy tests. The family READMEs list these.
-- The quantum models are small and exactly simulable. No quantum advantage is claimed. Shallow QAOA
-  concentrates little probability on the optimum (a few percent on 9-variable problems).
+- The quantum models are small and exactly simulable. No quantum advantage is claimed: on the
+  example classification task a classical model with quadratic features is the most accurate.
+  Shallow QAOA concentrates little probability on the optimum (a few percent on 9-variable problems).
 - "Quantum-inspired" names where an idea came from, not a speed-up. Compare against the classical
   baseline.
 - Hardware noise distorts circuits by a few percent of total variation for small circuits, and more
@@ -409,8 +454,9 @@ original papers of the models used, which are listed in each README. The package
 use and includes an explicit patent grant. For contributing, see [CONTRIBUTING.md](CONTRIBUTING.md);
 for release history, see [CHANGELOG.md](CHANGELOG.md).
 
-**Author:** Yeshwanth Guru (ORCID [0009-0007-6353-4033](https://orcid.org/0009-0007-6353-4033)),
-Department of Mechanical Engineering, Amrita Vishwa Vidyapeetham, Chennai, India.
+**Author and maintainer:** Yeshwanth Guru (yeshwanth445@gmail.com; ORCID
+[0009-0007-6353-4033](https://orcid.org/0009-0007-6353-4033)), Department of Mechanical Engineering,
+Amrita Vishwa Vidyapeetham, Chennai, India. Security reports: see [SECURITY.md](SECURITY.md).
 
 Companion manuscripts (in preparation): a systematic review of quantum-like cognition for autonomous
 agents, a systematic review of meta-learning orchestration on resource-constrained robots, and

@@ -29,10 +29,12 @@ def _u(x, alpha):
 
 
 def expected_utility(lottery, alpha):
+    """Expected utility of a lottery [(p, x), ...] with power utility x^alpha (sign-preserving)."""
     return float(sum(p * _u(x, alpha) for x, p in lottery))
 
 
 def outcome_variance(lottery):
+    """Variance of the outcomes of a lottery [(p, x), ...]."""
     m = sum(p * x for x, p in lottery)
     return float(sum(p * (x - m) ** 2 for x, p in lottery))
 
@@ -43,6 +45,7 @@ def _softmax2(v1, v2, beta):
 
 
 class ExpectedUtilityModel(Model):
+    """Classical baseline: logit choice between two lotteries by expected utility."""
     PARAMS = [Param('alpha', 'bounded', 0.8, 0.05, 2.0), Param('beta', 'positive', 1.0)]
     name = 'Expected utility (logit)'
 
@@ -52,6 +55,8 @@ class ExpectedUtilityModel(Model):
 
 
 class QDTModel(Model):
+    """Quantum decision theory (Yukalov and Sornette): choice probability p = f + q, a utility factor f plus
+    an attraction factor q that favours the less uncertain prospect."""
     PARAMS = [Param('alpha', 'bounded', 0.8, 0.05, 2.0), Param('beta', 'positive', 1.0), Param('q0', 'bounded', 0.25, 0.0, 0.5)]
     name = 'Quantum decision theory'
 
@@ -69,6 +74,8 @@ class QDTModel(Model):
 
 
 class ProspectTheoryModel(Model):
+    """Classical baseline: cumulative prospect theory value (loss aversion, probability weighting) with
+    logit choice."""
     PARAMS = [Param('alpha', 'bounded', 0.88, 0.05, 2.0), Param('lam', 'bounded', 2.25, 0.2, 5.0),
               Param('g', 'bounded', 0.65, 0.2, 1.5), Param('beta', 'positive', 1.0)]
     name = 'Prospect theory (logit)'
@@ -77,6 +84,7 @@ class ProspectTheoryModel(Model):
         g = self.g; return p ** g / (p ** g + (1 - p) ** g) ** (1 / g)
 
     def value(self, lottery):
+        """Prospect-theory value of a lottery."""
         v = 0.0
         for x, p in lottery:
             vx = abs(x) ** self.alpha if x >= 0 else -self.lam * abs(x) ** self.alpha

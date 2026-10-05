@@ -35,6 +35,7 @@ class QuantumSimilarityModel(Model):
     name = 'Quantum similarity'
 
     def projectors(self):
+        """Projector of each concept subspace."""
         out = {}
         for i, c in enumerate(self.options['concepts']):
             t, p = getattr(self, 't%d' % i), getattr(self, 'p%d' % i)
@@ -58,11 +59,13 @@ def _point_params():
 
 
 class GeometricModel(Model):
+    """Classical baseline: similarity decreases with distance in a psychological space (symmetric)."""
     PARAMS = _point_params() + [Param('c', 'positive', 1.0)]
     LOSS = 'sse'
     name = 'Geometric (symmetric)'
 
     def bias(self, name):
+        """Bias of a stimulus (zero for the symmetric model)."""
         return 1.0
 
     def predict(self, design=None):
@@ -75,10 +78,12 @@ class GeometricModel(Model):
 
 
 class BiasedGeometricModel(GeometricModel):
+    """Classical baseline with asymmetry (Nosofsky 1991): geometric similarity plus a bias per stimulus."""
     PARAMS = GeometricModel.PARAMS + [Param('b%d' % i, 'prob', 0.9) for i in range(MAX_CONCEPTS)]
     name = 'Biased geometric (Nosofsky)'
 
     def bias(self, name):
+        """Bias parameter of a stimulus."""
         return getattr(self, 'b%d' % self.options['concepts'].index(name))
 
 

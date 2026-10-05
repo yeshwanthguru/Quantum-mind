@@ -4,13 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qlcog"
-version = "1.1.0"
+version = "1.2.0"
 description = "Quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a 3D Bloch-sphere viewer"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [
-  {name = "Yeshwanth Guru", email = "g_yeshwanth@ch.students.amrita.edu"},
+  {name = "Yeshwanth Guru", email = "yeshwanth445@gmail.com"},
+]
+maintainers = [
+  {name = "Yeshwanth Guru", email = "yeshwanth445@gmail.com"},
 ]
 keywords = ["quantum cognition", "quantum-like models", "quantum machine learning", "quantum-inspired algorithms", "robotics",
             "human-robot interaction", "quantum probability", "decision making", "qiskit", "QAOA", "VQE",
@@ -37,10 +40,10 @@ Changelog = "https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/ma
 [project.optional-dependencies]
 qiskit = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40"]
 cloud = ["qiskit-ibm-runtime>=0.40", "amazon-braket-sdk>=1.80"]
-viz = ["matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8"]
+viz = ["matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8", "anywidget>=0.9"]
 all = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40", "amazon-braket-sdk>=1.80",
-       "matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8"]
-dev = ["pytest>=8", "ruff>=0.5"]
+       "matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8", "anywidget>=0.9"]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.5", "nbformat>=5.9", "nbclient>=0.10", "ipykernel>=6", "build>=1", "twine>=5"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

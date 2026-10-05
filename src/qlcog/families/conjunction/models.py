@@ -27,17 +27,22 @@ RANK_STRUCTURES = [{'ranks': r} for r in itertools.product((1, 2), repeat=2)]
 
 
 class QuantumConjunctionModel(Model):
+    """Quantum-like conjunction and disjunction judgements: two events as projectors in a real 3D space,
+    with the conjunction judged by asking the more likely event first (Lueders rule); can produce
+    conjunction and disjunction fallacies."""
     PARAMS = [Param('a', 'angle', 0.8), Param('b', 'angle', 1.2), Param('g', 'angle', 0.3)]
     LOSS = 'sse'
     name = 'Quantum-like'
 
     def projectors(self):
+        """Projectors {'A': P_A, 'B': P_B} of the two events."""
         a, b, g = self.a, self.b, self.g
         uA = np.array([np.cos(a), np.sin(a), 0.0]); uB = np.array([np.cos(b), np.sin(b) * np.cos(g), np.sin(b) * np.sin(g)])
         r = dict(zip('AB', self.options.get('ranks', (1, 1))))
         return {q: (projector(u) if r[q] == 1 else np.eye(3) - projector(u)) for q, u in (('A', uA), ('B', uB))}
 
     def judgements(self):
+        """Predicted judgements {A, B, A&B, A|B}."""
         psi = np.array([1.0, 0, 0]); P = self.projectors()
         pA, pB = luders(psi, P['A'])[0], luders(psi, P['B'])[0]
         first, second = ('A', 'B') if pA >= pB else ('B', 'A')
@@ -51,6 +56,7 @@ class QuantumConjunctionModel(Model):
 
 
 class ClassicalJointModel(Model):
+    """Classical baseline: one joint distribution, so P(A and B) <= min(P(A), P(B)) (no fallacies)."""
     PARAMS = [Param('pA', 'prob', 0.5), Param('pB', 'prob', 0.5), Param('rho', 'bounded', 0.0, -1, 1)]
     LOSS = 'sse'
     name = 'Classical joint'
@@ -64,6 +70,7 @@ class ClassicalJointModel(Model):
 
 
 class AveragingModel(Model):
+    """Baseline: the conjunction is judged as a weighted average of the two event judgements."""
     PARAMS = [Param('pA', 'prob', 0.5), Param('pB', 'prob', 0.5), Param('w', 'prob', 0.5)]
     LOSS = 'sse'
     name = 'Averaging'
@@ -75,6 +82,8 @@ class AveragingModel(Model):
 
 
 class PTNModel(Model):
+    """Probability theory plus noise baseline (Costello and Watts): classical probabilities read with random
+    noise, which regresses judgements towards 0.5."""
     PARAMS = [Param('pA', 'prob', 0.5), Param('pB', 'prob', 0.5), Param('rho', 'bounded', 0.0, -1, 1),
               Param('d', 'bounded', 0.1, 0, 0.5), Param('dd', 'bounded', 0.05, 0, 0.5)]
     LOSS = 'sse'

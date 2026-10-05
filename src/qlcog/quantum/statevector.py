@@ -10,7 +10,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 
-__all__ = ['W', 'X', 'Circuit', 'apply_matrix', 'basis_probs', 'expectation_z']
+__all__ = ['W', 'X', 'XX', 'Circuit', 'apply_matrix', 'basis_probs', 'expectation_z', 'MAX_QUBITS']
+
+MAX_QUBITS = 22          # state vectors beyond this size do not fit in typical memory (2^22 x 16 bytes per sample)
+_CHUNK_AMPLITUDES = 2 ** 21   # samples are simulated in chunks of about this many amplitudes (32 MB)
 
 
 @dataclass(frozen=True)
@@ -121,31 +124,69 @@ _FIXED = {
     'swap': np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]], complex),
 }
 PARAMETRIC = ('rx', 'ry', 'rz', 'p', 'rzz')
+_GENERATOR = {'rx': _FIXED['x'], 'ry': _FIXED['y'], 'rz': _FIXED['z'], 'rzz': np.diag([1, -1, -1, 1]).astype(complex),
+              'p': np.diag([0, 1]).astype(complex)}
+
+
+def _dagger(M):
+    return M.conj().swapaxes(-1, -2)
 
 
 class Circuit:
     """Parameterised circuit. Build with gate methods, simulate with `state(w, X)`."""
 
     def __init__(self, n):
+        if n > MAX_QUBITS:
+            raise ValueError('%d qubits exceed the simulator limit of %d (memory grows as 2^n)' % (n, MAX_QUBITS))
         self.n = n; self.ops = []
 
     def _add(self, name, qubits, param=None):
         self.ops.append((name, tuple(qubits), param)); return self
 
-    def h(self, q): return self._add('h', [q])
-    def x(self, q): return self._add('x', [q])
-    def y(self, q): return self._add('y', [q])
-    def z(self, q): return self._add('z', [q])
-    def s(self, q): return self._add('s', [q])
-    def sdg(self, q): return self._add('sdg', [q])
-    def cx(self, c, t): return self._add('cx', [c, t])
-    def cz(self, a, b): return self._add('cz', [a, b])
-    def swap(self, a, b): return self._add('swap', [a, b])
-    def rx(self, p, q): return self._add('rx', [q], p)
-    def ry(self, p, q): return self._add('ry', [q], p)
-    def rz(self, p, q): return self._add('rz', [q], p)
-    def p(self, p, q): return self._add('p', [q], p)
-    def rzz(self, p, a, b): return self._add('rzz', [a, b], p)
+    def h(self, q):
+
+        """Hadamard on qubit q."""
+
+        return self._add('h', [q])
+    def x(self, q):
+        """Pauli X on qubit q."""
+        return self._add('x', [q])
+    def y(self, q):
+        """Pauli Y on qubit q."""
+        return self._add('y', [q])
+    def z(self, q):
+        """Pauli Z on qubit q."""
+        return self._add('z', [q])
+    def s(self, q):
+        """S (phase pi/2) on qubit q."""
+        return self._add('s', [q])
+    def sdg(self, q):
+        """S dagger on qubit q."""
+        return self._add('sdg', [q])
+    def cx(self, c, t):
+        """CNOT with control c and target t."""
+        return self._add('cx', [c, t])
+    def cz(self, a, b):
+        """Controlled Z on qubits a and b."""
+        return self._add('cz', [a, b])
+    def swap(self, a, b):
+        """Swap qubits a and b."""
+        return self._add('swap', [a, b])
+    def rx(self, p, q):
+        """RX(p) on qubit q; p is a number, W(k), X(j) or XX(i, j)."""
+        return self._add('rx', [q], p)
+    def ry(self, p, q):
+        """RY(p) on qubit q."""
+        return self._add('ry', [q], p)
+    def rz(self, p, q):
+        """RZ(p) on qubit q."""
+        return self._add('rz', [q], p)
+    def p(self, p, q):
+        """Phase gate P(p) on qubit q."""
+        return self._add('p', [q], p)
+    def rzz(self, p, a, b):
+        """RZZ(p) = exp(-i p Z_a Z_b / 2) on qubits a and b."""
+        return self._add('rzz', [a, b], p)
 
     def unitary(self, M, qubits, label='U'):
         """Fixed unitary on `qubits`."""
@@ -157,10 +198,12 @@ class Circuit:
 
     @property
     def n_weights(self):
+        """Number of trainable weights (largest W index + 1)."""
         ks = [p.k for _, _, p in self.ops if isinstance(p, W)]
         return 1 + max(ks) if ks else 0
 
     def compose(self, other):
+        """Append the gates of another circuit; returns self."""
         self.ops += other.ops; return self
 
     # ----------------------------------------------------------------------------------- simulation
@@ -169,28 +212,69 @@ class Circuit:
         w = np.zeros(self.n_weights) if w is None else np.asarray(w, float)
         Xa = None if X_ is None else np.atleast_2d(np.asarray(X_, float))
         B = Xa.shape[0] if Xa is not None else (w.shape[0] if w.ndim == 2 else 1)
+        if w.ndim == 1 and len(w) < self.n_weights:
+            raise ValueError('expected %d weights, got %d' % (self.n_weights, len(w)))
         if init is None:
             psi = np.zeros((B, 2 ** self.n), complex); psi[:, 0] = 1
         else:
             psi = np.tile(np.asarray(init, complex), (B, 1))
-        for name, qs, p in self.ops:
-            if name in PARAMETRIC:
-                M = _rot(name, _value(p, w, Xa, B))
-            elif name == 'unitary':
-                M = p[0]
-            elif name == 'diag':
-                psi = psi * np.exp(1j * p[0])[None, :]; continue
-            else:
-                M = _FIXED[name]
-            psi = apply_matrix(psi, M, list(qs), self.n)
+        for op in self.ops:
+            psi = self._apply(op, psi, w, Xa, B)
         return psi
 
+    def _matrix(self, op, w, Xa, B):
+        name, qs, p = op
+        if name in PARAMETRIC:
+            return _rot(name, _value(p, w, Xa, B))
+        if name == 'unitary':
+            return p[0]
+        return _FIXED[name]
+
+    def _apply(self, op, psi, w, Xa, B, inverse=False):
+        name, qs, p = op
+        if name == 'diag':
+            return psi * np.exp((-1j if inverse else 1j) * p[0])[None, :]
+        M = self._matrix(op, w, Xa, B)
+        return apply_matrix(psi, _dagger(M) if inverse else M, list(qs), self.n)
+
+    def value_and_grad(self, w, X_, loss, chunk=None):
+        """Loss and its exact gradient with respect to the trainable weights by the adjoint method.
+
+        loss(psi, rows) -> (L, phi): L is the loss summed over the samples `rows` of the chunk and
+        phi = dL/d(conj psi) has the shape of psi. The circuit is run forward once, then backwards
+        once with the inverse gates, so the cost is about three simulations whatever the number of
+        weights; samples are processed in chunks (memory O(chunk x 2^n)). Weights shared by several
+        gates (e.g. QAOA angles) are handled."""
+        w = np.asarray(w, float); Xa = None if X_ is None else np.atleast_2d(np.asarray(X_, float))
+        B = 1 if Xa is None else Xa.shape[0]
+        chunk = chunk or max(1, _CHUNK_AMPLITUDES // 2 ** self.n)
+        total, grad = 0.0, np.zeros(self.n_weights)
+        for start in range(0, B, chunk):
+            rows = np.arange(start, min(B, start + chunk))
+            Xc = None if Xa is None else Xa[rows]; b = len(rows)
+            psi = self.state(w, Xc)
+            L, phi = loss(psi, rows)
+            total += float(L)
+            for op in reversed(self.ops):
+                name, qs, p = op
+                if name in PARAMETRIC and isinstance(p, W):
+                    Gpsi = apply_matrix(psi, _GENERATOR[name], list(qs), self.n)
+                    x = np.einsum('bi,bi->', phi.conj(), Gpsi)
+                    # rotation exp(-i t G / 2): dL/dt = Im<phi|G|psi>; phase gate P(t): dL/dt = -2 Im<phi|1><1|psi>
+                    grad[p.k] += p.scale * (-2 * x.imag if name == 'p' else x.imag)
+                psi = self._apply(op, psi, w, Xc, b, inverse=True)
+                phi = self._apply(op, phi, w, Xc, b, inverse=True)
+        return total, grad
+
     def probabilities(self, w=None, X_=None):
+        """Born-rule probabilities of the final states, shape (B, 2^n)."""
         return np.abs(self.state(w, X_)) ** 2
 
     # ----------------------------------------------------------------------------------- export
     def to_qiskit(self, w=None, x=None, measure=True):
         """Qiskit QuantumCircuit with all angles bound (x: one sample)."""
+        from .._optional import require
+        require('qiskit', 'qiskit')
         from qiskit import QuantumCircuit
         from qiskit.circuit.library import UnitaryGate, DiagonalGate
         w = np.zeros(self.n_weights) if w is None else np.asarray(w, float)
@@ -214,6 +298,7 @@ class Circuit:
 
 
 def basis_probs(psi):
+    """Born-rule probabilities |psi|^2."""
     return np.abs(psi) ** 2
 
 

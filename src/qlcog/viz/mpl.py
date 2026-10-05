@@ -14,6 +14,8 @@ class BlochSphere:
         b = BlochSphere(title='q0'); b.add_vector([0, 1, 0]); b.add_trajectory(points); b.show()"""
 
     def __init__(self, ax=None, title='', theme='dark', figsize=(5, 5), elev=20, azim=35):
+        from .._optional import require
+        require('matplotlib')
         import matplotlib.pyplot as plt
         self.t = _theme(theme)
         if ax is None:
@@ -62,19 +64,23 @@ class BlochSphere:
         return self.add_vector(bloch_vectors(state, 1)[0], **kw)
 
     def add_points(self, points, color=None, size=12, alpha=0.9):
+        """Scatter points (n, 3) on or inside the sphere."""
         p = np.atleast_2d(points)
         return self.ax.scatter(p[:, 0], p[:, 1], p[:, 2], color=self._color(color), s=size, alpha=alpha)
 
     def add_trajectory(self, points, color=None, lw=1.8, alpha=0.8):
+        """Draw a path of Bloch vectors (n, 3)."""
         p = np.atleast_2d(points)
         line, = self.ax.plot(p[:, 0], p[:, 1], p[:, 2], color=self._color(color), lw=lw, alpha=alpha)
         return line
 
     def show(self):
+        """Show the figure."""
         import matplotlib.pyplot as plt
         plt.show()
 
     def save(self, path, dpi=150):
+        """Save the figure to `path`."""
         self.fig.savefig(path, dpi=dpi, facecolor=self.t['bg'], bbox_inches='tight')
 
 

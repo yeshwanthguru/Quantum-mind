@@ -37,6 +37,7 @@ def complement(P):
 
 
 def is_projector(P, tol=1e-9):
+    """True if P is Hermitian and idempotent within tol."""
     return np.allclose(P @ P, P, atol=tol) and np.allclose(P, P.conj().T, atol=tol)
 
 
@@ -87,6 +88,7 @@ def givens_frame(angles, d):
 
 
 def density(psi):
+    """Density matrix |psi><psi| of a (normalised) state vector."""
     psi = np.asarray(psi)
     return np.outer(psi, psi.conj())
 
@@ -118,6 +120,7 @@ def lindblad_superoperator(H, jumps, rates):
 
 
 def evolve_density(rho, superop, t):
+    """Evolve a density matrix for time t under a Lindblad superoperator (matrix exponential)."""
     n = rho.shape[0]
     v = expm(superop * t) @ rho.reshape(-1)
     return v.reshape(n, n)

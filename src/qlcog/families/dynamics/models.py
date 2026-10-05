@@ -38,6 +38,7 @@ def _bins(N, K):
 
 class _WalkBase(Model):
     def setup(self):
+        """Build the generator matrices from the parameters."""
         N = int(self.options.get('n_states', 21)); K = int(self.options.get('n_categories', 3))
         width = float(self.options.get('initial_width', 0.15))
         x = np.linspace(0, 1, N)
@@ -56,6 +57,8 @@ class _WalkBase(Model):
 
 
 class MarkovWalk(_WalkBase):
+    """Classical baseline: evidence accumulation as a Markov random walk over N belief states (a judgement
+    does not disturb the state)."""
     PARAMS = [Param('mu', 'prob', 0.6), Param('gamma', 'positive', 5.0)]
     name = 'Markov random walk'
 
@@ -70,9 +73,11 @@ class MarkovWalk(_WalkBase):
         self.Kmat = Kmat
 
     def state_probs(self, t):
+        """Distribution over belief states at time t."""
         return expm(self.Kmat * t) @ self.p0
 
     def joint(self, t1, t2):
+        """Joint distribution of the judgements at times t1 and t2 (judgement at t1 included)."""
         p1 = expm(self.Kmat * t1) @ self.p0; T = expm(self.Kmat * (t2 - t1)); J = np.zeros((self.K, self.K))
         for i, bi in enumerate(self.bins):
             q = np.zeros(self.N); q[bi] = p1[bi]
@@ -82,6 +87,8 @@ class MarkovWalk(_WalkBase):
 
 
 class QuantumWalk(_WalkBase):
+    """Quantum walk over N belief states (Busemeyer, Kvam and Pleskac): unitary evolution, so an
+    intermediate judgement changes later judgements."""
     PARAMS = [Param('mu', 'real', 2.0), Param('sigma', 'positive', 5.0)]
     name = 'Quantum walk'
 
@@ -94,12 +101,15 @@ class QuantumWalk(_WalkBase):
         self.H = H
 
     def U(self, t):
+        """Unitary exp(-i H t)."""
         return expm(-1j * self.H * t)
 
     def state_probs(self, t):
+        """Distribution over belief states at time t (Born rule)."""
         return np.abs(self.U(t) @ self.psi0) ** 2
 
     def joint(self, t1, t2):
+        """Joint distribution of the judgements at t1 and t2, with collapse at t1 (Lueders)."""
         a1 = self.U(t1) @ self.psi0; U2 = self.U(t2 - t1); J = np.zeros((self.K, self.K))
         for i, bi in enumerate(self.bins):
             v = np.zeros(self.N, complex); v[bi] = a1[bi]
@@ -109,6 +119,8 @@ class QuantumWalk(_WalkBase):
 
 
 class OpenSystemWalk(QuantumWalk):
+    """Quantum walk with Lindblad dephasing between the quantum walk (rate 0) and Markov-like behaviour
+    (large rate)."""
     PARAMS = QuantumWalk.PARAMS + [Param('lam', 'positive', 1.0)]
     name = 'Open-system walk'
 
@@ -123,9 +135,11 @@ class OpenSystemWalk(QuantumWalk):
         return (expm(self.L * t) @ rho.reshape(-1)).reshape(n, n)
 
     def state_probs(self, t):
+        """Distribution over belief states at time t under Lindblad dynamics."""
         return np.real(np.diag(self._evolve(self.rho0, t)))
 
     def joint(self, t1, t2):
+        """Joint distribution of judgements at t1 and t2 with collapse at t1."""
         r1 = self._evolve(self.rho0, t1); J = np.zeros((self.K, self.K))
         for i, bi in enumerate(self.bins):
             P = np.zeros((self.N, self.N)); P[bi, bi] = 1.0
@@ -141,13 +155,17 @@ def _answer_keys(k):
 
 
 class MarkovBelief(Model):
+    """Classical baseline: a yes-probability updated by each event (successes raise, failures lower); asking
+    does not change it."""
     PARAMS = [Param('p0', 'prob', 0.5), Param('up', 'prob', 0.3), Param('down', 'prob', 0.3)]
     name = 'Markov belief'
 
     def step(self, p, e):
+        """Updated yes-probability after one event (1 = success, 0 = failure)."""
         return p + (1 - p) * self.up if e else p * (1 - self.down)
 
     def answer_probs(self, events, queries):
+        """Probabilities of the answer sequences given at the query times, after the events."""
         out = {(): (1.0, self.p0)}
         for t, e in enumerate(events):
             out = {k: (pr, self.step(p, e)) for k, (pr, p) in out.items()}
@@ -168,6 +186,8 @@ class MarkovBelief(Model):
 
 
 class OpenSystemBelief(MarkovBelief):
+    """Belief (e.g. trust) as a qubit: events rotate it, dephasing gamma pulls it towards the measurement
+    axis, and asking collapses it (Lueders), so asking can change later answers."""
     PARAMS = [Param('phi0', 'bounded', 1.6, 0, np.pi), Param('a_pos', 'bounded', 0.8, 0, np.pi),
               Param('a_neg', 'bounded', 1.2, 0, np.pi), Param('gamma', 'prob', 0.3)]
     name = 'Open-system belief'
@@ -177,6 +197,7 @@ class OpenSystemBelief(MarkovBelief):
         c, s = np.cos(a / 2), np.sin(a / 2); return np.array([[c, -s], [s, c]])
 
     def answer_probs(self, events, queries):
+        """Probabilities of the answer sequences given at the query times (rotation, dephasing, collapse)."""
         v = np.array([np.cos(self.phi0 / 2), np.sin(self.phi0 / 2)])
         out = {(): (1.0, np.outer(v, v))}
         for t, e in enumerate(events):

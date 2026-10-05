@@ -10,6 +10,8 @@ __all__ = ['FitResult', 'fit', 'compare', 'recovery', 'kl', 'tvd']
 
 @dataclass
 class FitResult:
+    """Result of `fit`: the fitted model, loss, log-likelihood, number of parameters k, observations n and
+    options; properties aic and bic."""
     model: object
     loss: float          # negative log-likelihood (multinomial) or sum of squared errors (sse)
     loglik: float        # log-likelihood (for sse: Gaussian with the error variance profiled out)
@@ -19,13 +21,16 @@ class FitResult:
 
     @property
     def aic(self):
+        """Akaike information criterion 2k - 2 log L."""
         return 2 * self.k - 2 * self.loglik
 
     @property
     def bic(self):
+        """Bayesian information criterion k log n - 2 log L."""
         return self.k * np.log(max(self.n, 1)) - 2 * self.loglik
 
     def summary(self):
+        """Dictionary with model name, parameters, options, log-likelihood, k, n, AIC and BIC."""
         return {'model': type(self.model).__name__, 'params': self.model.params, 'options': self.options,
                 'loglik': self.loglik, 'k': self.k, 'n': self.n, 'aic': self.aic, 'bic': self.bic}
 
@@ -96,9 +101,11 @@ def recovery(generators, candidates, design, n, reps=20, rng=None, criterion='bi
 
 
 def kl(p, q):
+    """Kullback-Leibler divergence KL(p || q) in nats (probabilities clipped at 1e-12)."""
     p = np.clip(np.asarray(p, float), 1e-12, 1); q = np.clip(np.asarray(q, float), 1e-12, 1)
     return float(np.sum(p * np.log(p / q)))
 
 
 def tvd(p, q):
+    """Total variation distance between two probability vectors."""
     return 0.5 * float(np.abs(np.asarray(p, float) - np.asarray(q, float)).sum())

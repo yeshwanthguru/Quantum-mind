@@ -78,10 +78,12 @@ class Trajectory:
 
     @property
     def frames(self):
+        """Number of frames."""
         return len(self.vectors)
 
     @property
     def n_qubits(self):
+        """Number of qubits."""
         return self.vectors.shape[1]
 
     def purity(self):

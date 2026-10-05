@@ -31,10 +31,13 @@ def _pair(p):
 
 
 class InterferenceModel(Model):
+    """Quantum-like law of total probability with an interference term between the two paths (normalised by
+    default) for disjunction effects."""
     PARAMS = [Param('p1', 'prob', 0.9), Param('p2', 'prob', 0.8), Param('c', 'prob', 0.5), Param('theta', 'angle', 2.0)]
     name = 'Quantum-like interference'
 
     def p_unknown(self):
+        """Probability of acting when the event is unknown."""
         c, p1, p2, ct = self.c, self.p1, self.p2, np.cos(self.theta)
         A = c * p1 + (1 - c) * p2 + 2 * ct * np.sqrt(c * p1 * (1 - c) * p2)
         if not self.options.get('normalized', True):
@@ -49,6 +52,7 @@ class InterferenceModel(Model):
 
 
 class ClassicalMixtureModel(Model):
+    """Classical baseline: the unknown condition is a mixture of the known ones (law of total probability)."""
     PARAMS = [Param('p1', 'prob', 0.9), Param('p2', 'prob', 0.8), Param('c', 'prob', 0.5)]
     name = 'Classical (total probability)'
 

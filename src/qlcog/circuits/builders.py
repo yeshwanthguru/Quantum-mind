@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import itertools
 import numpy as np
+from .._optional import require
+require('qiskit')
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit.library import UnitaryGate, StatePreparation, MCXGate
 
@@ -25,6 +27,7 @@ __all__ = ['subspace_unitary', 'projective_sequence_circuit', 'order_effects_cir
 
 
 def n_qubits(d):
+    """Number of qubits needed for dimension d (at least 1)."""
     return max(1, int(np.ceil(np.log2(d))))
 
 

@@ -12,6 +12,7 @@ AXIS_LABELS = {(0, 0, 1.18): '|0⟩', (0, 0, -1.18): '|1⟩', (1.22, 0, 0): '|+�
 
 
 def theme(name):
+    """Theme dict by name (dark, light) or a custom dict."""
     if isinstance(name, dict):
         return name
     return THEMES[name]

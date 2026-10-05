@@ -2,7 +2,8 @@
 probabilities, quantum potential wells, transverse-field tunnelling). They run on ordinary hardware and
 make no use of a quantum computer.
 
-  QIEA   quantum-inspired evolutionary algorithm (binary)          Han and Kim, IEEE TEVC 6(6), 2002
+  QIEA   quantum-inspired evolutionary algorithm (binary); a simplified variant of Han and Kim,
+         IEEE TEVC 6(6), 2002 (fixed rotation step instead of their lookup table; see the class docstring)
   QPSO   quantum-behaved particle swarm optimisation (continuous)   Sun, Feng and Xu, CEC 2004
   SQA    simulated quantum annealing, path-integral Monte Carlo     Martonak, Santoro and Tosatti, PRB 66, 2002
 """
@@ -16,6 +17,8 @@ __all__ = ['OptimResult', 'QIEA', 'QPSO', 'SQA', 'simulated_annealing']
 
 @dataclass
 class OptimResult:
+    """Optimiser result: best solution x, its value, the best value per iteration (history) and the number
+    of objective evaluations."""
     x: np.ndarray
     value: float
     history: list = field(default_factory=list, repr=False)     # best value per iteration
@@ -34,7 +37,13 @@ class QIEA:
 
     Each individual is a string of Q-bits; Q-bit i holds an angle theta_i with P(x_i = 1) = sin^2 theta_i.
     Observing an individual samples a bit string. A rotation gate moves every angle towards the best
-    solution found so far, and a not-gate style migration exchanges best solutions between groups.
+    solution found so far, and migration exchanges best solutions within groups and globally.
+
+    Simplified variant: Han and Kim's rotation uses a lookup table of eight cases with signs that
+    depend on the quadrant of the Q-bit; here one fixed step `delta` moves P(x_i = 1) towards the
+    individual's best bit whenever the observed bit differs and the observation is not better, and
+    an H-epsilon bound keeps every probability away from 0 and 1. Behaviour is comparable on the
+    tested problems but not identical to the original.
 
     problem: Qubo or f(x) for x in {0, 1}^n (then give n)."""
 
@@ -45,6 +54,7 @@ class QIEA:
         self.migrate_every, self.groups, self.seed = migrate_every, groups, seed
 
     def run(self):
+        """Run the evolutionary search; returns OptimResult."""
         rng = np.random.default_rng(self.seed); n, P = self.n, self.pop
         theta = np.full((P, n), np.pi / 4)                     # equal superposition
         observe = lambda: (rng.random((P, n)) < np.sin(theta) ** 2).astype(int)   # noqa: E731
@@ -85,6 +95,7 @@ class QPSO:
         self.N, self.iterations, self.beta0, self.beta1, self.seed = particles, iterations, beta0, beta1, seed
 
     def run(self):
+        """Run the swarm; returns OptimResult."""
         rng = np.random.default_rng(self.seed); d = len(self.lo)
         x = self.lo + (self.hi - self.lo) * rng.random((self.N, d))
         fx = np.array([self.f(v) for v in x]); pb, fpb = x.copy(), fx.copy()
@@ -114,6 +125,7 @@ class SQA:
         self.g0, self.g1, self.seed = gamma0, gamma1, seed
 
     def run(self):
+        """Run the annealing schedule; returns OptimResult with the best bit string found in any replica."""
         h, J, c = self.qubo.to_ising(); n = len(h)
         scale = max(np.abs(h).max(initial=0), np.abs(J).max(initial=0), 1e-12)
         h, Jf = h / scale, (J + J.T) / scale

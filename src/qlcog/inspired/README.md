@@ -5,10 +5,10 @@ quantum SDK and make no use of a quantum computer.
 
 | Model | Quantum idea | Problem type | Reference |
 |---|---|---|---|
-| `QIEA` | Each bit is a "Q-bit" with an amplitude angle; observation samples bit strings; rotation gates steer the population | Binary optimisation (any `Qubo` or `f(x)`, x ∈ {0,1}ⁿ) | Han and Kim, *IEEE TEVC* 6(6), 580–593 (2002) |
+| `QIEA` | Each bit is a "Q-bit" with an amplitude angle; observation samples bit strings; rotation gates steer the population | Binary optimisation (any `Qubo` or `f(x)`, x ∈ {0,1}ⁿ) | Simplified variant of Han and Kim, *IEEE TEVC* 6(6), 580–593 (2002): fixed rotation step instead of their lookup table |
 | `QPSO` | Particles in a delta potential well, positions sampled from its wave function (no velocities) | Continuous optimisation on a box | Sun, Feng and Xu, *CEC* (2004) |
 | `SQA` | Transverse-field Ising model mapped to coupled classical replicas (Suzuki–Trotter); tunnelling through thin barriers | Ising / QUBO problems | Martoňák, Santoro and Tosatti, *PRB* 66, 094203 (2002) |
-| `MPSClassifier` | Weight tensor in an exponentially large tensor-product space, stored as a matrix product state | Supervised classification | Stoudenmire and Schwab, *NeurIPS* (2016) |
+| `MPSClassifier` | Weight tensor in an exponentially large tensor-product space, stored as a matrix product state | Supervised classification | Model class of Stoudenmire and Schwab, *NeurIPS* (2016); trained by Adam on all cores with fixed bond dimension instead of their DMRG sweeps |
 | `simulated_annealing` | (classical baseline) | Ising / QUBO | Kirkpatrick et al., *Science* 220 (1983) |
 
 ```python

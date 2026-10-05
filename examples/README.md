@@ -17,7 +17,7 @@ seconds; 13 and 19 take about a minute. Only the data in `qlcog.data` are human 
 | `10_circuits_quickstart.py` | – | all | Circuit versus model on Aer, FakeTorino noise and Braket |
 | `11_cloud_run.py` | – | order effects | Running on IBM Quantum or Amazon Braket hardware (`--dry-run` for local) |
 | `12_robot_questioning_trust.py` | Robotics / HRI | robotics application | Questioning designs, human-model ensemble with uncertainty, trust question effect |
-| `13_quantum_classifiers_triage.py` | Medicine (simulated) | quantum, quantum-inspired | Variational quantum classifier, quantum kernel and MPS classifier against logistic regression; one circuit on Aer |
+| `13_quantum_classifiers_triage.py` | Medicine (simulated) | quantum, quantum-inspired | Variational quantum classifier, quantum kernel and MPS classifier against linear and quadratic logistic regression, 10 seeds (mean ± sd); one circuit on Aer |
 | `14_qaoa_multi_robot_allocation.py` | Robotics | quantum, quantum-inspired | Task allocation solved exactly and by QAOA, SQA, QIEA and simulated annealing; QAOA sampled on Aer and FakeTorino |
 | `15_portfolio_selection.py` | Finance (simulated) | quantum, quantum-inspired | Choose 3 of 8 assets: QAOA, SQA, QIEA, simulated annealing against the exact optimum |
 | `16_vqe_ising_chain.py` | Physics, materials | quantum | VQE ground-state energies of a transverse-field Ising chain against exact diagonalisation |
@@ -25,5 +25,6 @@ seconds; 13 and 19 take about a minute. Only the data in `qlcog.data` are human 
 | `18_qpso_controller_tuning.py` | Control, robotics | quantum-inspired | PID gains for a robot joint by QPSO against random search with the same budget |
 | `19_bloch_sphere_viewer.py` | Visualisation | viewer | Circuit trajectory on Bloch spheres, interactive HTML, GIF (`--gif`), live window (`--live`), tomography on Aer and FakeTorino |
 | `20_trust_on_the_bloch_sphere.py` | Robotics / HRI | quantum-like, viewer | The trust belief qubit over successes and failures; P(trust) from the sphere equals the model |
+| `21_robot_ask_for_help.py` | Robotics | robotics application | Ensemble uncertainty and `ask_or_act`: when model disagreement and error costs make a robot ask before acting |
 
 Scripts 19 and 20 write HTML (and GIF) files to `examples/output/` (ignored by git).

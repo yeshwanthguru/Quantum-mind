@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below, together with the original papers of the models used."
 title: "qlcog: quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a Bloch-sphere viewer"
-version: 1.1.0
+version: 1.2.0
 date-released: 2026-10-05
 license: Apache-2.0
 repository-code: "https://github.com/yeshwanthguru/quantum-cognition-robotics"
@@ -17,5 +17,6 @@ keywords:
 authors:
   - family-names: Guru
     given-names: Yeshwanth
+    email: "yeshwanth445@gmail.com"
     orcid: "https://orcid.org/0009-0007-6353-4033"
     affiliation: "Department of Mechanical Engineering, Amrita Vishwa Vidyapeetham, Chennai, India"

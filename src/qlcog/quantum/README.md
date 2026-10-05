@@ -7,16 +7,22 @@ Amazon Braket through `qlcog.circuits.run`.
 
 | Model | What it does | Typical use | Reference |
 |---|---|---|---|
-| `VariationalClassifier` | Data re-uploading classifier, any number of classes, exact parameter-shift gradients | Classification from a few features (triage, user intent, acceptance of a robot's offer) | Pérez-Salinas et al., *Quantum* 4, 226 (2020) |
+| `VariationalClassifier` | Data re-uploading classifier, any number of classes, exact adjoint gradients | Classification from a few features (triage, user intent, acceptance of a robot's offer) | Pérez-Salinas et al., *Quantum* 4, 226 (2020) |
 | `QuantumKernel`, `QuantumKernelClassifier` | Fidelity kernel of the ZZ feature map; kernel ridge classifier; kernel matrix for any kernel method | Small-data classification; kernel for scikit-learn `SVC(kernel='precomputed')` | Havlíček et al., *Nature* 567, 209 (2019) |
 | `QAOA` | Quantum Approximate Optimisation Algorithm for any `qlcog.problems.Qubo`; schedule search by depth-1 grid, layer-wise interpolation (INTERP) and random restarts | Task allocation, scheduling, MaxCut, portfolios | Farhi, Goldstone and Gutmann, arXiv:1411.4028 (2014) |
 | `VQE`, `Hamiltonian` | Variational Quantum Eigensolver for weighted Pauli strings (or a QUBO as an Ising Hamiltonian) | Ground states of spin models and small molecules | Peruzzo et al., *Nat. Commun.* 5, 4213 (2014) |
-| `grover` | Grover search with a phase oracle from a list of solutions or a predicate | Constraint satisfaction, unstructured search | Grover, *STOC* (1996) |
+| `grover` | Grover search with a phase oracle from a list of solutions or a predicate; exports a gate-level circuit (X and multi-controlled Z) or a diagonal-gate circuit | Constraint satisfaction, unstructured search | Grover, *STOC* (1996) |
 
 Building blocks: `Circuit` (gates `h x y z s sdg rx ry rz p cx cz swap rzz`, `unitary`, `diagonal`;
 angles are numbers, trainable weights `W(k)`, features `X(j)` or products `XX(i, j)`),
 `angle_encoding`, `zz_feature_map`, `hardware_efficient` (CZ or CX entanglers, ring or linear),
-`parameter_shift`, `shifted_weights`.
+`parameter_shift`, `shifted_weights`, and `Circuit.value_and_grad` (adjoint-method gradients: one
+forward and one backward pass whatever the number of weights, samples processed in chunks).
+
+**Sizes.** Up to 22 qubits are accepted. Training cost grows as 2ⁿ: 8 features × 400 samples train in
+about 80 s on a laptop CPU. Grover's gate-level export needs about 360 CNOTs per iteration at 8 qubits
+and 660 at 10 (diagonal export: 510 and 2,040, growing exponentially); use `style='diagonal'` only
+for small cases.
 
 ```python
 from qlcog.quantum import VariationalClassifier, QAOA, VQE, Hamiltonian, grover
@@ -32,9 +38,10 @@ vqe = VQE(Hamiltonian([(-1, 'ZZ'), (-0.5, 'XI'), (-0.5, 'IX')]), rotations=('ry'
 g = grover(5, lambda x: sum(x) == 2)                                   # g.success, g.to_qiskit()
 ```
 
-**Verification.** The simulator is tested gate by gate against Qiskit's `Statevector`; the
-parameter-shift gradients against finite differences; the exported QAOA circuit against the simulated
-distribution; and a trained classifier circuit against an Aer run (`tests/test_quantum.py`).
+**Verification.** The simulator is tested gate by gate against Qiskit's `Statevector`; the adjoint and
+parameter-shift gradients against finite differences; the exported QAOA and Grover circuits against
+the simulated distributions; and a trained classifier circuit against an Aer run
+(`tests/test_quantum.py`, `tests/test_robustness.py`).
 
 **Honest expectations.** These are small, exactly simulable models (up to about 12–16 qubits on a
 laptop). There is no proven quantum advantage for them on classical data, and at low depth QAOA puts

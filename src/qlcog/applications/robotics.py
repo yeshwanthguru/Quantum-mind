@@ -91,12 +91,15 @@ class HumanModelEnsemble:
         self.design = design; self.fits = []; self.weights = None
 
     def update(self, data, restarts=8, rng=None):
+        """Fit every candidate model to `data` and set BIC weights; returns self."""
         self.fits = compare(self.candidates, data, self.design, restarts=restarts, rng=rng)
         b = np.array([f.bic for f in self.fits])
         w = np.exp(-0.5 * (b - b.min())); self.weights = w / w.sum()
         return self
 
     def predict(self, condition):
+        """Mixture prediction for `condition` and its uncertainty {entropy_bits, model_disagreement_bits,
+        total_bits}."""
         preds = np.array([np.asarray(f.model.predict(self.design)[condition], float) for f in self.fits])
         mix = self.weights @ preds
         H = lambda p: float(-np.sum(np.where(p > 0, p * np.log2(np.clip(p, 1e-12, 1)), 0)))
@@ -104,4 +107,26 @@ class HumanModelEnsemble:
         return mix, {'entropy_bits': H(mix), 'model_disagreement_bits': js, 'total_bits': H(mix) + js}
 
     def summary(self):
+        """One dict per model: name, ensemble weight and BIC."""
         return [{'model': type(f.model).__name__, 'weight': float(w), 'bic': f.bic} for f, w in zip(self.fits, self.weights)]
+
+
+def ask_or_act(p_success, uncertainty=None, ask_cost=1.0, error_cost=5.0, max_disagreement_bits=0.05):
+    """Decision rule for a robot that may ask a person before acting.
+
+    p_success: probability that acting now is right (e.g. the ensemble's predicted 'yes' rate for the
+    robot's current hypothesis). Acting costs error_cost * (1 - p_success) in expectation; asking costs
+    ask_cost and is assumed to resolve the doubt. The robot also asks when the human models disagree
+    by more than `max_disagreement_bits` (model uncertainty, from HumanModelEnsemble.predict), because
+    then p_success itself is unreliable. Returns {'action': 'ask' | 'act', 'expected_cost_act': ...,
+    'reason': ...}. Framework-agnostic: call it from a ROS 2 node, a behaviour tree or a planner."""
+    if not 0.0 <= p_success <= 1.0:
+        raise ValueError('p_success must be a probability')
+    cost_act = float(error_cost * (1.0 - p_success))
+    disagreement = (uncertainty or {}).get('model_disagreement_bits', 0.0)
+    if disagreement > max_disagreement_bits:
+        return {'action': 'ask', 'expected_cost_act': cost_act,
+                'reason': 'human models disagree (%.3f bits)' % disagreement}
+    action = 'ask' if cost_act > ask_cost else 'act'
+    reason = 'expected error cost %.2f %s asking cost %.2f' % (cost_act, '>' if action == 'ask' else '<=', ask_cost)
+    return {'action': action, 'expected_cost_act': cost_act, 'reason': reason}

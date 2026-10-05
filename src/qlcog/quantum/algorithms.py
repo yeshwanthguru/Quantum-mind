@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from scipy.optimize import minimize
 from .statevector import Circuit, W
-from .ansatz import hardware_efficient, shifted_weights
+from .ansatz import hardware_efficient
 
 __all__ = ['QAOA', 'QAOAResult', 'pauli_matrix', 'Hamiltonian', 'VQE', 'grover', 'GroverResult']
 
@@ -15,6 +15,8 @@ __all__ = ['QAOA', 'QAOAResult', 'pauli_matrix', 'Hamiltonian', 'VQE', 'grover',
 # ------------------------------------------------------------------------------------------- QAOA
 @dataclass
 class QAOAResult:
+    """QAOA result: best bit string among the most probable outcomes, its energy, the expectation, the
+    output distribution, the angles, the exact optimum and P(optimal)."""
     x: np.ndarray                 # best bit string found among the most probable outcomes
     energy: float                 # its QUBO energy
     expectation: float            # <H_C> of the optimised state (QUBO units)
@@ -22,12 +24,9 @@ class QAOAResult:
     gammas: np.ndarray
     betas: np.ndarray
     circuit: Circuit = field(repr=False, default=None)
-    optimum: float = None         # exact minimum (brute force) when n is small
-
-    @property
-    def p_optimal(self):
-        """Probability of measuring an optimal bit string."""
-        return float(self._p_opt)
+    optimum: float = None         # exact minimum over all bit strings
+    p_optimal: float = 0.0        # probability of measuring an optimal bit string
+    weights: np.ndarray = field(repr=False, default=None)   # (gamma_1, beta_1, ..., gamma_p, beta_p)
 
 
 class QAOA:
@@ -61,18 +60,29 @@ class QAOA:
         return c
 
     def expectation(self, w):
+        """Expected QUBO energy of the QAOA state for angles w = (gamma_1, beta_1, ...)."""
         return float(self.circuit.probabilities(w)[0] @ self.energies)
 
-    def _optimise(self, w0, depth):
-        """Optimise the first `depth` layers; deeper layers stay at gamma = beta = 0 (identity)."""
-        pad = np.zeros(2 * self.p)
+    def _value_and_grad(self, w):
+        E = self.energies
+        return self.circuit.value_and_grad(w, None, lambda psi, rows: (((np.abs(psi) ** 2) @ E).sum(), psi * E[None, :]))
 
-        def f(v):
-            pad[:2 * depth] = v; return self.expectation(pad)
-        r = minimize(f, np.asarray(w0, float), method='L-BFGS-B', options={'maxiter': self.maxiter})
-        r = minimize(f, r.x, method='COBYLA', options={'maxiter': self.maxiter})
-        w = np.zeros(2 * self.p); w[:2 * depth] = r.x
-        return float(r.fun), w
+    def _optimise(self, w0, depth):
+        """Optimise the first `depth` layers (exact adjoint gradients, L-BFGS-B); deeper layers stay at
+        gamma = beta = 0 (identity)."""
+        def fg(v):
+            w = np.zeros(2 * self.p); w[:2 * depth] = v
+            val, g = self._value_and_grad(w)
+            return float(val), g[:2 * depth]
+        r = minimize(fg, np.asarray(w0, float), jac=True, method='L-BFGS-B', options={'maxiter': self.maxiter})
+        val, v = float(r.fun), r.x
+        # derivative-free polish: escapes some flat regions L-BFGS stops in (16/16 vs 14/16 optima found on
+        # random 8-variable portfolio and MaxCut instances)
+        r2 = minimize(lambda u: fg(u)[0], v, method='COBYLA', options={'maxiter': self.maxiter})
+        if r2.fun < val:
+            val, v = float(r2.fun), r2.x
+        w = np.zeros(2 * self.p); w[:2 * depth] = v
+        return val, w
 
     def run(self):
         """Schedule search: (1) grid search at depth 1, then layer-by-layer interpolation of the
@@ -96,14 +106,14 @@ class QAOA:
         w = min(cands, key=lambda c: c[0])[1]; P = self.circuit.probabilities(w)[0]
         top = np.argsort(P)[::-1][:max(8, self.qubo.n)]
         k = int(top[np.argmin(self.energies[top])])
-        res = QAOAResult(x=np.array([(k >> i) & 1 for i in range(self.qubo.n)]), energy=float(self.energies[k]),
-                         expectation=float(P @ self.energies), probabilities=P, gammas=w[0::2], betas=w[1::2],
-                         circuit=self.circuit, optimum=float(self.energies.min()))
-        res._p_opt = P[np.isclose(self.energies, self.energies.min())].sum()
-        res.weights = w
-        return res
+        opt = float(self.energies.min())
+        return QAOAResult(x=np.array([(k >> i) & 1 for i in range(self.qubo.n)]), energy=float(self.energies[k]),
+                          expectation=float(P @ self.energies), probabilities=P, gammas=w[0::2], betas=w[1::2],
+                          circuit=self.circuit, optimum=opt, p_optimal=float(P[np.isclose(self.energies, opt)].sum()),
+                          weights=w)
 
     def to_qiskit(self, result, measure=True):
+        """Qiskit circuit with the optimised angles of `result` bound."""
         return self.circuit.to_qiskit(result.weights, None, measure)
 
 
@@ -129,6 +139,7 @@ class Hamiltonian:
 
     @classmethod
     def from_qubo(cls, qubo):
+        """Ising Hamiltonian (Z and ZZ terms) with the same energies as a Qubo."""
         h, J, c = qubo.to_ising(); n = qubo.n; terms = [(c, 'I' * n)]
         for i in range(n):
             if h[i]:
@@ -142,6 +153,7 @@ class Hamiltonian:
         return np.real(np.einsum('bi,ij,bj->b', psi.conj(), self.matrix, psi))
 
     def ground_energy(self):
+        """Exact ground-state energy (dense diagonalisation)."""
         return float(np.linalg.eigvalsh(self.matrix)[0])
 
 
@@ -160,14 +172,15 @@ class VQE:
             self.circuit.ry(W(self.circuit.n_weights), q)
 
     def energy(self, w):
+        """Energy expectation of the ansatz state for weights w."""
         return float(self.H.expectation(self.circuit.state(w))[0])
 
     def _energy_and_grad(self, w):
-        Ws = np.vstack([w[None, :], shifted_weights(w)])            # one batch: w and all 2K shifts
-        E = self.H.expectation(self.circuit.state(Ws))
-        return float(E[0]), (E[1::2] - E[2::2]) / 2
+        M = self.H.matrix                                           # adjoint gradient: phi = H psi
+        return self.circuit.value_and_grad(w, None, lambda psi, rows: (self.H.expectation(psi).sum(), psi @ M.T))
 
     def run(self):
+        """Optimise from several random starts; returns {energy, exact, weights, state}."""
         rng = np.random.default_rng(self.seed); best = None
         fg = self._energy_and_grad
         for _ in range(self.restarts):
@@ -180,25 +193,62 @@ class VQE:
                 'state': self.circuit.state(best.x)[0]}
 
     def to_qiskit(self, measure=True):
+        """Qiskit circuit of the optimised ansatz."""
         return self.circuit.to_qiskit(self.weights_, None, measure)
 
 
 # ------------------------------------------------------------------------------------------- Grover
 @dataclass
 class GroverResult:
+    """Grover result: output distribution, number of iterations, marked states, success probability and the
+    circuit."""
     probabilities: np.ndarray
     iterations: int
     marked: list
     success: float
     circuit: Circuit = field(repr=False, default=None)
+    n: int = 0
 
-    def to_qiskit(self, measure=True):
-        return self.circuit.to_qiskit(None, None, measure)
+    def to_qiskit(self, measure=True, style='gates'):
+        """Qiskit circuit of the search.
+
+        style='gates' (default): textbook oracle and diffuser from X and multi-controlled Z gates, one
+        multi-controlled Z per marked state; this is the form that compiles sensibly for hardware.
+        style='diagonal': the phase layers as DiagonalGate (exact, compact to write, but its compiled
+        size grows exponentially with the number of qubits)."""
+        if style == 'diagonal':
+            return self.circuit.to_qiskit(None, None, measure)
+        from .._optional import require
+        require('qiskit')
+        from qiskit import QuantumCircuit
+        n = self.n; qc = QuantumCircuit(n)
+
+        def mcz():
+            if n == 1:
+                qc.z(0); return
+            qc.h(n - 1); qc.mcx(list(range(n - 1)), n - 1); qc.h(n - 1)
+
+        qc.h(range(n))
+        for _ in range(self.iterations):
+            for k in self.marked:                                   # phase flip of |k>
+                zeros = [q for q in range(n) if not (k >> q) & 1]
+                if zeros:
+                    qc.x(zeros)
+                mcz()
+                if zeros:
+                    qc.x(zeros)
+            qc.h(range(n)); qc.x(range(n)); mcz(); qc.x(range(n)); qc.h(range(n))   # diffuser (up to phase)
+        if measure:
+            qc.measure_all()
+        return qc
 
 
 def grover(n, marked, iterations=None):
     """Grover search over n qubits. marked: list of basis indices, or a predicate on the bit tuple
-    (x_0, ..., x_{n-1}). The oracle and diffuser are diagonal phase layers (exported as DiagonalGate)."""
+    (x_0, ..., x_{n-1}). Simulated with diagonal phase layers; `to_qiskit()` exports a gate-level
+    circuit (X and multi-controlled Z), or the diagonal form with style='diagonal'."""
+    if not 1 <= n <= 16:
+        raise ValueError('grover supports 1 to 16 qubits (the marked set is enumerated), got %d' % n)
     N = 2 ** n
     if callable(marked):
         marked = [k for k in range(N) if marked(tuple((k >> i) & 1 for i in range(n)))]
@@ -219,4 +269,4 @@ def grover(n, marked, iterations=None):
         for q in range(n):
             c.h(q)
     P = c.probabilities()[0]
-    return GroverResult(P, it, marked, float(P[marked].sum()), c)
+    return GroverResult(P, it, marked, float(P[marked].sum()), c, n)

@@ -41,17 +41,20 @@ class BayesNet:
         return order
 
     def prob(self, var, value, assignment):
+        """Conditional probability of var = value given the parents in `assignment`."""
         t = self.cpt[var]
         pv = tuple(assignment[p] for p in self.parents.get(var, []))
         return t(value, dict(zip(self.parents.get(var, []), pv))) if callable(t) else t[pv][value]
 
     def joint(self, assignment):
+        """Joint probability of a full assignment (product of the conditional tables)."""
         p = 1.0
         for v in self.order:
             p *= self.prob(v, assignment[v], assignment)
         return p
 
     def configurations(self, names):
+        """All assignments of the variables in `names`."""
         for vals in itertools.product(*(self.variables[n] for n in names)):
             yield dict(zip(names, vals))
 
@@ -61,6 +64,7 @@ def _hidden(net, query, evidence):
 
 
 def classical_marginal(net, query, evidence=None):
+    """Classical Bayesian-network marginal of `query` given `evidence` (sum over hidden configurations)."""
     evidence = evidence or {}
     hid = _hidden(net, query, evidence); out = {}
     for val in net.variables[query]:
@@ -85,6 +89,8 @@ def quantum_like_marginal(net, query, evidence=None, phases=None):
 
 
 def n_hidden_configurations(net, query, evidence=None):
+    """Number of configurations of the hidden (non-query, non-evidence) variables, i.e. the number of
+    interference phases."""
     return int(np.prod([len(net.variables[v]) for v in _hidden(net, query, evidence or {})]))
 
 
@@ -108,6 +114,7 @@ class QLBNModel(Model):
 
 
 class ClassicalBNModel(Model):
+    """Classical baseline for QLBNModel: the same network without interference."""
     PARAMS = []
     name = 'Classical Bayesian network'
 

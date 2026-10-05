@@ -1,5 +1,7 @@
 """Regenerate the images and animations used in the README and docs (python3 docs/make_assets.py).
-All figures come from the package itself; nothing is drawn by hand except the SVG banner."""
+All figures come from the package itself; nothing is drawn by hand except the SVG banner. The
+interactive HTML versions are not committed (they are large); examples/19 and 20 write them to
+examples/output/."""
 import pathlib
 import sys
 
@@ -13,7 +15,7 @@ sys.path.insert(0, str(ROOT / 'src'))
 OUT = ROOT / 'docs' / 'assets'; OUT.mkdir(parents=True, exist_ok=True)
 
 from qiskit import QuantumCircuit                                 # noqa: E402
-from qlcog.viz import circuit_trajectory, belief_trajectory, animate_trajectory, animate_bloch, save_html  # noqa: E402
+from qlcog.viz import circuit_trajectory, belief_trajectory, animate_trajectory  # noqa: E402
 from qlcog.families.dynamics import OpenSystemBelief              # noqa: E402
 from qlcog.problems import maxcut                                 # noqa: E402
 from qlcog.quantum import QAOA, VariationalClassifier            # noqa: E402
@@ -31,17 +33,15 @@ def dark(ax):
 # 1. Entanglement on the Bloch sphere: H, rotation, CNOT (vectors shrink into the ball), then undo
 qc = QuantumCircuit(2)
 qc.h(0); qc.ry(np.pi / 3, 1); qc.cx(0, 1); qc.rz(np.pi / 2, 0); qc.cx(0, 1); qc.h(0)
-tr = circuit_trajectory(qc, steps=14)
+tr = circuit_trajectory(qc, steps=9)
 tr.names = ['qubit 0', 'qubit 1']; tr.title = 'H · RY(π/3) · CNOT · RZ(π/2) · CNOT · H'
-animate_trajectory(tr, save=OUT / 'entanglement.gif', fps=24, rotate=0.6, dpi=80)
-save_html(animate_bloch(tr, title=tr.title), OUT / 'entanglement.html')
+animate_trajectory(tr, save=OUT / 'entanglement.gif', fps=16, rotate=0.9, dpi=64)
 
 # 2. Trust belief of a person watching a robot (qlcog OpenSystemBelief, simulated parameters)
 m = OpenSystemBelief(phi0=1.6, a_pos=0.8, a_neg=1.2, gamma=0.3)
-bt = belief_trajectory(m, (1, 1, 0, 1, 0, 1), steps=10)
+bt = belief_trajectory(m, (1, 1, 0, 1, 0, 1), steps=6)
 bt.title = 'Trust belief (simulated person)'
-animate_trajectory(bt, save=OUT / 'trust_belief.gif', fps=20, rotate=0.4, dpi=80, size=4.2)
-save_html(animate_bloch(bt), OUT / 'trust_belief.html')
+animate_trajectory(bt, save=OUT / 'trust_belief.gif', fps=12, rotate=0.6, dpi=64, size=4.2)
 
 # 3. Three pillars on one problem: MaxCut on a 12-node random graph
 rng = np.random.default_rng(4)

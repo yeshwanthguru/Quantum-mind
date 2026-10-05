@@ -13,6 +13,8 @@ _DYN = 3          # dynamic traces per qubit: arrow, tip, trail
 
 
 def _static_traces(t):
+    from .._optional import require
+    require('plotly')
     import plotly.graph_objects as go
     u, v = np.mgrid[0:2 * np.pi:48j, 0:np.pi:24j]
     tr = [go.Surface(x=np.cos(u) * np.sin(v), y=np.sin(u) * np.sin(v), z=np.cos(v), opacity=0.12,
@@ -73,6 +75,8 @@ def _figure(vectors, trails, names, t, title, height, widget=False):
             fig.add_trace(tr, row=1, col=q + 1)
     _layout(fig, n, t, title, height)
     if widget:
+        from .._optional import require
+        require('anywidget'); require('ipywidgets')          # Plotly >= 6 FigureWidget needs both
         fig = go.FigureWidget(fig)
     return fig, dyn_index
 
@@ -154,6 +158,7 @@ class LiveBloch:
             self.caption = self.fig.text(0.5, 0.03, '', color=self.t['text'], ha='center')
 
     def show(self):
+        """Display the spheres (widget in Jupyter, window elsewhere); returns self."""
         if self.backend == 'plotly':
             from IPython.display import display
             display(self.fig)
@@ -195,6 +200,7 @@ class LiveBloch:
         return self
 
     def reset(self):
+        """Clear the trails; returns self."""
         self.history = [[] for _ in range(self.n)]; return self
 
 

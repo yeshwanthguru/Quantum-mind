@@ -19,6 +19,8 @@ import numpy as np
 
 
 def s_odd(values):
+    """Maximum over sign patterns with an odd number of minus signs of sum_i s_i x_i (Kujala, Dzhafarov and
+    Larsson)."""
     v = np.asarray(values, float); best = -np.inf
     for signs in itertools.product((1, -1), repeat=len(v)):
         if signs.count(-1) % 2 == 1:
@@ -27,6 +29,7 @@ def s_odd(values):
 
 
 def chsh(E11, E12, E21, E22):
+    """CHSH value E11 + E12 + E21 - E22 (classical bound 2, quantum bound 2 sqrt 2)."""
     return abs(E11 + E12 + E21 - E22)
 
 

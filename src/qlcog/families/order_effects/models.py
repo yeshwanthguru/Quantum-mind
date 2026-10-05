@@ -35,9 +35,11 @@ class ProjectiveQuestionModel:
         self.psi = normalize(psi); self.projectors = projectors
 
     def answer_probs(self, order):
+        """Probabilities of all answer sequences for questions asked in `order` (Lueders rule)."""
         return sequence_probabilities(self.psi, self.projectors, order)
 
     def predict(self, design=None):
+        """Answer distribution [yy, yn, ny, nn] for each question order in the design (default AB, BA)."""
         return {o: _cells(self.answer_probs(tuple(o))) for o in (design or ORDERS)}
 
 
@@ -48,11 +50,13 @@ class QuantumOrderModel(Model):
     name = 'Quantum-like'
 
     def vectors(self):
+        """Unit vectors u_A and u_B that define the two questions."""
         a, b, g = self.a, self.b, self.g
         return {'A': np.array([np.cos(a), np.sin(a), 0.0]),
                 'B': np.array([np.cos(b), np.sin(b) * np.cos(g), np.sin(b) * np.sin(g)])}
 
     def projectors(self):
+        """'Yes' projectors of the two questions {'A': P_A, 'B': P_B}."""
         ranks = dict(zip('AB', self.options.get('ranks', (1, 1))))
         out = {}
         for q, u in self.vectors().items():
@@ -61,6 +65,7 @@ class QuantumOrderModel(Model):
         return out
 
     def as_projective(self):
+        """The same model as a ProjectiveQuestionModel (state and projectors)."""
         return ProjectiveQuestionModel(np.array([1.0, 0.0, 0.0]), self.projectors())
 
     def predict(self, design=None):
@@ -78,6 +83,7 @@ class QuantumOrderModel4D(Model):
     name = 'Quantum-like (4D, nests Bayes)'
 
     def projectors(self):
+        """'Yes' projectors of the two questions {'A': P_A, 'B': P_B}."""
         from ...core import angles_to_unit  # noqa: F401
         c, s_ = np.cos(self.phi), np.sin(self.phi)
         U = np.eye(4)
@@ -89,6 +95,7 @@ class QuantumOrderModel4D(Model):
         return {'A': PA, 'B': PB}
 
     def as_projective(self):
+        """The same model as a ProjectiveQuestionModel (state and projectors)."""
         from ...core import angles_to_unit
         return ProjectiveQuestionModel(angles_to_unit([self.t1, self.t2, self.t3]), self.projectors())
 
@@ -103,6 +110,7 @@ class BayesOrderModel(Model):
     name = 'Bayesian (order-free)'
 
     def joint(self):
+        """Order-free joint distribution [yy, yn, ny, nn] with A first."""
         pA, pB = self.pA, self.pB
         lo, hi = max(0.0, pA + pB - 1) - pA * pB, min(pA, pB) - pA * pB
         yy = pA * pB + self.rho * (hi if self.rho > 0 else -lo)
@@ -138,6 +146,7 @@ class AnchoringOrderModel(Model):
 
 
 class SaturatedOrderModel(Model):
+    """Reference model with a free answer distribution per order (6 parameters); the best any model can fit."""
     PARAMS = [Param('x%d' % i, 'real', 0.0) for i in range(6)]
     name = 'Saturated'
 

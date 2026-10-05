@@ -5,8 +5,12 @@ Each feature x_j in [0, 1] is mapped to a local state of dimension d: for d = 2 
 sqrt(C(d-1, s)) cos^(d-1-s) sin^s, a polynomial feature map of degree d - 1. The input becomes a
 product state in a d^n-dimensional space. The classifier is a weight tensor in
 that space stored as a matrix product state with bond dimension D (Stoudenmire and Schwab, NeurIPS
-2016), so its cost is linear in the number of features. It is trained here by gradient descent on
-the softmax cross-entropy, with exact gradients from left and right environments."""
+2016), so its cost is linear in the number of features.
+
+Simplified variant: Stoudenmire and Schwab train with DMRG-style sweeps that optimise two neighbouring
+cores at a time and adapt the bond dimension by SVD truncation, using a squared loss. Here all cores
+are updated together by Adam on the softmax cross-entropy, with exact gradients from left and right
+environments, and the bond dimension is fixed. The model class is the same; the training differs."""
 from __future__ import annotations
 
 import numpy as np
@@ -54,6 +58,7 @@ class MPSClassifier:
         return loss, grads, Pr
 
     def fit(self, X, y):
+        """Train on X (samples x features) and labels y; returns self."""
         X = np.asarray(X, float); y = np.asarray(y)
         self.classes_ = np.unique(y); C = len(self.classes_)
         self.mn, self.mx = X.min(0), X.max(0)
@@ -85,15 +90,19 @@ class MPSClassifier:
         return self
 
     def predict_proba(self, X):
+        """Class probabilities (softmax of the MPS scores)."""
         _, S = self._contract(self._phi(self._scale(X)))
         S = S - S.max(1, keepdims=True); P = np.exp(S); return P / P.sum(1, keepdims=True)
 
     def predict(self, X):
+        """Most probable class for each sample."""
         return self.classes_[np.argmax(self.predict_proba(X), 1)]
 
     def score(self, X, y):
+        """Accuracy on (X, y)."""
         return float(np.mean(self.predict(X) == np.asarray(y)))
 
     @property
     def n_parameters(self):
+        """Number of trainable numbers in the MPS cores."""
         return int(sum(c.size for c in self.cores))

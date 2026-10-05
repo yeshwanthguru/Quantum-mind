@@ -22,6 +22,7 @@ __all__ = ['Qubo', 'maxcut', 'knapsack', 'task_allocation', 'portfolio', 'from_i
 
 @dataclass
 class Qubo:
+    """Quadratic unconstrained binary optimisation problem: minimise x^T Q x + offset over x in {0, 1}^n."""
     Q: np.ndarray
     offset: float = 0.0
     labels: list = field(default_factory=list)
@@ -34,6 +35,7 @@ class Qubo:
 
     @property
     def n(self):
+        """Number of binary variables."""
         return self.Q.shape[0]
 
     def normalised(self):
@@ -42,6 +44,7 @@ class Qubo:
         return Qubo(U, self.offset, list(self.labels), self.name)
 
     def energy(self, x):
+        """Energy of one bit string (1-D) or of each row of a 2-D array of bit strings."""
         x = np.asarray(x, float)
         if x.ndim == 1:
             return float(x @ self.Q @ x + self.offset)

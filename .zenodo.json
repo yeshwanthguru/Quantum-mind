@@ -1,0 +1,16 @@
+{
+  "title": "qlcog: quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a Bloch-sphere viewer",
+  "upload_type": "software",
+  "description": "Python library for quantum-like models of human judgement, decision and trust (each with classical baselines), quantum machine learning and algorithms as Qiskit circuits, quantum-inspired optimisers and tensor networks, shared QUBO problems and a 3D Bloch-sphere viewer. Built for robots and AI agents that work with people.",
+  "creators": [
+    {
+      "name": "Guru, Yeshwanth",
+      "affiliation": "Department of Mechanical Engineering, Amrita Vishwa Vidyapeetham, Chennai, India",
+      "orcid": "0009-0007-6353-4033"
+    }
+  ],
+  "license": "Apache-2.0",
+  "keywords": ["quantum cognition", "quantum-like models", "quantum machine learning", "quantum-inspired algorithms",
+               "robotics", "human-robot interaction", "qiskit", "Bloch sphere"],
+  "access_right": "open"
+}
