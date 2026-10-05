@@ -9,7 +9,8 @@ viewer. Backward compatible with 1.0.0.
   (checked gate by gate against Qiskit), `to_qiskit()` export; angle encoding, ZZ feature map,
   hardware-efficient ansatz (CZ or CX entanglers); exact parameter-shift gradients evaluated in one
   batch; `VariationalClassifier` (data re-uploading, multi-class), `QuantumKernel` and
-  `QuantumKernelClassifier`, `QAOA` for any QUBO, `VQE` with `Hamiltonian` (Pauli strings or a QUBO),
+  `QuantumKernelClassifier`, `QAOA` for any QUBO (schedule search: depth-1 grid, INTERP layer interpolation
+  of Zhou et al. 2020, random restarts), `VQE` with `Hamiltonian` (Pauli strings or a QUBO),
   `grover`.
 - **Quantum-inspired (`qlcog.inspired`)**: `QIEA`, `QPSO`, `SQA` (path-integral Monte Carlo),
   `simulated_annealing` baseline, `MPSClassifier` (matrix product state with polynomial local feature

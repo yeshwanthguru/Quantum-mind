@@ -317,8 +317,8 @@ Results printed by the examples (simulated data, this version):
 | Task | Result |
 |---|---|
 | Triage classification (test accuracy) | MPS 0.91 · VQC 0.84 · logistic regression 0.83 · quantum kernel 0.79 |
-| Robot task allocation (3 × 3) | QAOA, SQA, QIEA and SA all reach the optimum; QAOA P(optimal) 0.06 ideal, 0.04 under FakeTorino noise, against 0.002 uniform |
-| Portfolio, 3 of 8 assets | SQA, QIEA and SA optimal; QAOA (p = 2) not optimal |
+| Robot task allocation (3 × 3) | QAOA, SQA, QIEA and SA all reach the optimum; QAOA P(optimal) 0.043 ideal, 0.028 under FakeTorino noise, against 0.002 uniform |
+| Portfolio, 3 of 8 assets | QAOA (p = 2), SQA, QIEA and SA all optimal; QAOA P(optimal) 0.014 against 0.004 uniform |
 | VQE, 4-spin Ising chain | error below 1e-8 against exact diagonalisation |
 | Grover, 9 of 32 schedules valid | P(valid) 0.99 after one iteration (random 0.28) |
 | Trust qubit | P(trust) from the Bloch vector equals the model's prediction (0.7247) |
@@ -383,8 +383,8 @@ Bloch trajectories against Qiskit's partial trace and the trust model.
   quantum-like structure.
 - Several quantum-like models have been challenged by further tests, for example the Grand Reciprocity
   equations and conjunction-fallacy tests. The family READMEs list these.
-- The quantum models are small and exactly simulable. No quantum advantage is claimed, and shallow
-  QAOA often misses the optimum.
+- The quantum models are small and exactly simulable. No quantum advantage is claimed. Shallow QAOA
+  concentrates little probability on the optimum (a few percent on 9-variable problems).
 - "Quantum-inspired" names where an idea came from, not a speed-up. Compare against the classical
   baseline.
 - Hardware noise distorts circuits by a few percent of total variation for small circuits, and more

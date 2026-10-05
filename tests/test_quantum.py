@@ -66,7 +66,9 @@ def test_vqc_circuit_on_aer():
 def test_qaoa_vqe_grover():
     q = maxcut([(0, 1), (1, 2), (2, 3), (3, 0), (0, 2)])
     r = QAOA(q, p=2, restarts=3).run()
-    assert r.energy == r.optimum and r.p_optimal > 0.5
+    uniform = np.isclose(q.all_energies(), r.optimum).mean()                 # 2 optimal cuts of 16
+    assert r.energy == r.optimum and r.p_optimal > 3 * uniform
+    assert r.expectation / r.optimum > 0.85                                  # approximation ratio
     v = VQE(Hamiltonian([(1, 'ZZ'), (0.5, 'XI'), (0.5, 'IX')]), restarts=2).run()
     assert abs(v['energy'] - v['exact']) < 1e-6
     g = grover(4, [5, 11]); assert g.iterations == 2 and g.success > 0.9

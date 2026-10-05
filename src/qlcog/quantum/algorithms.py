@@ -63,14 +63,37 @@ class QAOA:
     def expectation(self, w):
         return float(self.circuit.probabilities(w)[0] @ self.energies)
 
+    def _optimise(self, w0, depth):
+        """Optimise the first `depth` layers; deeper layers stay at gamma = beta = 0 (identity)."""
+        pad = np.zeros(2 * self.p)
+
+        def f(v):
+            pad[:2 * depth] = v; return self.expectation(pad)
+        r = minimize(f, np.asarray(w0, float), method='L-BFGS-B', options={'maxiter': self.maxiter})
+        r = minimize(f, r.x, method='COBYLA', options={'maxiter': self.maxiter})
+        w = np.zeros(2 * self.p); w[:2 * depth] = r.x
+        return float(r.fun), w
+
     def run(self):
-        rng = np.random.default_rng(self.seed); best = None
+        """Schedule search: (1) grid search at depth 1, then layer-by-layer interpolation of the
+        optimal angles to the next depth (INTERP, Zhou et al., PRX 10, 021067, 2020); (2) random restarts
+        at full depth. The best schedule over both is kept."""
+        rng = np.random.default_rng(self.seed); cands = []
+        G, B = np.meshgrid(np.linspace(0, np.pi, 25)[1:], np.linspace(0, np.pi / 2, 13)[1:])
+        grid = [(self.expectation(np.r_[[g, b], np.zeros(2 * self.p - 2)]), g, b) for g, b in zip(G.ravel(), B.ravel())]
+        _, g, b = min(grid)
+        val, w = self._optimise([g, b], 1)
+        for d in range(2, self.p + 1):                       # INTERP initialisation of depth d from d - 1
+            gp, bp = np.r_[0, w[0:2 * (d - 1):2], 0], np.r_[0, w[1:2 * (d - 1):2], 0]
+            i = np.arange(1, d + 1)
+            g0 = (i - 1) / (d - 1) * gp[i - 1] + (d - i) / (d - 1) * gp[i]
+            b0 = (i - 1) / (d - 1) * bp[i - 1] + (d - i) / (d - 1) * bp[i]
+            val, w = self._optimise(np.column_stack([g0, b0]).ravel(), d)
+        cands.append((val, w))
         for _ in range(self.restarts):
             w0 = np.column_stack([rng.uniform(0, np.pi, self.p), rng.uniform(0, np.pi / 2, self.p)]).ravel()
-            r = minimize(self.expectation, w0, method='COBYLA', options={'maxiter': self.maxiter})
-            if best is None or r.fun < best.fun:
-                best = r
-        w = best.x; P = self.circuit.probabilities(w)[0]
+            cands.append(self._optimise(w0, self.p))
+        w = min(cands, key=lambda c: c[0])[1]; P = self.circuit.probabilities(w)[0]
         top = np.argsort(P)[::-1][:max(8, self.qubo.n)]
         k = int(top[np.argmin(self.energies[top])])
         res = QAOAResult(x=np.array([(k >> i) & 1 for i in range(self.qubo.n)]), energy=float(self.energies[k]),
