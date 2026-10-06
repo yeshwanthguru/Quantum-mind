@@ -127,7 +127,7 @@ html_theme_options = {
     'navigation_with_keys': False,
     'pygments_light_style': 'tango',
     'pygments_dark_style': 'github-dark',
-    'announcement': ('Version %s is on PyPI: <code>pip install quantum-mind</code>. '
+    'announcement': ('Quantum Mind %s: robot decision layer, perception and learning modules. '
                      '<a href="%sdocs/about/changelog.html">What changed</a>' % (version, SITE)),
     'footer_start': ['copyright'],
     'footer_end': ['sphinx-version'],
