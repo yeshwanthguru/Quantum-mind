@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantum-mind"
-version = "2.0.0"
+version = "2.0.1"
 description = "Quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a 3D Bloch-sphere viewer"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,11 +36,11 @@ classifiers = [
 dependencies = ["numpy>=1.24", "scipy>=1.10"]
 
 [project.urls]
-Homepage = "https://yeshwanthguru.github.io/quantum-mind/"
-Source = "https://github.com/yeshwanthguru/quantum-mind"
-Issues = "https://github.com/yeshwanthguru/quantum-mind/issues"
-Documentation = "https://yeshwanthguru.github.io/quantum-mind/docs/"
-Changelog = "https://yeshwanthguru.github.io/quantum-mind/docs/about/changelog.html"
+Homepage = "https://yeshwanthguru.github.io/Quantum-mind/"
+Source = "https://github.com/yeshwanthguru/Quantum-mind"
+Issues = "https://github.com/yeshwanthguru/Quantum-mind/issues"
+Documentation = "https://yeshwanthguru.github.io/Quantum-mind/docs/"
+Changelog = "https://yeshwanthguru.github.io/Quantum-mind/docs/about/changelog.html"
 
 [project.optional-dependencies]
 qiskit = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40"]

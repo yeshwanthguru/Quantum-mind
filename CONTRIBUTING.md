@@ -22,7 +22,7 @@ Contributions of models, baselines, circuits, data sets and examples are welcome
 ## Workflow
 
 ```bash
-git clone https://github.com/yeshwanthguru/quantum-mind
+git clone https://github.com/yeshwanthguru/Quantum-mind
 cd quantum-mind
 pip install -e ".[all,dev,docs]"
 pytest -q

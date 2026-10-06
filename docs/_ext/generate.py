@@ -15,7 +15,7 @@ import shutil
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 GEN = DOCS / '_generated'          # static files for the build (demos, assets)
-REPO = 'https://github.com/yeshwanthguru/quantum-mind'
+REPO = 'https://github.com/yeshwanthguru/Quantum-mind'
 
 # README -> documentation page (path under docs/, without the suffix)
 READMES = {

@@ -1,6 +1,6 @@
 # Website
 
-Source of https://yeshwanthguru.github.io/quantum-mind/, built from this repository by
+Source of https://yeshwanthguru.github.io/Quantum-mind/, built from this repository by
 `.github/workflows/pages.yml` on every push to `main`.
 
 | File | Role |

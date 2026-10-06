@@ -5,7 +5,7 @@
 ```bash
 pip install quantum-mind              # core: numpy, scipy
 pip install "quantum-mind[all]"       # everything (Qiskit, cloud back ends, viewer)
-pip install "quantum-mind[all] @ git+https://github.com/yeshwanthguru/quantum-mind"   # latest development version
+pip install "quantum-mind[all] @ git+https://github.com/yeshwanthguru/Quantum-mind"   # latest development version
 ```
 
 | Extra | Adds | For |
