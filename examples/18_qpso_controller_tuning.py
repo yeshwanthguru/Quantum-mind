@@ -1,12 +1,23 @@
-"""Control engineering and robotics: tune a PID controller with quantum-behaved particle swarm
+"""Tuning a PID controller with QPSO
+=================================
+
+Control engineering and robotics: tune a PID controller with quantum-behaved particle swarm
 optimisation (quantum-inspired), compared with random search using the same number of evaluations.
 
 Plant: a joint modelled as J q'' + b q' = u (illustrative parameters); cost: integrated squared error
-of a unit step plus a control-effort penalty, simulated for 3 s."""
-import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))  # run without installing
+of a unit step plus a control-effort penalty, simulated for 3 s.
+"""
+# sphinx_gallery_start_ignore
+import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
+# sphinx_gallery_end_ignore
+# sphinx_gallery_thumbnail_path = '_static/thumbs/qi.png'
 import numpy as np
 from qlcog.inspired import QPSO
 
+# %%
+# Plant and cost
+# --------------
+# Euler simulation of a unit step response; the cost adds a small penalty on control effort.
 J, b, dt, T = 0.05, 0.2, 0.002, 3.0
 
 
@@ -21,6 +32,10 @@ def cost(gains):
     return c
 
 
+# %%
+# QPSO versus random search
+# -------------------------
+# Both get the same number of cost evaluations.
 lo, hi = [0, 0, 0], [50, 20, 5]
 r = QPSO(cost, lo, hi, particles=16, iterations=40, seed=0).run()
 rng = np.random.default_rng(0)

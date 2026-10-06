@@ -2,10 +2,21 @@
 probabilities, quantum potential wells, transverse-field tunnelling). They run on ordinary hardware and
 make no use of a quantum computer.
 
-  QIEA   quantum-inspired evolutionary algorithm (binary)          Han and Kim, IEEE TEVC 6(6), 2002
-         (their rotation lookup table by default; a simplified fixed-step rule as an option)
-  QPSO   quantum-behaved particle swarm optimisation (continuous)   Sun, Feng and Xu, CEC 2004
-  SQA    simulated quantum annealing, path-integral Monte Carlo     Martonak, Santoro and Tosatti, PRB 66, 2002
+* :class:`QIEA`: quantum-inspired evolutionary algorithm for binary problems (Han and Kim, IEEE TEVC
+  6(6), 2002), with their rotation lookup table by default and a simplified fixed-step rule as an option.
+* :class:`QPSO`: quantum-behaved particle swarm optimisation for continuous problems (Sun, Feng and Xu,
+  CEC 2004).
+* :class:`SQA`: simulated quantum annealing by path-integral Monte Carlo (Martoňák, Santoro and
+  Tosatti, PRB 66, 2002).
+* :func:`simulated_annealing`: the classical baseline.
+
+Examples
+--------
+>>> from qlcog.problems import maxcut
+>>> from qlcog.inspired import QIEA, SQA, simulated_annealing
+>>> q = maxcut([(0, 1), (1, 2), (2, 3), (3, 0)])
+>>> QIEA(q, generations=50).run().value, SQA(q, sweeps=50).run().value, simulated_annealing(q, sweeps=50).value
+(-4.0, -4.0, -4.0)
 """
 from __future__ import annotations
 
@@ -17,8 +28,19 @@ __all__ = ['OptimResult', 'QIEA', 'QPSO', 'SQA', 'simulated_annealing']
 
 @dataclass
 class OptimResult:
-    """Optimiser result: best solution x, its value, the best value per iteration (history) and the number
-    of objective evaluations."""
+    """Result of an optimiser.
+
+    Attributes
+    ----------
+    x : numpy.ndarray
+        Best solution found.
+    value : float
+        Its objective value.
+    history : list of float
+        Best value after each iteration.
+    evaluations : int
+        Number of objective evaluations.
+    """
     x: np.ndarray
     value: float
     history: list = field(default_factory=list, repr=False)     # best value per iteration
@@ -33,20 +55,41 @@ def _as_objective(problem):
 
 
 class QIEA:
-    """Quantum-inspired evolutionary algorithm for binary minimisation.
+    r"""Quantum-inspired evolutionary algorithm for binary minimisation.
 
-    Each individual is a string of Q-bits; Q-bit i holds an angle theta_i with P(x_i = 1) = sin^2 theta_i.
-    Observing an individual samples a bit string. A rotation gate moves every angle towards the best
-    solution found so far, and migration exchanges best solutions within groups and globally.
+    Each individual is a string of Q-bits; Q-bit i holds an angle :math:`\theta_i` with
+    :math:`P(x_i = 1) = \sin^2\theta_i`. Observing an individual samples a bit string. A rotation gate
+    moves every angle toward the best solution found so far, and migration exchanges best solutions
+    within groups and globally.
 
-    rotation='lookup' (default): the rotation table of Han and Kim (2002, Table I), with the
-    comparison f(x) >= f(b) of their maximisation problem read as f(x) <= f(b) for minimisation. For
+    With ``rotation='lookup'`` (default) the rotation table of Han and Kim (2002, Table I) is used, with
+    the comparison f(x) >= f(b) of their maximisation problem read as f(x) <= f(b) for minimisation. For
     each bit the table gives the rotation angle from (x_i, b_i, x better than b); the sign moves the
-    amplitude towards the bit of the better solution. Q-bit angles stay in the first quadrant, so the
-    sign column for alpha * beta > 0 applies, and an H-epsilon bound keeps P(x_i = 1) away from 0 and 1.
-    rotation='simple': one fixed step `delta` towards b_i whenever x_i != b_i and x is not better.
+    amplitude toward the bit of the better solution. Q-bit angles stay in the first quadrant, so the sign
+    column for alpha * beta > 0 applies, and an H-epsilon bound keeps P(x_i = 1) away from 0 and 1.
+    ``rotation='simple'`` takes one fixed step ``delta`` toward b_i whenever x_i != b_i and x is not better.
 
-    problem: Qubo or f(x) for x in {0, 1}^n (then give n)."""
+    Parameters
+    ----------
+    problem : Qubo or callable
+        A :class:`qlcog.problems.Qubo`, or ``f(x)`` for :math:`x \in \{0, 1\}^n` (then give ``n``).
+    n : int, optional
+        Number of bits (needed for a callable).
+    pop : int, optional
+        Population size.
+    generations : int, optional
+        Number of generations.
+    rotation : {'lookup', 'simple'}, optional
+        Rotation rule.
+    delta : float, optional
+        Step of the simple rule.
+    migrate_every : int, optional
+        Generations between global migrations (local migration every 5).
+    groups : int, optional
+        Number of local-migration groups.
+    seed : int, optional
+        Seed.
+    """
 
     # Han and Kim (2002), Table I: (x_i, b_i, x better) -> (rotation angle, sign for alpha * beta > 0)
     LOOKUP = {(0, 0, False): (0.0, 0), (0, 0, True): (0.0, 0), (0, 1, False): (0.0, 0), (0, 1, True): (0.05 * np.pi, -1),
@@ -66,7 +109,12 @@ class QIEA:
         self._step = ang * sgn                                   # signed rotation per case
 
     def run(self):
-        """Run the evolutionary search; returns OptimResult."""
+        """Run the evolutionary search.
+
+        Returns
+        -------
+        OptimResult
+        """
         rng = np.random.default_rng(self.seed); n, P = self.n, self.pop
         theta = np.full((P, n), np.pi / 4)                     # equal superposition
         observe = lambda: (rng.random((P, n)) < np.sin(theta) ** 2).astype(int)   # noqa: E731
@@ -98,19 +146,43 @@ class QIEA:
 
 
 class QPSO:
-    """Quantum-behaved particle swarm optimisation for continuous minimisation on a box.
+    r"""Quantum-behaved particle swarm optimisation for continuous minimisation on a box.
 
-    Particles sit in a delta potential well centred on a local attractor between their own best and
-    the swarm best; a new position is sampled from the well's wave function:
-        x = p +- beta |m - x| ln(1/u),   m = mean of personal bests,
-    with the contraction-expansion coefficient beta decreasing linearly from beta0 to beta1."""
+    Each particle sits in a delta potential well centred on a local attractor p between its own best and
+    the swarm best; a new position is sampled from the well's wave function,
+
+    .. math:: x = p \pm \beta\,|m - x|\,\ln(1/u),
+
+    where m is the mean of the personal bests and the contraction-expansion coefficient
+    :math:`\beta` decreases linearly from ``beta0`` to ``beta1``.
+
+    Parameters
+    ----------
+    f : callable
+        Objective ``f(x) -> float``.
+    lower, upper : array_like
+        Box bounds.
+    particles : int, optional
+        Swarm size.
+    iterations : int, optional
+        Number of iterations.
+    beta0, beta1 : float, optional
+        Start and end values of :math:`\beta`.
+    seed : int, optional
+        Seed.
+    """
 
     def __init__(self, f, lower, upper, particles=30, iterations=300, beta0=1.0, beta1=0.5, seed=0):
         self.f = f; self.lo, self.hi = np.asarray(lower, float), np.asarray(upper, float)
         self.N, self.iterations, self.beta0, self.beta1, self.seed = particles, iterations, beta0, beta1, seed
 
     def run(self):
-        """Run the swarm; returns OptimResult."""
+        """Run the swarm.
+
+        Returns
+        -------
+        OptimResult
+        """
         rng = np.random.default_rng(self.seed); d = len(self.lo)
         x = self.lo + (self.hi - self.lo) * rng.random((self.N, d))
         fx = np.array([self.f(v) for v in x]); pb, fpb = x.copy(), fx.copy()
@@ -128,19 +200,42 @@ class QPSO:
 
 
 class SQA:
-    """Simulated quantum annealing (path-integral Monte Carlo) for a Qubo or Ising model.
+    r"""Simulated quantum annealing (path-integral Monte Carlo) for a QUBO.
 
     The transverse-field Ising model is mapped (Suzuki-Trotter) onto P coupled classical replicas at
-    temperature T; the inter-replica coupling J_perp = -(P T / 2) ln tanh(Gamma / (P T)) grows as the
-    transverse field Gamma is lowered, so replicas merge into one solution. Tunnelling through tall,
-    thin barriers is the quantum feature it imitates."""
+    temperature T; the inter-replica coupling
+    :math:`J_\perp = -\tfrac{PT}{2}\ln\tanh\bigl(\Gamma / (PT)\bigr)` grows as the transverse field
+    :math:`\Gamma` is lowered, so the replicas merge into one solution. Tunnelling through tall, thin
+    barriers is the quantum feature it imitates.
+
+    Parameters
+    ----------
+    qubo : Qubo
+        Problem.
+    replicas : int, optional
+        Number of Trotter replicas P.
+    sweeps : int, optional
+        Monte Carlo sweeps.
+    T : float, optional
+        Temperature.
+    gamma0, gamma1 : float, optional
+        Initial and final transverse field (geometric schedule).
+    seed : int, optional
+        Seed.
+    """
 
     def __init__(self, qubo, replicas=16, sweeps=400, T=0.05, gamma0=3.0, gamma1=1e-3, seed=0):
         self.qubo = qubo; self.P, self.sweeps, self.T = replicas, sweeps, T
         self.g0, self.g1, self.seed = gamma0, gamma1, seed
 
     def run(self):
-        """Run the annealing schedule; returns OptimResult with the best bit string found in any replica."""
+        """Run the annealing schedule.
+
+        Returns
+        -------
+        OptimResult
+            Best bit string found in any replica.
+        """
         h, J, c = self.qubo.to_ising(); n = len(h)
         scale = max(np.abs(h).max(initial=0), np.abs(J).max(initial=0), 1e-12)
         h, Jf = h / scale, (J + J.T) / scale
@@ -170,7 +265,23 @@ class SQA:
 
 
 def simulated_annealing(qubo, sweeps=400, T0=2.0, T1=0.01, seed=0):
-    """Classical simulated annealing baseline (single-spin Metropolis on the same Ising model)."""
+    """Classical simulated annealing baseline (single-spin Metropolis on the same Ising model).
+
+    Parameters
+    ----------
+    qubo : Qubo
+        Problem.
+    sweeps : int, optional
+        Sweeps over all spins.
+    T0, T1 : float, optional
+        Initial and final temperature (geometric schedule).
+    seed : int, optional
+        Seed.
+
+    Returns
+    -------
+    OptimResult
+    """
     h, J, c = qubo.to_ising(); n = len(h)
     scale = max(np.abs(h).max(initial=0), np.abs(J).max(initial=0), 1e-12)
     h, Jf = h / scale, (J + J.T) / scale

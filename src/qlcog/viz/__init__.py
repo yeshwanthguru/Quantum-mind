@@ -1,14 +1,16 @@
 """Bloch-sphere visualisation: watch qubits evolve in 3D.
 
-  states        Bloch vectors, reduced states of entangled qubits, Trajectory, circuit_trajectory
-                (gate-by-gate arcs from any Qiskit circuit), belief_trajectory (qlcog trust model),
-                bloch_tomography (Bloch vectors measured on a simulator or quantum hardware)
-  mpl           BlochSphere, plot_bloch, animate_trajectory (GIF / MP4), plot_entanglement (Bloch
-                lengths and pairwise concurrence along a circuit), plot_qsphere   needs matplotlib
-  interactive   bloch_figure, animate_bloch (HTML with play/slider), LiveBloch   needs plotly
-                (real-time updates in Jupyter or a Matplotlib window)
+* :mod:`~qlcog.viz.states`: Bloch vectors, reduced states of entangled qubits, concurrence,
+  :class:`Trajectory`, :func:`circuit_trajectory` (gate-by-gate arcs from any Qiskit circuit),
+  :func:`belief_trajectory` (the trust model) and :func:`bloch_tomography` (Bloch vectors measured on a
+  simulator or quantum hardware). NumPy only.
+* :mod:`~qlcog.viz.mpl`: ``BlochSphere``, ``plot_bloch``, ``animate_trajectory`` (GIF and MP4),
+  ``plot_entanglement`` and ``plot_qsphere``. Needs Matplotlib.
+* :mod:`~qlcog.viz.interactive`: ``bloch_figure``, ``animate_bloch`` (HTML with play and slider) and
+  ``LiveBloch`` (real-time updates in Jupyter or a Matplotlib window). Needs Plotly.
 
-See README.md in this folder."""
+The plotting back ends are imported only when first used. See README.md in this folder.
+"""
 from .states import (bloch_vector, state_from_bloch, reduced_density, reduced_density_pair, concurrence,
                      entanglement_summary, bloch_vectors, Trajectory, circuit_trajectory, belief_trajectory,
                      rotation_trajectory, bloch_tomography, tomography_circuits)

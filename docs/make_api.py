@@ -51,12 +51,12 @@ for name in MODULES:
     lines += ['## `%s`' % name, '', first_paragraph(mod), '']
     for n, obj in public(mod):
         if inspect.isclass(obj):
-            lines.append('- **class `%s%s`** — %s' % (n, signature(obj), first_paragraph(obj)))
+            lines.append('- **class `%s%s`**: %s' % (n, signature(obj), first_paragraph(obj)))
             for m, f in inspect.getmembers(obj, inspect.isfunction):
                 if not m.startswith('_') and f.__qualname__.startswith(obj.__name__ + '.'):
-                    lines.append('  - `%s%s` — %s' % (m, signature(f), first_paragraph(f)))
+                    lines.append('  - `%s%s`: %s' % (m, signature(f), first_paragraph(f)))
         elif inspect.isfunction(obj):
-            lines.append('- `%s%s` — %s' % (n, signature(obj), first_paragraph(obj)))
+            lines.append('- `%s%s`: %s' % (n, signature(obj), first_paragraph(obj)))
         else:
             lines.append('- `%s` (constant)' % n)
     lines.append('')

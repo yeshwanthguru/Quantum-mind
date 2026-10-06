@@ -1,20 +1,29 @@
 """Running circuits: one function, many backends.
 
-    run(circuit, backend='aer', shots=10000)
+.. code-block:: python
 
-backend strings
-  'aer'                 Qiskit Aer, ideal
-  'aer:<FakeBackend>'   Aer with the noise model of an IBM fake backend, e.g. 'aer:FakeTorino'
-                        (list: qiskit_ibm_runtime.fake_provider)
-  'braket_local'        Amazon Braket local state-vector simulator (circuit sent as OpenQASM 3;
-                        deferred-measurement circuits only)
-  'braket_dm:<p>'       Braket local density-matrix simulator with depolarizing noise p after every gate
-  'ibm:<backend name>'  IBM Quantum hardware through the Qiskit Runtime Sampler; needs a saved account
-  'ibm:least_busy'      the least busy operational IBM device
-  'braket:<device ARN>' Amazon Braket managed simulator or QPU; needs AWS credentials; billed
+   run(circuit, backend='aer', shots=10000)
 
-Returns a dict of bit strings to counts in Qiskit's convention (highest classical bit first), so the
-decode functions of builders.py work unchanged for every backend."""
+Backend strings:
+
+=========================  =================================================================
+``'aer'``                  Qiskit Aer, ideal.
+``'aer:<FakeBackend>'``    Aer with the noise model of an IBM fake backend, for example
+                           ``'aer:FakeTorino'`` (see ``qiskit_ibm_runtime.fake_provider``).
+``'braket_local'``         Amazon Braket local state-vector simulator (circuit sent as
+                           OpenQASM 3; deferred-measurement circuits only).
+``'braket_dm:<p>'``        Braket local density-matrix simulator with depolarising noise p
+                           after every gate.
+``'ibm:<backend name>'``   IBM Quantum hardware through the Qiskit Runtime Sampler; needs a
+                           saved account.
+``'ibm:least_busy'``       The least busy operational IBM device.
+``'braket:<device ARN>'``  Amazon Braket managed simulator or QPU; needs AWS credentials;
+                           billed.
+=========================  =================================================================
+
+:func:`run` returns a dict of bit strings to counts in Qiskit's convention (highest classical bit
+first), so the decode functions of :mod:`qlcog.circuits.builders` work unchanged for every backend.
+"""
 from __future__ import annotations
 
 
@@ -24,9 +33,23 @@ __all__ = ['run', 'to_qasm3', 'run_on_ibm_backend', 'run_on_braket_device']
 
 
 def run_on_ibm_backend(qc, device, shots):
-    """Submission step for IBM devices: transpile to the device's instruction set, run with the Qiskit
-    Runtime Sampler primitive and return counts. `device` is a real backend from QiskitRuntimeService or a
-    fake backend (local testing mode), so the same code is exercised in the tests."""
+    """Submit a circuit to an IBM device and return counts.
+
+    Transpiles to the device's instruction set and runs with the Qiskit Runtime Sampler primitive.
+
+    Parameters
+    ----------
+    qc : qiskit.QuantumCircuit
+    device : qiskit backend
+        A real backend from ``QiskitRuntimeService``, or a fake backend (local testing mode), so the same
+        code path is exercised in the tests.
+    shots : int
+
+    Returns
+    -------
+    dict
+        Counts.
+    """
     try:                                   # client-side Sampler (qiskit-ibm-runtime >= 0.50)
         from qiskit_ibm_runtime.executor_sampler import Sampler
     except ImportError:                    # older releases: SamplerV2 (deprecated from 0.50)
@@ -40,8 +63,21 @@ def run_on_ibm_backend(qc, device, shots):
 
 
 def run_on_braket_device(qc, device, shots):
-    """Submission step for Amazon Braket: OpenQASM 3 program to a device with .run(program, shots).
-    `device` is an AwsDevice (billed) or a LocalSimulator, which the tests use as a stand-in."""
+    """Submit a circuit to an Amazon Braket device and return counts.
+
+    Parameters
+    ----------
+    qc : qiskit.QuantumCircuit
+        Deferred-measurement form (no reset).
+    device : braket device
+        An ``AwsDevice`` (billed) or a ``LocalSimulator``, which the tests use as a stand-in.
+    shots : int
+
+    Returns
+    -------
+    dict
+        Counts in Qiskit bit order.
+    """
     from braket.ir.openqasm import Program
     src, t = to_qasm3(qc)
     res = device.run(Program(source=src), shots=shots).result()
@@ -49,8 +85,26 @@ def run_on_braket_device(qc, device, shots):
 
 
 def to_qasm3(qc):
-    """Transpile to {rz, sx, x, cx, measure} and export OpenQASM 3 in Braket's gate names
-    (sx -> v, cx -> cnot; no stdgates include). Used for every Braket backend."""
+    """Export a circuit as OpenQASM 3 in Braket's gate names.
+
+    The circuit is transpiled to {rz, sx, x, cx, measure}; ``sx`` becomes ``v`` and ``cx`` becomes
+    ``cnot``, and the stdgates include is removed.
+
+    Parameters
+    ----------
+    qc : qiskit.QuantumCircuit
+
+    Returns
+    -------
+    source : str
+        OpenQASM 3 program.
+    transpiled : qiskit.QuantumCircuit
+
+    Raises
+    ------
+    ValueError
+        If the circuit contains a reset (use the deferred-measurement form).
+    """
     import re
     require('qiskit')
     from qiskit import transpile, qasm3
@@ -65,8 +119,9 @@ def to_qasm3(qc):
 
 
 def _braket_counts_to_qiskit(counts, qc, all_qubits=False):
-    """Braket returns bit strings over the measured qubits (or all qubits) in qubit order; map them to
-    the circuit's classical bits and return Qiskit-style strings (highest classical bit first)."""
+    """Map Braket bit strings (measured or all qubits, in qubit order) to the circuit's classical bits,
+    as Qiskit-style strings (highest classical bit first).
+    """
     meas = [(qc.find_bit(i.qubits[0]).index, qc.find_bit(i.clbits[0]).index) for i in qc.data if i.operation.name == 'measure']
     measured_qubits = list(range(qc.num_qubits)) if all_qubits else sorted({q for q, _ in meas})
     pos = {q: k for k, q in enumerate(measured_qubits)}
@@ -80,8 +135,28 @@ def _braket_counts_to_qiskit(counts, qc, all_qubits=False):
 
 
 def run(qc, backend='aer', shots=10000, seed=7):
-    """Run a circuit on `backend` (see the module docstring for the backend strings) and return counts in
-    Qiskit bit order."""
+    """Run a circuit and return counts.
+
+    Parameters
+    ----------
+    qc : qiskit.QuantumCircuit
+    backend : str, optional
+        Backend string (see the module description).
+    shots : int, optional
+        Number of shots.
+    seed : int, optional
+        Simulator and transpiler seed.
+
+    Returns
+    -------
+    dict
+        ``{bit string: count}`` in Qiskit bit order.
+
+    Raises
+    ------
+    ValueError
+        For an unknown backend string.
+    """
     if backend == 'aer' or backend.startswith('aer:'):
         require('qiskit_aer', 'qiskit')
         from qiskit import transpile

@@ -1,4 +1,7 @@
-"""Medicine (simulated): quantum, quantum-inspired and classical classifiers on the same triage task.
+"""Quantum, quantum-inspired and classical classifiers
+===================================================
+
+Medicine (simulated): quantum, quantum-inspired and classical classifiers on the same triage task.
 
 A synthetic triage data set (four vital-sign features, two classes, simulated, not patient data) is
 classified by a variational quantum classifier, a quantum-kernel classifier, a tensor-network (MPS)
@@ -7,14 +10,23 @@ quadratic features (non-linear, the fair comparison here because the simulated r
 The comparison is repeated over 10 random data sets and splits (seeds) and reported as mean +-
 standard deviation of test accuracy, because a single split is not enough to rank the methods. The variational circuit for one patient is then
 executed on the Aer simulator to show that the exported circuit gives the same probability.
-Use --quick for 2 seeds."""
-import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))  # run without installing
+Use --quick for 2 seeds.
+"""
+# sphinx_gallery_start_ignore
+import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
+# sphinx_gallery_end_ignore
+# sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
 import numpy as np
 from scipy.optimize import minimize
 from qlcog.quantum import VariationalClassifier, QuantumKernelClassifier
 from qlcog.inspired import MPSClassifier
 
 
+# %%
+# Simulated triage data and classical baselines
+# ---------------------------------------------
+# Four standardised features with a non-linear risk; logistic regression on raw and on quadratic
+# features.
 def make_data(seed, n=300):
     rng = np.random.default_rng(seed)
     X = rng.normal(0, 1, (n, 4))                                         # simulated, standardised vital signs
@@ -36,6 +48,11 @@ def logistic(Xtr, ytr, features=lambda X: X, l2=1e-2):
     return lambda Xq: (np.c_[features(Xq), np.ones(len(Xq))] @ w > 0).astype(int)
 
 
+# %%
+# Repeat over seeds
+# -----------------
+# Every method is trained and tested on the same splits; results are mean and standard deviation of
+# test accuracy.
 makers = {
     'variational quantum classifier (4 qubits)': lambda: VariationalClassifier(layers=3, maxiter=150),
     'quantum-kernel classifier (ZZ map)': lambda: QuantumKernelClassifier(reps=1, scale=0.5),
@@ -55,6 +72,11 @@ print('test accuracy over %d seeds (mean +- sd):' % len(seeds))
 for name, v in sorted(scores.items(), key=lambda kv: -np.mean(kv[1])):
     print('  %-52s %.3f +- %.3f' % (name, np.mean(v), np.std(v, ddof=1)))
 
+# %%
+# Run one circuit on Aer
+# ----------------------
+# The trained classifier's circuit for one patient, sampled on the Aer simulator, gives the same class
+# probability as the built-in simulator.
 X, y, tr, te = make_data(0)
 vqc = makers['variational quantum classifier (4 qubits)']().fit(X[tr], y[tr])
 try:

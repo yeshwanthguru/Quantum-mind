@@ -49,11 +49,15 @@ def test_playground_matches_the_simulator():
     assert abs(half['c'] - np.sqrt(0.5)) < 1e-9                         # CNOT^0.5 after H: concurrence 1/sqrt 2
 
 
-def test_site_link_rewriting():
+def test_docs_link_rewriting():
+    """README links in the Sphinx docs point at doc pages, copied assets or GitHub."""
     import importlib.util
-    spec = importlib.util.spec_from_file_location('site_build', ROOT / 'site' / 'build.py')
-    sb = importlib.util.module_from_spec(spec); spec.loader.exec_module(sb)
-    md = sb.rewrite_links('[api](API.md) [ex](../examples/13_quantum_classifiers_triage.py) [web](https://x.org) [a](#h)',
-                          'docs/concepts.md')
-    assert '(api.html)' in md and sb.REPO + '/blob/main/examples/13_quantum_classifiers_triage.py' in md
-    assert '(https://x.org)' in md and '(#h)' in md
+    spec = importlib.util.spec_from_file_location('generate', ROOT / 'docs' / '_ext' / 'generate.py')
+    g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
+    md = g._rewrite('[api](API.md) [ex](../examples/13_quantum_classifiers_triage.py) [web](https://x.org) [a](#h) '
+                    '[q](../src/qlcog/quantum/README.md) [lic](../LICENSE) ![gif](assets/entanglement.gif)', 'docs/concepts.md')
+    assert '(../api/index.rst)' in md and '(../auto_examples/13_quantum_classifiers_triage.rst)' in md
+    assert '(quantum.md)' in md and g.REPO + '/blob/main/LICENSE' in md
+    assert '(../assets/entanglement.gif)' in md and '(https://x.org)' in md and '(#h)' in md
+    fam = g._rewrite('<img src="../../../../docs/assets/x.png">', 'src/qlcog/families/memory/README.md')
+    assert 'src="../../_static/assets/x.png"' in fam

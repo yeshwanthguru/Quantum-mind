@@ -14,7 +14,7 @@ Contributions of models, baselines, circuits, data sets and examples are welcome
    `predict(design)`. Classifiers follow `fit / predict / predict_proba / score`; optimisers take a
    `qlcog.problems.Qubo` (or an objective) and return a result with `x`, `value` (or `energy`) and a
    history.
-5. **Name the pillar honestly.** Quantum-like (a model of people), quantum (a circuit for a quantum
+5. **Name the pillar correctly.** Quantum-like (a model of people), quantum (a circuit for a quantum
    computer) or quantum-inspired (a classical algorithm); see `docs/concepts.md`.
 6. **Always compare.** Quantum and quantum-inspired solvers are reported next to the exact answer (for
    small instances) and a classical baseline with the same budget.
@@ -24,10 +24,24 @@ Contributions of models, baselines, circuits, data sets and examples are welcome
 ```bash
 git clone https://github.com/yeshwanthguru/quantum-cognition-robotics
 cd quantum-cognition-robotics
-pip install -e ".[all,dev]"
+pip install -e ".[all,dev,docs]"
 pytest -q
-ruff check src tests examples
+pytest -q --doctest-modules src/qlcog            # the examples in the docstrings
+ruff check src tests examples docs site
+QLCOG_DOCS_FAST=1 python -m sphinx -b html docs docs/_build/html   # documentation preview
 ```
+
+## Documentation
+
+Every public class, function and method has a NumPy-style docstring (a one-line summary, then
+`Parameters`, `Returns`, `Raises` and, where useful, `Examples` that run as doctests). Formulas use
+`:math:`. The API reference in the documentation and `docs/API.md` are generated from these
+docstrings; regenerate the latter with `python3 docs/make_api.py`.
+
+Examples in `examples/` are also the documentation's example gallery. Start each script with a
+docstring whose first line is a title underlined with `=`, and split the code into steps with
+`# %%` comment blocks that explain what each step does; the gallery shows them as text between the
+code cells.
 
 Open a pull request against `main` with tests, a README entry for the model, and an example if the
 change adds a new use case. If figures in the README change, regenerate them with

@@ -1,6 +1,6 @@
 # Applications
 
-## `qlcog.applications.robotics` — robots that ask people questions
+## `qlcog.applications.robotics`: robots that ask people questions
 
 | Name | Purpose |
 |---|---|

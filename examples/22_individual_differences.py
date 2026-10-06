@@ -1,4 +1,7 @@
-"""Surveys, HRI: do people differ? Pooled versus individual-level model comparison (simulated people).
+"""Individual differences: pooled versus per-person fits
+=====================================================
+
+Surveys, HRI: do people differ? Pooled versus individual-level model comparison (simulated people).
 
 Twelve simulated people answer the robot's two clarification questions in both orders: six follow
 the quantum-like model, six follow the anchoring model (illustrative parameters). Fitting the pooled
@@ -7,13 +10,21 @@ Result: the pooled fit selects the quantum-like model at every sample size, alth
 anchor. Individual fits favour the simplest model (Bayes) with 60 or 400 answers per person and
 order, because these two populations differ only slightly per answer; with 3,000 answers they assign
 all 12 people to the model that generated them. Individual differences can therefore hide behind,
-or be mistaken for, a quantum-like pattern in pooled data."""
-import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))  # run without installing
+or be mistaken for, a quantum-like pattern in pooled data.
+"""
+# sphinx_gallery_start_ignore
+import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
+# sphinx_gallery_end_ignore
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ql.png'
 import numpy as np
 from qlcog.core import compare, compare_individuals
 from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel
 from qlcog.applications.robotics import domain_models
 
+# %%
+# Twelve simulated people at three sample sizes
+# ---------------------------------------------
+# Six follow the quantum-like model and six the anchoring model.
 MODELS = [QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel]
 gen = domain_models('object_clarification')
 for answers in (60, 400, 3000):

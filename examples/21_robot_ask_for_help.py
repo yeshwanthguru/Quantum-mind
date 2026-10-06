@@ -1,4 +1,7 @@
-"""Robotics: when should a robot ask for help? (simulated people)
+"""When should a robot ask for help?
+=================================
+
+Robotics: when should a robot ask for help? (simulated people)
 
 A robot must fetch "the red cup on the left". Before acting it can ask two clarification questions;
 the answers of a simulated population (quantum-like order effects, illustrative parameters) arrive
@@ -9,12 +12,21 @@ decision is driven by the cost of a wrong action: with an expensive error (3) it
 a cheap error (1.5) it acts.
 
 This is a decision layer only: no robot middleware is needed. In a ROS 2 system, the same calls
-would sit in a service or behaviour-tree node (not included in the package)."""
-import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))  # run without installing
+would sit in a service or behaviour-tree node (not included in the package).
+"""
+# sphinx_gallery_start_ignore
+import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
+# sphinx_gallery_end_ignore
+# sphinx_gallery_thumbnail_path = '_static/thumbs/robot.png'
 import numpy as np
 from qlcog.applications.robotics import domain_models, HumanModelEnsemble, ask_or_act
 from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel
 
+# %%
+# Answers arrive in batches
+# -------------------------
+# After each batch the ensemble is refitted and the robot decides, for two error costs, whether to
+# ask or to act.
 rng = np.random.default_rng(3)
 people = domain_models('object_clarification')['QL']                # simulated population
 counts = {'AB': np.zeros(4, int), 'BA': np.zeros(4, int)}

@@ -1,11 +1,25 @@
-"""Bloch-vector geometry and state trajectories (NumPy only).
+r"""Bloch-vector geometry and state trajectories (NumPy only).
 
-A single-qubit density matrix rho = (I + r . sigma) / 2 is represented by its Bloch vector r with
-|r| <= 1: pure states lie on the sphere, mixed states inside, and the reduced state of an entangled
-qubit shrinks towards the centre.
+A single-qubit density matrix :math:`\rho = (I + \vec r\cdot\vec\sigma)/2` is represented by its
+Bloch vector :math:`\vec r` with :math:`|\vec r| \le 1`: pure states lie on the sphere, mixed states
+inside, and the reduced state of an entangled qubit shrinks toward the centre.
 
-Trajectories are arrays of shape (frames, qubits, 3) with a list of frame labels; every plotting
-function in qlcog.viz accepts them."""
+Trajectories (:class:`Trajectory`) hold arrays of shape ``(frames, qubits, 3)`` with one label per
+frame; every plotting function in :mod:`qlcog.viz` accepts them.
+
+Examples
+--------
+>>> import numpy as np
+>>> from qlcog.viz import bloch_vector, bloch_vectors, concurrence
+>>> bloch_vector([1, 1] / np.sqrt(2))                 # |+> points along +x
+array([1., 0., 0.])
+>>> bell = np.array([1, 0, 0, 1]) / np.sqrt(2)
+>>> np.round(bloch_vectors(bell), 6)                 # both reduced states are maximally mixed
+array([[0., 0., 0.],
+       [0., 0., 0.]])
+>>> round(concurrence(bell), 6)
+1.0
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -29,21 +43,57 @@ def _to_array(state):
 
 
 def bloch_vector(state):
-    """Bloch vector (x, y, z) of a qubit given as a 2-vector or a 2 x 2 density matrix."""
+    r"""Bloch vector of one qubit.
+
+    Parameters
+    ----------
+    state : array_like or qiskit.quantum_info.Statevector or DensityMatrix
+        A 2-vector or a 2 x 2 density matrix.
+
+    Returns
+    -------
+    numpy.ndarray
+        ``(x, y, z)`` with :math:`r_k = \mathrm{tr}(\rho\,\sigma_k)`.
+    """
     s = _to_array(state)
     rho = np.outer(s, s.conj()) / np.vdot(s, s).real if s.ndim == 1 else s
     return np.real([np.trace(rho @ _SX), np.trace(rho @ _SY), np.trace(rho @ _SZ)])
 
 
 def state_from_bloch(r):
-    """Density matrix of a Bloch vector."""
+    r"""Density matrix of a Bloch vector.
+
+    Parameters
+    ----------
+    r : sequence of float
+        ``(x, y, z)``.
+
+    Returns
+    -------
+    numpy.ndarray
+        :math:`(I + \vec r\cdot\vec\sigma) / 2`.
+    """
     x, y, z = r
     return 0.5 * np.array([[1 + z, x - 1j * y], [x + 1j * y, 1 - z]])
 
 
 def reduced_density(state, q, n):
-    """Reduced density matrix of qubit q of an n-qubit state vector or density matrix (Qiskit order:
-    qubit q = bit q of the basis index)."""
+    """Reduced density matrix of one qubit.
+
+    Parameters
+    ----------
+    state : array_like
+        n-qubit state vector or density matrix (Qiskit order: qubit q = bit q of the basis index).
+    q : int
+        Qubit to keep.
+    n : int
+        Number of qubits.
+
+    Returns
+    -------
+    numpy.ndarray
+        2 x 2 density matrix.
+    """
     s = _to_array(state)
     ax = n - 1 - q
     if s.ndim == 1:
@@ -55,7 +105,22 @@ def reduced_density(state, q, n):
 
 
 def reduced_density_pair(state, a, b, n):
-    """Reduced 4 x 4 density matrix of qubits a and b of an n-qubit state vector (index bit 0 = qubit a)."""
+    """Reduced density matrix of two qubits.
+
+    Parameters
+    ----------
+    state : array_like
+        n-qubit state vector.
+    a, b : int
+        Qubits to keep; index bit 0 of the result is qubit a.
+    n : int
+        Number of qubits.
+
+    Returns
+    -------
+    numpy.ndarray
+        4 x 4 density matrix.
+    """
     psi = _to_array(state)
     if psi.ndim != 1:
         raise ValueError('reduced_density_pair expects a state vector')
@@ -65,7 +130,18 @@ def reduced_density_pair(state, a, b, n):
 
 
 def concurrence(rho):
-    """Wootters concurrence of a two-qubit density matrix (0 = separable, 1 = maximally entangled)."""
+    """Wootters concurrence of a two-qubit state.
+
+    Parameters
+    ----------
+    rho : array_like
+        4 x 4 density matrix or 4-vector.
+
+    Returns
+    -------
+    float
+        0 for separable states, 1 for maximally entangled ones (checked against Qiskit).
+    """
     rho = _to_array(rho)
     if rho.ndim == 1:
         rho = np.outer(rho, rho.conj())
@@ -76,8 +152,21 @@ def concurrence(rho):
 
 
 def entanglement_summary(state, n=None):
-    """Per-qubit Bloch-vector length (1 = not entangled with the rest, for a pure global state) and the
-    matrix of pairwise concurrences."""
+    """Entanglement overview of a pure multi-qubit state.
+
+    Parameters
+    ----------
+    state : array_like
+        State vector.
+    n : int, optional
+        Number of qubits (inferred from the length).
+
+    Returns
+    -------
+    dict
+        ``bloch_length``: per-qubit Bloch-vector length (1 = not entangled with the rest);
+        ``concurrence``: n x n matrix of pairwise concurrences.
+    """
     psi = _to_array(state); n = n or int(round(np.log2(psi.shape[0])))
     C = np.zeros((n, n))
     for a in range(n):
@@ -87,14 +176,41 @@ def entanglement_summary(state, n=None):
 
 
 def bloch_vectors(state, n=None):
-    """Bloch vectors of every qubit, shape (n, 3)."""
+    """Bloch vectors of every qubit.
+
+    Parameters
+    ----------
+    state : array_like
+        n-qubit state vector or density matrix.
+    n : int, optional
+        Number of qubits.
+
+    Returns
+    -------
+    numpy.ndarray
+        Shape ``(n, 3)``.
+    """
     s = _to_array(state); n = n or int(round(np.log2(s.shape[0])))
     return np.array([bloch_vector(reduced_density(s, q, n)) for q in range(n)])
 
 
 @dataclass
 class Trajectory:
-    """Bloch vectors over time: vectors (frames, qubits, 3) and one label per frame."""
+    """Bloch vectors over time.
+
+    Parameters
+    ----------
+    vectors : array_like
+        Shape ``(frames, qubits, 3)`` (or ``(frames, 3)`` for one qubit).
+    labels : list of str, optional
+        One label per frame (for example the gate being applied).
+    names : list of str, optional
+        Qubit names.
+    title : str, optional
+        Title for plots.
+    states : list of numpy.ndarray, optional
+        Full state per frame (circuit trajectories), needed for :meth:`concurrence`.
+    """
     vectors: np.ndarray
     labels: list = field(default_factory=list)
     names: list = field(default_factory=list)          # qubit names
@@ -112,28 +228,49 @@ class Trajectory:
 
     @property
     def frames(self):
-        """Number of frames."""
+        """int: number of frames."""
         return len(self.vectors)
 
     @property
     def n_qubits(self):
-        """Number of qubits."""
+        """int: number of qubits."""
         return self.vectors.shape[1]
 
     def concurrence(self, a=0, b=1):
-        """Concurrence of qubits a and b per frame (needs the full states, i.e. a circuit trajectory)."""
+        """Concurrence of two qubits in every frame.
+
+        Parameters
+        ----------
+        a, b : int, optional
+            Qubits.
+
+        Returns
+        -------
+        numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            If the trajectory has no stored states (only circuit trajectories do).
+        """
         if not self.states:
             raise ValueError('this trajectory has no stored states')
         n = self.n_qubits
         return np.array([concurrence(reduced_density_pair(psi, a, b, n)) for psi in self.states])
 
     def purity(self):
-        """|r| per frame and qubit (1 = pure, 0 = maximally mixed or maximally entangled)."""
+        """Bloch-vector length per frame and qubit.
+
+        Returns
+        -------
+        numpy.ndarray
+            1 for a pure (unentangled) qubit, 0 for a maximally mixed or maximally entangled one.
+        """
         return np.linalg.norm(self.vectors, axis=-1)
 
 
 def _fractional(U, t):
-    """U^t on the principal branch (unitary U)."""
+    """U^t on the principal branch, for a unitary U (via the Schur decomposition)."""
     from scipy.linalg import schur
     T, Z = schur(U, output='complex')
     ev = np.diag(T)
@@ -141,17 +278,32 @@ def _fractional(U, t):
 
 
 def _unitary_of(op):
+    """Matrix of a Qiskit instruction."""
     from qiskit.quantum_info import Operator
     return Operator(op).data
 
 
 def circuit_trajectory(qc, steps=12, initial=None):
-    """Smooth Bloch-sphere trajectory of every qubit of a Qiskit circuit, gate by gate.
+    r"""Smooth Bloch-sphere trajectory of every qubit of a Qiskit circuit, gate by gate.
 
-    Each unitary gate U is applied in `steps` fractional steps U^(k/steps), so rotations are drawn as
-    arcs and entangling gates as vectors moving into the ball. Measurements, resets and barriers are
-    skipped (the trajectory shows the coherent evolution); gates without a matrix (e.g. state
-    preparation) are decomposed first."""
+    Each unitary gate U is applied in ``steps`` fractional steps :math:`U^{k/\text{steps}}`, so rotations
+    are drawn as arcs and entangling gates as vectors moving into the ball. Measurements, resets and
+    barriers are skipped (the trajectory shows the coherent evolution); gates without a matrix (for
+    example state preparation) are decomposed first.
+
+    Parameters
+    ----------
+    qc : qiskit.QuantumCircuit
+    steps : int, optional
+        Frames per gate.
+    initial : array_like, optional
+        Initial state (default all zeros).
+
+    Returns
+    -------
+    Trajectory
+        With the full state stored in every frame.
+    """
     from qiskit import QuantumCircuit, transpile
     from ..quantum.statevector import apply_matrix
     n = qc.num_qubits
@@ -184,7 +336,23 @@ def circuit_trajectory(qc, steps=12, initial=None):
 
 
 def rotation_trajectory(axis, angle, start=(0, 0, 1), steps=60):
-    """Rotation of a Bloch vector about `axis` by `angle` (useful for demonstrations)."""
+    """Rotation of a Bloch vector about an axis (for demonstrations).
+
+    Parameters
+    ----------
+    axis : array_like
+        Rotation axis.
+    angle : float
+        Total angle.
+    start : array_like, optional
+        Initial Bloch vector.
+    steps : int, optional
+        Number of frames.
+
+    Returns
+    -------
+    Trajectory
+    """
     a = np.asarray(axis, float); a /= np.linalg.norm(a); v = np.asarray(start, float); out = []
     for t in np.linspace(0, angle, steps):
         out.append(v * np.cos(t) + np.cross(a, v) * np.sin(t) + a * (a @ v) * (1 - np.cos(t)))
@@ -192,9 +360,23 @@ def rotation_trajectory(axis, angle, start=(0, 0, 1), steps=60):
 
 
 def belief_trajectory(model, events, steps=12):
-    """Trajectory of the belief qubit of qlcog's OpenSystemBelief (trust) model over a sequence of
-    events (1 = success, 0 = failure): each event rotates the belief about the y axis and dephasing of
-    strength gamma pulls the vector towards the z axis. |0> (north pole) = 'yes, I trust the robot'."""
+    r"""Trajectory of the belief qubit of the trust model over a sequence of events.
+
+    Each event (1 = success, 0 = failure) rotates the belief about the y axis of an
+    :class:`~qlcog.families.dynamics.OpenSystemBelief`; dephasing of strength gamma then pulls the vector
+    toward the z axis. The north pole :math:`|0\rangle` means "yes, I trust the robot".
+
+    Parameters
+    ----------
+    model : OpenSystemBelief
+    events : sequence of int
+    steps : int, optional
+        Frames per rotation and per dephasing.
+
+    Returns
+    -------
+    Trajectory
+    """
     v = np.array([np.cos(model.phi0 / 2), np.sin(model.phi0 / 2)])
     rho = np.outer(v, v); vecs = [bloch_vector(rho)]; labels = ['prior']
     for t, e in enumerate(events):
@@ -213,7 +395,18 @@ def belief_trajectory(model, events, steps=12):
 
 
 def tomography_circuits(qc):
-    """Three copies of a (measurement-free) circuit measured in the Z, X and Y bases on every qubit."""
+    """Circuits for single-qubit state tomography.
+
+    Parameters
+    ----------
+    qc : qiskit.QuantumCircuit
+        Circuit (final measurements are removed).
+
+    Returns
+    -------
+    dict
+        ``{'z': ..., 'x': ..., 'y': ...}``: copies measured in the Z, X and Y bases on every qubit.
+    """
     out = {}
     for basis in 'zxy':
         c = qc.remove_final_measurements(inplace=False)
@@ -227,8 +420,23 @@ def tomography_circuits(qc):
 
 
 def bloch_tomography(qc, backend='aer', shots=4000, seed=7):
-    """Bloch vector of every qubit estimated from measurements on a simulator or quantum hardware
-    (single-qubit state tomography). backend: any string accepted by qlcog.circuits.run."""
+    """Bloch vectors estimated from measurements on a simulator or quantum hardware.
+
+    Parameters
+    ----------
+    qc : qiskit.QuantumCircuit
+    backend : str, optional
+        Any backend string accepted by :func:`qlcog.circuits.run`.
+    shots : int, optional
+        Shots per basis.
+    seed : int, optional
+        Simulator seed.
+
+    Returns
+    -------
+    numpy.ndarray
+        Shape ``(n, 3)``.
+    """
     from ..circuits import run
     n = qc.num_qubits; r = np.zeros((n, 3))
     for basis, c in tomography_circuits(qc).items():

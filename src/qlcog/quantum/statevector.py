@@ -1,10 +1,25 @@
-"""A small batched state-vector simulator for parameterised circuits (pure NumPy).
+"""A small batched state-vector simulator for parameterised circuits, in pure NumPy.
 
-Qubit q is bit q of the basis-state index (Qiskit ordering). Gate angles are expressions: a number,
-W(k) (trainable weight k), X(j, scale) (feature j of each sample times scale) or a product with a
-constant. Circuits are simulated for a whole batch of samples at once, which makes training of
-variational models fast without a quantum SDK; `to_qiskit` produces the same circuit for Aer, IBM
-Quantum or Amazon Braket (via `qlcog.circuits.run`)."""
+Qubit q is bit q of the basis-state index (Qiskit ordering). Gate angles are *expressions*: a
+number, :class:`W` (trainable weight k), :class:`X` (feature j of each sample, scaled and shifted),
+:class:`XX` (a product feature) or a constant.
+
+Circuits are simulated for a whole batch of samples at once, which makes training variational models
+fast without a quantum SDK. Gradients are exact and cheap (:meth:`Circuit.value_and_grad`, adjoint
+method). :meth:`Circuit.to_qiskit` produces the same circuit for Aer, IBM Quantum or Amazon Braket
+(via :func:`qlcog.circuits.run`).
+
+Examples
+--------
+>>> import numpy as np
+>>> from qlcog.quantum import Circuit, W
+>>> c = Circuit(2).h(0).cx(0, 1)                   # Bell state
+>>> c.probabilities().round(3)
+array([[0.5, 0. , 0. , 0.5]])
+>>> c = Circuit(1).ry(W(0), 0)                     # one trainable rotation
+>>> c.probabilities([np.pi]).round(3)
+array([[0., 1.]])
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,20 +27,39 @@ import numpy as np
 
 __all__ = ['W', 'X', 'XX', 'Circuit', 'apply_matrix', 'basis_probs', 'expectation_z', 'MAX_QUBITS']
 
-MAX_QUBITS = 22          # state vectors beyond this size do not fit in typical memory (2^22 x 16 bytes per sample)
+#: Largest number of qubits: beyond this a state vector does not fit in typical memory (2^22 x 16 bytes per sample).
+MAX_QUBITS = 22
 _CHUNK_AMPLITUDES = 2 ** 21   # samples are simulated in chunks of about this many amplitudes (32 MB)
 
 
 @dataclass(frozen=True)
 class W:
-    """Trainable weight k (times a constant scale)."""
+    """Trainable weight as a gate angle.
+
+    Parameters
+    ----------
+    k : int
+        Index of the weight in the weight vector.
+    scale : float, optional
+        Constant factor: the angle is ``scale * w[k]``.
+    """
     k: int
     scale: float = 1.0
 
 
 @dataclass(frozen=True)
 class X:
-    """Feature j of the input sample (times scale, plus shift)."""
+    """Input feature as a gate angle.
+
+    Parameters
+    ----------
+    j : int
+        Feature index.
+    scale : float, optional
+        Factor.
+    shift : float, optional
+        Offset: the angle is ``scale * x[j] + shift``.
+    """
     j: int
     scale: float = 1.0
     shift: float = 0.0
@@ -33,7 +67,17 @@ class X:
 
 @dataclass(frozen=True)
 class XX:
-    """Product feature  scale * (a - x_i)(a - x_j)  used by ZZ feature maps."""
+    """Product feature used by ZZ feature maps.
+
+    Parameters
+    ----------
+    i, j : int
+        Feature indices.
+    a : float, optional
+        Offset; the angle is ``scale * (a - x[i]) * (a - x[j])`` (Havlíček et al., 2019).
+    scale : float, optional
+        Factor.
+    """
     i: int
     j: int
     a: float = np.pi
@@ -41,7 +85,7 @@ class XX:
 
 
 def _value(p, w, x, B):
-    """Angle per sample: array of shape (B,). w: (K,) shared weights or (B, K) one weight vector per
+    """Angle per sample, shape (B,). w: (K,) shared weights or (B, K) one weight vector per
     sample (used to evaluate many weight settings, e.g. parameter shifts, in one batch)."""
     if isinstance(p, W):
         return p.scale * w[:, p.k] if w.ndim == 2 else np.full(B, p.scale * w[p.k])
@@ -53,37 +97,61 @@ def _value(p, w, x, B):
 
 
 def _axes(n, q):
-    return n - 1 - q          # axis of qubit q in a (B, 2, ..., 2) array reshaped from big-endian index
+    """Axis of qubit q in a (B, 2, ..., 2) array reshaped from the big-endian index."""
+    return n - 1 - q
 
 
 def _apply_1q(state, M, q, n):
     """Fast path for one qubit: view the batch as (B, high, 2, low) with low = 2^q."""
-    B = state.shape[0]; psi = state.reshape(B, 2 ** (n - 1 - q), 2, 2 ** q)
-    a0, a1 = psi[:, :, 0, :], psi[:, :, 1, :]
-    if M.ndim == 3:
+    B = state.shape[0]
+    psi = state.reshape(B, 2 ** (n - 1 - q), 2, 2 ** q)
+    a0, a1 = psi[:, :, 0, :], psi[:, :, 1, :]              # amplitudes with qubit q = 0 and = 1
+    if M.ndim == 3:                                        # one matrix per sample
         m = M[:, :, :, None, None]
-        out0 = m[:, 0, 0] * a0 + m[:, 0, 1] * a1; out1 = m[:, 1, 0] * a0 + m[:, 1, 1] * a1
+        out0 = m[:, 0, 0] * a0 + m[:, 0, 1] * a1
+        out1 = m[:, 1, 0] * a0 + m[:, 1, 1] * a1
     else:
-        out0 = M[0, 0] * a0 + M[0, 1] * a1; out1 = M[1, 0] * a0 + M[1, 1] * a1
+        out0 = M[0, 0] * a0 + M[0, 1] * a1
+        out1 = M[1, 0] * a0 + M[1, 1] * a1
     return np.stack([out0, out1], 2).reshape(B, 2 ** n)
 
 
 def _diag_phases(D, qubits, n):
     """Expand the diagonal of a k-qubit diagonal gate to all 2^n basis states (shape (..., 2^n))."""
-    idx = np.arange(2 ** n); sub = np.zeros(2 ** n, int)
+    idx = np.arange(2 ** n)
+    sub = np.zeros(2 ** n, int)
     for i, q in enumerate(qubits):
         sub |= ((idx >> q) & 1) << i
     return D[..., sub]
 
 
 def apply_matrix(state, M, qubits, n):
-    """Apply a 2^k x 2^k matrix (same for the batch, or shape (B, 2^k, 2^k)) to `qubits` (first qubit
-    = least significant bit of M's index)."""
-    B = state.shape[0]; k = len(qubits)
+    """Apply a k-qubit matrix to a batch of states.
+
+    Parameters
+    ----------
+    state : numpy.ndarray
+        Batch of states, shape ``(B, 2**n)``.
+    M : numpy.ndarray
+        ``(2**k, 2**k)`` matrix shared by the batch, or ``(B, 2**k, 2**k)`` one per sample. The
+        first qubit in ``qubits`` is the least significant bit of M's index.
+    qubits : sequence of int
+        Qubits acted on.
+    n : int
+        Total number of qubits.
+
+    Returns
+    -------
+    numpy.ndarray
+        New batch of states, shape ``(B, 2**n)``. Diagonal two-qubit gates use a fast phase path.
+    """
+    B = state.shape[0]
+    k = len(qubits)
     if k == 1:
         return _apply_1q(state, M, qubits[0], n)
     if k == 2 and np.count_nonzero(M - np.einsum('...ii->...i', M)[..., None] * np.eye(4)) == 0:
         return state * _diag_phases(np.einsum('...ii->...i', M), qubits, n)
+    # general case: move the target axes to the front, multiply, move them back
     psi = state.reshape((B,) + (2,) * n)
     ax = [1 + _axes(n, q) for q in reversed(qubits)]          # big-endian order of M's index
     psi = np.moveaxis(psi, ax, list(range(1, k + 1))).reshape(B, 2 ** k, -1)
@@ -94,7 +162,9 @@ def apply_matrix(state, M, qubits, n):
 
 
 def _rot(name, th):
-    c, s = np.cos(th / 2), np.sin(th / 2); B = len(th)
+    """Matrices of a parametric gate for a batch of angles, shape (B, 2, 2) or (B, 4, 4)."""
+    c, s = np.cos(th / 2), np.sin(th / 2)
+    B = len(th)
     M = np.zeros((B, 2, 2), complex)
     if name == 'ry':
         M[:, 0, 0] = c; M[:, 0, 1] = -s; M[:, 1, 0] = s; M[:, 1, 1] = c
@@ -105,7 +175,9 @@ def _rot(name, th):
     elif name == 'p':
         M[:, 0, 0] = 1; M[:, 1, 1] = np.exp(1j * th)
     elif name == 'cp':                                         # controlled phase diag(1, 1, 1, e^{i t})
-        M = np.zeros((B, 4, 4), complex); M[:, 0, 0] = M[:, 1, 1] = M[:, 2, 2] = 1; M[:, 3, 3] = np.exp(1j * th)
+        M = np.zeros((B, 4, 4), complex)
+        M[:, 0, 0] = M[:, 1, 1] = M[:, 2, 2] = 1
+        M[:, 3, 3] = np.exp(1j * th)
     elif name == 'rzz':                                        # 4 x 4 diagonal
         M = np.zeros((B, 4, 4), complex)
         for b, z in enumerate([1, -1, -1, 1]):
@@ -125,103 +197,204 @@ _FIXED = {
     'cz': np.diag([1, 1, 1, -1]).astype(complex),
     'swap': np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]], complex),
 }
+#: Gates whose angle can be a number, :class:`W`, :class:`X` or :class:`XX`.
 PARAMETRIC = ('rx', 'ry', 'rz', 'p', 'rzz', 'cp')
+# Generators G of the parametric gates, used by the adjoint gradient.
 _GENERATOR = {'rx': _FIXED['x'], 'ry': _FIXED['y'], 'rz': _FIXED['z'], 'rzz': np.diag([1, -1, -1, 1]).astype(complex),
               'p': np.diag([0, 1]).astype(complex), 'cp': np.diag([0, 0, 0, 1]).astype(complex)}
 
 
 def _dagger(M):
+    """Conjugate transpose of the last two axes."""
     return M.conj().swapaxes(-1, -2)
 
 
 class Circuit:
-    """Parameterised circuit. Build with gate methods, simulate with `state(w, X)`."""
+    """Parameterised quantum circuit with a batched simulator.
+
+    Build the circuit with the gate methods (each returns ``self``, so calls chain) and simulate it
+    with :meth:`state` or :meth:`probabilities`.
+
+    Parameters
+    ----------
+    n : int
+        Number of qubits, at most :data:`MAX_QUBITS`.
+
+    Attributes
+    ----------
+    ops : list of tuple
+        Gates as ``(name, qubits, parameter)``.
+
+    Raises
+    ------
+    ValueError
+        If ``n`` exceeds :data:`MAX_QUBITS`.
+    """
 
     def __init__(self, n):
         if n > MAX_QUBITS:
             raise ValueError('%d qubits exceed the simulator limit of %d (memory grows as 2^n)' % (n, MAX_QUBITS))
-        self.n = n; self.ops = []
+        self.n = n
+        self.ops = []
 
     def _add(self, name, qubits, param=None):
-        self.ops.append((name, tuple(qubits), param)); return self
+        """Append a gate and return self."""
+        self.ops.append((name, tuple(qubits), param))
+        return self
 
+    # ----------------------------------------------------------------------------------- fixed gates
     def h(self, q):
-
-        """Hadamard on qubit q."""
-
+        """Hadamard on qubit ``q``."""
         return self._add('h', [q])
+
     def x(self, q):
-        """Pauli X on qubit q."""
+        """Pauli X on qubit ``q``."""
         return self._add('x', [q])
+
     def y(self, q):
-        """Pauli Y on qubit q."""
+        """Pauli Y on qubit ``q``."""
         return self._add('y', [q])
+
     def z(self, q):
-        """Pauli Z on qubit q."""
+        """Pauli Z on qubit ``q``."""
         return self._add('z', [q])
+
     def s(self, q):
-        """S (phase pi/2) on qubit q."""
+        """S gate (phase pi/2) on qubit ``q``."""
         return self._add('s', [q])
+
     def sdg(self, q):
-        """S dagger on qubit q."""
+        """S-dagger gate on qubit ``q``."""
         return self._add('sdg', [q])
+
     def cx(self, c, t):
-        """CNOT with control c and target t."""
+        """CNOT with control ``c`` and target ``t``."""
         return self._add('cx', [c, t])
+
     def cz(self, a, b):
-        """Controlled Z on qubits a and b."""
+        """Controlled Z on qubits ``a`` and ``b``."""
         return self._add('cz', [a, b])
+
     def swap(self, a, b):
-        """Swap qubits a and b."""
+        """Swap qubits ``a`` and ``b``."""
         return self._add('swap', [a, b])
+
+    # ----------------------------------------------------------------------------------- parametric gates
     def rx(self, p, q):
-        """RX(p) on qubit q; p is a number, W(k), X(j) or XX(i, j)."""
+        """RX rotation on qubit ``q``; ``p`` is a number, :class:`W`, :class:`X` or :class:`XX`."""
         return self._add('rx', [q], p)
+
     def ry(self, p, q):
-        """RY(p) on qubit q."""
+        """RY rotation on qubit ``q``; ``p`` is a number or an angle expression."""
         return self._add('ry', [q], p)
+
     def rz(self, p, q):
-        """RZ(p) on qubit q."""
+        """RZ rotation on qubit ``q``; ``p`` is a number or an angle expression."""
         return self._add('rz', [q], p)
+
     def p(self, p, q):
-        """Phase gate P(p) on qubit q."""
+        """Phase gate diag(1, e^{ip}) on qubit ``q``."""
         return self._add('p', [q], p)
+
     def cp(self, p, c, t):
-        """Controlled phase diag(1, 1, 1, e^{i p}) on qubits c and t (symmetric)."""
+        """Controlled phase diag(1, 1, 1, e^{ip}) on qubits ``c`` and ``t`` (symmetric)."""
         return self._add('cp', [c, t], p)
 
     def rzz(self, p, a, b):
-        """RZZ(p) = exp(-i p Z_a Z_b / 2) on qubits a and b."""
+        """RZZ(p) = exp(-i p Z_a Z_b / 2) on qubits ``a`` and ``b``."""
         return self._add('rzz', [a, b], p)
 
     def unitary(self, M, qubits, label='U'):
-        """Fixed unitary on `qubits`."""
-        self.ops.append(('unitary', tuple(qubits), (np.asarray(M, complex), label))); return self
+        """Fixed unitary on some qubits.
+
+        Parameters
+        ----------
+        M : array_like
+            ``(2**k, 2**k)`` unitary.
+        qubits : sequence of int
+            Qubits acted on (the first is the least significant bit of M's index).
+        label : str, optional
+            Label in the Qiskit export.
+
+        Returns
+        -------
+        Circuit
+            ``self``.
+        """
+        self.ops.append(('unitary', tuple(qubits), (np.asarray(M, complex), label)))
+        return self
 
     def diagonal(self, phases, label='D'):
-        """Diagonal unitary diag(exp(i phases)) on all qubits (e.g. a cost or oracle layer)."""
-        self.ops.append(('diag', tuple(range(self.n)), (np.asarray(phases, float), label))); return self
+        """Diagonal unitary diag(exp(i phases)) on all qubits (for example a cost or oracle layer).
+
+        Parameters
+        ----------
+        phases : array_like
+            ``2**n`` phases.
+        label : str, optional
+            Label.
+
+        Returns
+        -------
+        Circuit
+            ``self``.
+        """
+        self.ops.append(('diag', tuple(range(self.n)), (np.asarray(phases, float), label)))
+        return self
 
     @property
     def n_weights(self):
-        """Number of trainable weights (largest W index + 1)."""
+        """int: number of trainable weights (largest :class:`W` index + 1)."""
         ks = [p.k for _, _, p in self.ops if isinstance(p, W)]
         return 1 + max(ks) if ks else 0
 
     def compose(self, other):
-        """Append the gates of another circuit; returns self."""
-        self.ops += other.ops; return self
+        """Append the gates of another circuit.
+
+        Parameters
+        ----------
+        other : Circuit
+            Circuit on the same number of qubits.
+
+        Returns
+        -------
+        Circuit
+            ``self``.
+        """
+        self.ops += other.ops
+        return self
 
     # ----------------------------------------------------------------------------------- simulation
     def state(self, w=None, X_=None, init=None):
-        """Final states, shape (B, 2^n). X_: (B, n_features) or None; w: (K,) or (B, K)."""
+        """Simulate the circuit.
+
+        Parameters
+        ----------
+        w : array_like, optional
+            Weights, shape ``(K,)`` shared by the batch or ``(B, K)`` one per sample. Default zeros.
+        X_ : array_like, optional
+            Input samples, shape ``(B, n_features)``.
+        init : array_like, optional
+            Initial state (default :math:`|0\\dots0\\rangle`).
+
+        Returns
+        -------
+        numpy.ndarray
+            Final states, shape ``(B, 2**n)``.
+
+        Raises
+        ------
+        ValueError
+            If fewer weights than :attr:`n_weights` are given.
+        """
         w = np.zeros(self.n_weights) if w is None else np.asarray(w, float)
         Xa = None if X_ is None else np.atleast_2d(np.asarray(X_, float))
         B = Xa.shape[0] if Xa is not None else (w.shape[0] if w.ndim == 2 else 1)
         if w.ndim == 1 and len(w) < self.n_weights:
             raise ValueError('expected %d weights, got %d' % (self.n_weights, len(w)))
         if init is None:
-            psi = np.zeros((B, 2 ** self.n), complex); psi[:, 0] = 1
+            psi = np.zeros((B, 2 ** self.n), complex)
+            psi[:, 0] = 1
         else:
             psi = np.tile(np.asarray(init, complex), (B, 1))
         for op in self.ops:
@@ -229,6 +402,7 @@ class Circuit:
         return psi
 
     def _matrix(self, op, w, Xa, B):
+        """Matrix (or batch of matrices) of one gate."""
         name, qs, p = op
         if name in PARAMETRIC:
             return _rot(name, _value(p, w, Xa, B))
@@ -237,6 +411,7 @@ class Circuit:
         return _FIXED[name]
 
     def _apply(self, op, psi, w, Xa, B, inverse=False):
+        """Apply one gate (or its inverse) to a batch of states."""
         name, qs, p = op
         if name == 'diag':
             return psi * np.exp((-1j if inverse else 1j) * p[0])[None, :]
@@ -244,23 +419,45 @@ class Circuit:
         return apply_matrix(psi, _dagger(M) if inverse else M, list(qs), self.n)
 
     def value_and_grad(self, w, X_, loss, chunk=None):
-        """Loss and its exact gradient with respect to the trainable weights by the adjoint method.
+        """Loss and its exact gradient with respect to the weights (adjoint method).
 
-        loss(psi, rows) -> (L, phi): L is the loss summed over the samples `rows` of the chunk and
-        phi = dL/d(conj psi) has the shape of psi. The circuit is run forward once, then backwards
-        once with the inverse gates, so the cost is about three simulations whatever the number of
-        weights; samples are processed in chunks (memory O(chunk x 2^n)). Weights shared by several
-        gates (e.g. QAOA angles) are handled."""
-        w = np.asarray(w, float); Xa = None if X_ is None else np.atleast_2d(np.asarray(X_, float))
+        The circuit is run forward once, then backwards once with the inverse gates, so the cost is
+        about three simulations whatever the number of weights. Samples are processed in chunks
+        (memory ``O(chunk * 2**n)``). Weights shared by several gates (for example QAOA angles) are
+        handled.
+
+        Parameters
+        ----------
+        w : array_like
+            Weights, shape ``(K,)``.
+        X_ : array_like or None
+            Input samples, shape ``(B, n_features)``.
+        loss : callable
+            ``loss(psi, rows) -> (L, phi)``: ``L`` is the loss summed over the samples ``rows`` of the
+            chunk and ``phi`` = dL/d(conj psi), with the shape of ``psi``.
+        chunk : int, optional
+            Samples per chunk (default: about 2**21 amplitudes).
+
+        Returns
+        -------
+        loss : float
+            Total loss.
+        grad : numpy.ndarray
+            Gradient, shape ``(K,)``.
+        """
+        w = np.asarray(w, float)
+        Xa = None if X_ is None else np.atleast_2d(np.asarray(X_, float))
         B = 1 if Xa is None else Xa.shape[0]
         chunk = chunk or max(1, _CHUNK_AMPLITUDES // 2 ** self.n)
         total, grad = 0.0, np.zeros(self.n_weights)
         for start in range(0, B, chunk):
             rows = np.arange(start, min(B, start + chunk))
-            Xc = None if Xa is None else Xa[rows]; b = len(rows)
+            Xc = None if Xa is None else Xa[rows]
+            b = len(rows)
             psi = self.state(w, Xc)
             L, phi = loss(psi, rows)
             total += float(L)
+            # walk the circuit backwards, undoing each gate on psi and on the adjoint state phi
             for op in reversed(self.ops):
                 name, qs, p = op
                 if name in PARAMETRIC and isinstance(p, W):
@@ -273,12 +470,40 @@ class Circuit:
         return total, grad
 
     def probabilities(self, w=None, X_=None):
-        """Born-rule probabilities of the final states, shape (B, 2^n)."""
+        """Born-rule probabilities of the final states.
+
+        Parameters
+        ----------
+        w : array_like, optional
+            Weights.
+        X_ : array_like, optional
+            Input samples.
+
+        Returns
+        -------
+        numpy.ndarray
+            Shape ``(B, 2**n)``.
+        """
         return np.abs(self.state(w, X_)) ** 2
 
     # ----------------------------------------------------------------------------------- export
     def to_qiskit(self, w=None, x=None, measure=True):
-        """Qiskit QuantumCircuit with all angles bound (x: one sample)."""
+        """Export to Qiskit with every angle bound.
+
+        Parameters
+        ----------
+        w : array_like, optional
+            Weights.
+        x : array_like, optional
+            One input sample.
+        measure : bool, optional
+            Add a final measurement of every qubit.
+
+        Returns
+        -------
+        qiskit.QuantumCircuit
+            Ready for :func:`qlcog.circuits.run` on Aer, IBM Quantum or Amazon Braket.
+        """
         from .._optional import require
         require('qiskit', 'qiskit')
         from qiskit import QuantumCircuit
@@ -304,11 +529,38 @@ class Circuit:
 
 
 def basis_probs(psi):
-    """Born-rule probabilities |psi|^2."""
+    """Born-rule probabilities.
+
+    Parameters
+    ----------
+    psi : numpy.ndarray
+        State or batch of states.
+
+    Returns
+    -------
+    numpy.ndarray
+        :math:`|\\psi|^2`.
+    """
     return np.abs(psi) ** 2
 
 
 def expectation_z(psi, q, n):
-    """<Z_q> for each state in the batch."""
-    idx = np.arange(2 ** n); sign = 1 - 2 * ((idx >> q) & 1)
+    """Expectation of Pauli Z on one qubit.
+
+    Parameters
+    ----------
+    psi : numpy.ndarray
+        Batch of states, shape ``(B, 2**n)``.
+    q : int
+        Qubit.
+    n : int
+        Number of qubits.
+
+    Returns
+    -------
+    numpy.ndarray
+        :math:`\\langle Z_q \\rangle` for each state, shape ``(B,)``.
+    """
+    idx = np.arange(2 ** n)
+    sign = 1 - 2 * ((idx >> q) & 1)                  # +1 if qubit q is 0, -1 if it is 1
     return (np.abs(psi) ** 2) @ sign

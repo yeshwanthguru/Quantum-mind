@@ -1,5 +1,15 @@
 """Interactive Plotly Bloch spheres: rotate and zoom with the mouse, play animations with a slider,
-export to a standalone HTML file, and update live in Jupyter (`LiveBloch`)."""
+export to a standalone HTML file, and update live in Jupyter (:class:`LiveBloch`).
+
+Examples
+--------
+>>> from qiskit import QuantumCircuit                                  # doctest: +SKIP
+>>> from qlcog.viz import circuit_trajectory, animate_bloch, save_html, LiveBloch
+>>> qc = QuantumCircuit(2); qc.h(0); qc.cx(0, 1)                       # doctest: +SKIP
+>>> save_html(animate_bloch(circuit_trajectory(qc)), 'bell.html')      # doctest: +SKIP
+>>> live = LiveBloch(2).show()                                         # doctest: +SKIP
+>>> live.play(circuit_trajectory(qc), fps=30)                          # doctest: +SKIP
+"""
 from __future__ import annotations
 
 import time
@@ -13,6 +23,7 @@ _DYN = 3          # dynamic traces per qubit: arrow, tip, trail
 
 
 def _static_traces(t):
+    """Sphere surface, wire-frame circles, axes and state labels (the parts that never move)."""
     from .._optional import require
     require('plotly')
     import plotly.graph_objects as go
@@ -36,6 +47,7 @@ def _static_traces(t):
 
 
 def _dynamic_traces(r, trail, color, name):
+    """Arrow, tip and trail of one qubit (the parts animations update)."""
     import plotly.graph_objects as go
     trail = np.atleast_2d(trail)
     return [go.Scatter3d(x=[0, r[0]], y=[0, r[1]], z=[0, r[2]], mode='lines', line=dict(color=color, width=9),
@@ -48,6 +60,7 @@ def _dynamic_traces(r, trail, color, name):
 
 
 def _layout(fig, n, t, title, height):
+    """Shared 3D scene and page layout for n spheres."""
     scene = dict(xaxis=dict(visible=False, range=[-1.25, 1.25]), yaxis=dict(visible=False, range=[-1.25, 1.25]),
                  zaxis=dict(visible=False, range=[-1.25, 1.25]), aspectmode='cube',
                  camera=dict(eye=dict(x=1.35, y=1.0, z=0.7)), bgcolor=t['bg'])
@@ -59,6 +72,7 @@ def _layout(fig, n, t, title, height):
 
 
 def _figure(vectors, trails, names, t, title, height, widget=False):
+    """Build a figure with n spheres; returns it and the indices of the dynamic traces per qubit."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
     n = len(vectors)
@@ -82,7 +96,22 @@ def _figure(vectors, trails, names, t, title, height, widget=False):
 
 
 def bloch_figure(vectors, names=None, theme='dark', title=None, height=460):
-    """Interactive figure with one sphere per qubit. vectors: (qubits, 3) or a state."""
+    """Interactive figure with one sphere per qubit.
+
+    Parameters
+    ----------
+    vectors : array_like or state
+        Bloch vectors ``(qubits, 3)``, or a state.
+    names : list of str, optional
+    theme : str or dict, optional
+    title : str, optional
+    height : int, optional
+        Height in pixels.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+    """
     v = np.asarray(vectors, float) if (np.ndim(vectors) == 2 and np.shape(vectors)[-1] == 3) else bloch_vectors(vectors)
     names = names or ['q%d' % q for q in range(len(v))]
     fig, _ = _figure(v, [r[None] for r in v], names, _theme(theme), title, height)
@@ -90,7 +119,25 @@ def bloch_figure(vectors, names=None, theme='dark', title=None, height=460):
 
 
 def animate_bloch(traj, theme='dark', fps=30, trail=True, title=None, height=500, max_frames=400):
-    """Animated interactive figure (play / pause buttons and a slider labelled with the frame labels)."""
+    """Animated interactive figure with play and pause buttons and a slider labelled with the frame labels.
+
+    Parameters
+    ----------
+    traj : Trajectory or array_like
+    theme : str or dict, optional
+    fps : int, optional
+        Frames per second when playing.
+    trail : bool, optional
+        Draw the path followed so far.
+    title : str, optional
+    height : int, optional
+    max_frames : int, optional
+        Frames are subsampled to at most this many (keeps HTML files small).
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+    """
     import plotly.graph_objects as go
     if not isinstance(traj, Trajectory):
         traj = Trajectory(traj)
@@ -120,7 +167,20 @@ def animate_bloch(traj, theme='dark', fps=30, trail=True, title=None, height=500
 
 
 def save_html(fig, path, auto_open=False):
-    """Standalone HTML (Plotly JavaScript embedded from its CDN)."""
+    """Write a standalone HTML file (Plotly JavaScript loaded from its CDN).
+
+    Parameters
+    ----------
+    fig : plotly.graph_objects.Figure
+    path : str
+    auto_open : bool, optional
+        Open the file in a browser.
+
+    Returns
+    -------
+    str
+        ``path``.
+    """
     fig.write_html(path, include_plotlyjs='cdn', auto_open=auto_open)
     return path
 
@@ -128,12 +188,27 @@ def save_html(fig, path, auto_open=False):
 class LiveBloch:
     """Real-time Bloch spheres.
 
-    In Jupyter (with ipywidgets) the figure is a Plotly FigureWidget updated in place; elsewhere a
-    Matplotlib window is redrawn. Feed it states, Bloch vectors or whole trajectories:
+    In Jupyter (with ipywidgets and anywidget) the figure is a Plotly ``FigureWidget`` updated in place;
+    elsewhere a Matplotlib window is redrawn. Feed it states, Bloch vectors or whole trajectories.
 
-        live = LiveBloch(2); live.show()
-        for state in states: live.update(state)
-        live.play(circuit_trajectory(qc), fps=30)"""
+    Parameters
+    ----------
+    n_qubits : int, optional
+    names : list of str, optional
+    theme : str or dict, optional
+    backend : {'auto', 'plotly', 'matplotlib'}, optional
+        ``'auto'`` picks Plotly inside a notebook and Matplotlib elsewhere.
+    trail : bool, optional
+        Keep and draw the history of every vector.
+    title : str, optional
+
+    Examples
+    --------
+    >>> live = LiveBloch(2).show()                    # doctest: +SKIP
+    >>> for state in states:                          # doctest: +SKIP
+    ...     live.update(state)
+    >>> live.play(circuit_trajectory(qc), fps=30)     # doctest: +SKIP
+    """
 
     def __init__(self, n_qubits=1, names=None, theme='dark', backend='auto', trail=True, title=None):
         self.n = n_qubits; self.names = names or ['q%d' % q for q in range(n_qubits)]
@@ -158,7 +233,13 @@ class LiveBloch:
             self.caption = self.fig.text(0.5, 0.03, '', color=self.t['text'], ha='center')
 
     def show(self):
-        """Display the spheres (widget in Jupyter, window elsewhere); returns self."""
+        """Display the spheres (a widget in Jupyter, a window elsewhere).
+
+        Returns
+        -------
+        LiveBloch
+            ``self``.
+        """
         if self.backend == 'plotly':
             from IPython.display import display
             display(self.fig)
@@ -168,7 +249,20 @@ class LiveBloch:
         return self
 
     def update(self, state, label=''):
-        """state: Bloch vectors (n, 3), or a state vector / density matrix / Qiskit state."""
+        """Move the vectors to a new state.
+
+        Parameters
+        ----------
+        state : array_like or Qiskit state
+            Bloch vectors ``(n, 3)``, or a state vector, density matrix or Qiskit state.
+        label : str, optional
+            Caption.
+
+        Returns
+        -------
+        LiveBloch
+            ``self``.
+        """
         v = np.asarray(state, float) if (np.ndim(state) == 2 and np.shape(state)[-1] == 3 and np.isrealobj(state)) \
             else bloch_vectors(state, self.n)
         for q in range(self.n):
@@ -192,7 +286,18 @@ class LiveBloch:
         return self
 
     def play(self, traj, fps=30):
-        """Replay a Trajectory in real time."""
+        """Replay a trajectory in real time.
+
+        Parameters
+        ----------
+        traj : Trajectory or array_like
+        fps : int, optional
+
+        Returns
+        -------
+        LiveBloch
+            ``self``.
+        """
         if not isinstance(traj, Trajectory):
             traj = Trajectory(traj)
         for k in range(traj.frames):
@@ -200,11 +305,18 @@ class LiveBloch:
         return self
 
     def reset(self):
-        """Clear the trails; returns self."""
+        """Clear the trails.
+
+        Returns
+        -------
+        LiveBloch
+            ``self``.
+        """
         self.history = [[] for _ in range(self.n)]; return self
 
 
 def _sleep(dt, backend):
+    """Wait between frames (Matplotlib needs plt.pause to redraw)."""
     if backend == 'matplotlib':
         import matplotlib.pyplot as plt
         plt.pause(dt)
@@ -213,6 +325,7 @@ def _sleep(dt, backend):
 
 
 def _in_notebook():
+    """True inside a Jupyter kernel."""
     try:
         from IPython import get_ipython
         ip = get_ipython()

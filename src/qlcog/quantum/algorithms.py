@@ -1,6 +1,20 @@
-"""Quantum algorithms on the built-in simulator: QAOA for QUBO problems, VQE for Pauli Hamiltonians
-and Grover search. Each returns a result object with the circuit, which `to_qiskit` exports for Aer,
-IBM Quantum or Amazon Braket."""
+"""Quantum algorithms on the built-in simulator.
+
+* :class:`QAOA`: Quantum Approximate Optimisation Algorithm for any :class:`qlcog.problems.Qubo`
+  (allocation, scheduling, MaxCut, portfolios).
+* :class:`VQE` with :class:`Hamiltonian`: ground states of Pauli Hamiltonians.
+* :func:`grover`: Grover search with an oracle from a list or a predicate.
+
+Each returns a result object with the circuit, which ``to_qiskit`` exports for Aer, IBM Quantum or
+Amazon Braket.
+
+Examples
+--------
+>>> from qlcog.quantum import grover
+>>> res = grover(5, marked=[3, 17])
+>>> res.iterations, round(res.success, 3)
+(3, 0.961)
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -15,8 +29,29 @@ __all__ = ['QAOA', 'QAOAResult', 'pauli_matrix', 'Hamiltonian', 'VQE', 'grover',
 # ------------------------------------------------------------------------------------------- QAOA
 @dataclass
 class QAOAResult:
-    """QAOA result: best bit string among the most probable outcomes, its energy, the expectation, the
-    output distribution, the angles, the exact optimum and P(optimal)."""
+    r"""Result of :meth:`QAOA.run`.
+
+    Attributes
+    ----------
+    x : numpy.ndarray
+        Best bit string found among the most probable outcomes.
+    energy : float
+        Its QUBO energy.
+    expectation : float
+        :math:`\langle H_C \rangle` of the optimised state (QUBO units).
+    probabilities : numpy.ndarray
+        Output distribution over all :math:`2^n` bit strings (:math:`x_0` = least significant bit).
+    gammas, betas : numpy.ndarray
+        Optimised angles, one per layer.
+    circuit : Circuit
+        The QAOA circuit.
+    optimum : float
+        Exact minimum over all bit strings (brute force).
+    p_optimal : float
+        Probability of measuring an optimal bit string.
+    weights : numpy.ndarray
+        ``(gamma_1, beta_1, ..., gamma_p, beta_p)``, the circuit weights.
+    """
     x: np.ndarray                 # best bit string found among the most probable outcomes
     energy: float                 # its QUBO energy
     expectation: float            # <H_C> of the optimised state (QUBO units)
@@ -30,11 +65,26 @@ class QAOAResult:
 
 
 class QAOA:
-    """Quantum Approximate Optimisation Algorithm (Farhi, Goldstone and Gutmann, 2014) for a
-    `qlcog.problems.Qubo`. The cost layer is built from RZ and RZZ gates of the equivalent Ising model,
-    so the simulated and exported circuits are identical.
+    """Quantum Approximate Optimisation Algorithm (Farhi, Goldstone and Gutmann, 2014).
 
-    Parameters: p (layers), restarts, maxiter, seed."""
+    The cost layer is built from RZ and RZZ gates of the equivalent Ising model, so the simulated and
+    exported circuits are identical. Angles are optimised with exact adjoint gradients (L-BFGS-B,
+    then a COBYLA polish), starting from a depth-1 grid search extended layer by layer (INTERP) and
+    from random restarts.
+
+    Parameters
+    ----------
+    qubo : qlcog.problems.Qubo
+        Problem to minimise (normalised internally).
+    p : int, optional
+        Number of layers.
+    restarts : int, optional
+        Random restarts at full depth.
+    maxiter : int, optional
+        Iterations per optimisation.
+    seed : int, optional
+        Seed.
+    """
 
     def __init__(self, qubo, p=2, restarts=6, maxiter=300, seed=0):
         self.qubo = qubo.normalised(); self.p = p
@@ -45,6 +95,7 @@ class QAOA:
         self.energies = self.qubo.all_energies()
 
     def _build(self):
+        """Build the circuit: Hadamards, then p layers of cost (RZ, RZZ) and mixer (RX) gates."""
         n = self.qubo.n; c = Circuit(n); s = 1 / self.scale
         for q in range(n):
             c.h(q)
@@ -60,10 +111,21 @@ class QAOA:
         return c
 
     def expectation(self, w):
-        """Expected QUBO energy of the QAOA state for angles w = (gamma_1, beta_1, ...)."""
+        """Expected QUBO energy of the QAOA state.
+
+        Parameters
+        ----------
+        w : array_like
+            Angles ``(gamma_1, beta_1, ..., gamma_p, beta_p)``.
+
+        Returns
+        -------
+        float
+        """
         return float(self.circuit.probabilities(w)[0] @ self.energies)
 
     def _value_and_grad(self, w):
+        """Expected energy and its adjoint gradient (phi = E * psi)."""
         E = self.energies
         return self.circuit.value_and_grad(w, None, lambda psi, rows: (((np.abs(psi) ** 2) @ E).sum(), psi * E[None, :]))
 
@@ -85,9 +147,16 @@ class QAOA:
         return val, w
 
     def run(self):
-        """Schedule search: (1) grid search at depth 1, then layer-by-layer interpolation of the
-        optimal angles to the next depth (INTERP, Zhou et al., PRX 10, 021067, 2020); (2) random restarts
-        at full depth. The best schedule over both is kept."""
+        """Optimise the angles and sample the result.
+
+        The schedule search has two parts: (1) a grid search at depth 1, then layer-by-layer
+        interpolation of the optimal angles to the next depth (INTERP; Zhou et al., PRX 10, 021067,
+        2020); (2) random restarts at full depth. The best schedule over both is kept.
+
+        Returns
+        -------
+        QAOAResult
+        """
         rng = np.random.default_rng(self.seed); cands = []
         G, B = np.meshgrid(np.linspace(0, np.pi, 25)[1:], np.linspace(0, np.pi / 2, 13)[1:])
         grid = [(self.expectation(np.r_[[g, b], np.zeros(2 * self.p - 2)]), g, b) for g, b in zip(G.ravel(), B.ravel())]
@@ -113,7 +182,19 @@ class QAOA:
                           weights=w)
 
     def to_qiskit(self, result, measure=True):
-        """Qiskit circuit with the optimised angles of `result` bound."""
+        """Qiskit circuit with optimised angles bound.
+
+        Parameters
+        ----------
+        result : QAOAResult
+            Output of :meth:`run`.
+        measure : bool, optional
+            Add measurements.
+
+        Returns
+        -------
+        qiskit.QuantumCircuit
+        """
         return self.circuit.to_qiskit(result.weights, None, measure)
 
 
@@ -122,7 +203,17 @@ _PAULI = {'I': np.eye(2), 'X': np.array([[0, 1], [1, 0]]), 'Y': np.array([[0, -1
 
 
 def pauli_matrix(label):
-    """Matrix of a Pauli string in Qiskit order (the leftmost letter acts on the highest qubit)."""
+    """Matrix of a Pauli string.
+
+    Parameters
+    ----------
+    label : str
+        Letters from ``IXYZ`` in Qiskit order (the leftmost letter acts on the highest qubit).
+
+    Returns
+    -------
+    numpy.ndarray
+    """
     M = np.array([[1.0 + 0j]])
     for ch in label:
         M = np.kron(M, _PAULI[ch])
@@ -130,7 +221,20 @@ def pauli_matrix(label):
 
 
 class Hamiltonian:
-    """Sum of weighted Pauli strings, e.g. Hamiltonian([(1.0, 'ZZ'), (0.5, 'XI')])."""
+    """Sum of weighted Pauli strings.
+
+    Parameters
+    ----------
+    terms : list of tuple
+        ``(coefficient, label)`` pairs, for example ``[(1.0, 'ZZ'), (0.5, 'XI')]``.
+
+    Attributes
+    ----------
+    n : int
+        Number of qubits.
+    matrix : numpy.ndarray
+        Dense matrix of the Hamiltonian.
+    """
 
     def __init__(self, terms):
         self.terms = [(float(c), s.upper()) for c, s in terms]
@@ -139,7 +243,16 @@ class Hamiltonian:
 
     @classmethod
     def from_qubo(cls, qubo):
-        """Ising Hamiltonian (Z and ZZ terms) with the same energies as a Qubo."""
+        """Ising Hamiltonian (Z and ZZ terms) with the same energies as a QUBO.
+
+        Parameters
+        ----------
+        qubo : qlcog.problems.Qubo
+
+        Returns
+        -------
+        Hamiltonian
+        """
         h, J, c = qubo.to_ising(); n = qubo.n; terms = [(c, 'I' * n)]
         for i in range(n):
             if h[i]:
@@ -149,18 +262,56 @@ class Hamiltonian:
         return cls(terms)
 
     def expectation(self, psi):
-        """<psi|H|psi> for each state of a batch (B, 2^n) -> (B,)."""
+        r"""Energy expectation of a batch of states.
+
+        Parameters
+        ----------
+        psi : numpy.ndarray
+            States, shape ``(B, 2**n)``.
+
+        Returns
+        -------
+        numpy.ndarray
+            :math:`\langle\psi|H|\psi\rangle`, shape ``(B,)``.
+        """
         return np.real(np.einsum('bi,ij,bj->b', psi.conj(), self.matrix, psi))
 
     def ground_energy(self):
-        """Exact ground-state energy (dense diagonalisation)."""
+        """Exact ground-state energy (dense diagonalisation).
+
+        Returns
+        -------
+        float
+        """
         return float(np.linalg.eigvalsh(self.matrix)[0])
 
 
 class VQE:
-    """Variational Quantum Eigensolver (Peruzzo et al., Nature Communications 5, 4213, 2014) with a
-    hardware-efficient ansatz and parameter-shift gradients. rotations=('ry',) gives a real ansatz,
-    enough for Hamiltonians with real ground states (e.g. transverse-field Ising models)."""
+    """Variational Quantum Eigensolver (Peruzzo et al., Nature Communications 5, 4213, 2014).
+
+    A hardware-efficient ansatz is optimised with exact adjoint gradients and L-BFGS from several random
+    starts.
+
+    Parameters
+    ----------
+    hamiltonian : Hamiltonian
+        Operator whose ground state is sought.
+    layers : int, optional
+        Ansatz layers.
+    restarts : int, optional
+        Random starts.
+    maxiter : int, optional
+        Iterations per start.
+    seed : int, optional
+        Seed.
+    rotations : tuple of str, optional
+        Rotation gates; ``('ry',)`` gives a real ansatz, enough for Hamiltonians with real ground states
+        (for example transverse-field Ising models).
+    entangle : {'linear', 'ring'}, optional
+        Entangler topology.
+    entangler : {'cx', 'cz'}, optional
+        Two-qubit gate.
+    """
 
     def __init__(self, hamiltonian, layers=2, restarts=4, maxiter=400, seed=0, rotations=('ry', 'rz'),
                  entangle='linear', entangler='cx'):
@@ -172,15 +323,32 @@ class VQE:
             self.circuit.ry(W(self.circuit.n_weights), q)
 
     def energy(self, w):
-        """Energy expectation of the ansatz state for weights w."""
+        """Energy of the ansatz state.
+
+        Parameters
+        ----------
+        w : array_like
+            Weights.
+
+        Returns
+        -------
+        float
+        """
         return float(self.H.expectation(self.circuit.state(w))[0])
 
     def _energy_and_grad(self, w):
+        """Energy and its adjoint gradient (phi = H psi)."""
         M = self.H.matrix                                           # adjoint gradient: phi = H psi
         return self.circuit.value_and_grad(w, None, lambda psi, rows: (self.H.expectation(psi).sum(), psi @ M.T))
 
     def run(self):
-        """Optimise from several random starts; returns {energy, exact, weights, state}."""
+        """Optimise from several random starts.
+
+        Returns
+        -------
+        dict
+            ``energy`` (best found), ``exact`` (ground energy), ``weights`` and ``state``.
+        """
         rng = np.random.default_rng(self.seed); best = None
         fg = self._energy_and_grad
         for _ in range(self.restarts):
@@ -193,15 +361,40 @@ class VQE:
                 'state': self.circuit.state(best.x)[0]}
 
     def to_qiskit(self, measure=True):
-        """Qiskit circuit of the optimised ansatz."""
+        """Qiskit circuit of the optimised ansatz.
+
+        Parameters
+        ----------
+        measure : bool, optional
+            Add measurements.
+
+        Returns
+        -------
+        qiskit.QuantumCircuit
+        """
         return self.circuit.to_qiskit(self.weights_, None, measure)
 
 
 # ------------------------------------------------------------------------------------------- Grover
 @dataclass
 class GroverResult:
-    """Grover result: output distribution, number of iterations, marked states, success probability and the
-    circuit."""
+    """Result of :func:`grover`.
+
+    Attributes
+    ----------
+    probabilities : numpy.ndarray
+        Output distribution.
+    iterations : int
+        Number of Grover iterations.
+    marked : list of int
+        Marked basis states.
+    success : float
+        Probability of measuring a marked state.
+    circuit : Circuit
+        Simulated circuit (diagonal phase layers).
+    n : int
+        Number of qubits.
+    """
     probabilities: np.ndarray
     iterations: int
     marked: list
@@ -212,10 +405,20 @@ class GroverResult:
     def to_qiskit(self, measure=True, style='gates'):
         """Qiskit circuit of the search.
 
-        style='gates' (default): textbook oracle and diffuser from X and multi-controlled Z gates, one
-        multi-controlled Z per marked state; this is the form that compiles sensibly for hardware.
-        style='diagonal': the phase layers as DiagonalGate (exact, compact to write, but its compiled
-        size grows exponentially with the number of qubits)."""
+        Parameters
+        ----------
+        measure : bool, optional
+            Add measurements.
+        style : {'gates', 'diagonal'}, optional
+            ``'gates'`` (default): textbook oracle and diffuser from X and multi-controlled Z gates, one
+            multi-controlled Z per marked state; this form compiles sensibly for hardware. ``'diagonal'``:
+            the phase layers as ``DiagonalGate`` (exact and compact to write, but its compiled size grows
+            exponentially with the number of qubits).
+
+        Returns
+        -------
+        qiskit.QuantumCircuit
+        """
         if style == 'diagonal':
             return self.circuit.to_qiskit(None, None, measure)
         from .._optional import require
@@ -244,9 +447,27 @@ class GroverResult:
 
 
 def grover(n, marked, iterations=None):
-    """Grover search over n qubits. marked: list of basis indices, or a predicate on the bit tuple
-    (x_0, ..., x_{n-1}). Simulated with diagonal phase layers; `to_qiskit()` exports a gate-level
-    circuit (X and multi-controlled Z), or the diagonal form with style='diagonal'."""
+    r"""Grover search.
+
+    Parameters
+    ----------
+    n : int
+        Number of qubits (1 to 16).
+    marked : list of int or callable
+        Marked basis indices, or a predicate on the bit tuple :math:`(x_0, \dots, x_{n-1})`.
+    iterations : int, optional
+        Number of iterations (default :math:`\lfloor \frac{\pi}{4}\sqrt{N/M} \rfloor`).
+
+    Returns
+    -------
+    GroverResult
+        Simulated with diagonal phase layers; ``to_qiskit()`` exports a gate-level circuit.
+
+    Raises
+    ------
+    ValueError
+        If n is out of range or no (or every) state is marked.
+    """
     if not 1 <= n <= 16:
         raise ValueError('grover supports 1 to 16 qubits (the marked set is enumerated), got %d' % n)
     N = 2 ** n

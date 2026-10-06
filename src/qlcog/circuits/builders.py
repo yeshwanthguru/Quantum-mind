@@ -1,17 +1,27 @@
 """Qiskit circuits for the quantum-like model families.
 
-Every builder returns (circuit, decode), where decode(counts) turns measurement counts into the same
-probability vectors that the analytic model predicts, so circuit and model can be compared directly.
+Every builder returns ``(circuit, decode)``, where ``decode(counts)`` turns measurement counts into the
+same probability vectors that the analytic model predicts, so circuit and model can be compared
+directly.
 
-Forms. 'dynamic' circuits use mid-circuit measurement and reset (IBM hardware, Aer). 'deferred'
-circuits copy each measurement to a fresh ancilla and read everything at the end (deferred-
-measurement principle); they run on hardware without mid-circuit measurement (e.g. ion traps on
-Amazon Braket) and on OpenQASM 3 simulators.
+**Forms.** ``'dynamic'`` circuits use mid-circuit measurement and reset (IBM hardware, Aer).
+``'deferred'`` circuits copy each measurement to a fresh ancilla and read everything at the end (the
+deferred-measurement principle); they run on hardware without mid-circuit measurement (for example ion
+traps on Amazon Braket) and on OpenQASM 3 simulators.
 
-Binary projective measurement. To ask 'is the state in the subspace of projector P (rank r)?', a
+**Binary projective measurement.** To ask "is the state in the subspace of projector P (rank r)?", a
 unitary V maps that subspace onto the first r computational basis states, an ancilla is flipped for
 each of those basis states (multi-controlled X), only the ancilla is measured, and V is undone. The
-system is never measured directly, so the post-measurement state follows the Lueders rule."""
+system is never measured directly, so the post-measurement state follows the Lüders rule.
+
+Examples
+--------
+>>> from qlcog.families.order_effects import QuantumOrderModel
+>>> from qlcog.circuits import order_effects_circuit, run
+>>> model = QuantumOrderModel(a=0.8, b=1.2, g=0.3)
+>>> qc, decode = order_effects_circuit(model, 'AB')            # doctest: +SKIP
+>>> decode(run(qc, 'aer', shots=20000)).round(2)               # doctest: +SKIP
+"""
 from __future__ import annotations
 
 import itertools
@@ -27,18 +37,44 @@ __all__ = ['subspace_unitary', 'projective_sequence_circuit', 'order_effects_cir
 
 
 def n_qubits(d):
-    """Number of qubits needed for dimension d (at least 1)."""
+    r"""Number of qubits needed for a dimension.
+
+    Parameters
+    ----------
+    d : int
+        Hilbert-space dimension.
+
+    Returns
+    -------
+    int
+        :math:`\lceil \log_2 d \rceil`, at least 1.
+    """
     return max(1, int(np.ceil(np.log2(d))))
 
 
 def _pad(v, n):
+    """Pad a state vector with zeros to length 2^n."""
     out = np.zeros(2 ** n, complex); out[:len(v)] = v; return out
 
 
 def subspace_unitary(P, n):
-    """Unitary on n qubits whose first r rows are an orthonormal basis (conjugated) of range(P), so
-    that it maps range(P) onto span(|0>, ..., |r-1>). P is d x d with d <= 2^n; padding dimensions are
-    completed to a full unitary."""
+    """Unitary that maps the range of a projector onto the first basis states.
+
+    Parameters
+    ----------
+    P : numpy.ndarray
+        ``d x d`` projector with ``d <= 2**n``.
+    n : int
+        Number of qubits; padding dimensions are completed to a full unitary.
+
+    Returns
+    -------
+    V : numpy.ndarray
+        ``2**n x 2**n`` unitary whose first r rows are an orthonormal basis (conjugated) of range(P), so
+        it maps range(P) onto span(``|0>``, ..., ``|r-1>``).
+    r : int
+        Rank of P.
+    """
     d = P.shape[0]; D = 2 ** n
     w, V = np.linalg.eigh((P + P.conj().T) / 2)
     B = V[:, w > 0.5]                        # columns: basis of the subspace (d x r)
@@ -55,13 +91,31 @@ def subspace_unitary(P, n):
 
 
 def _flag(qc, sysq, anc, r):
+    """Flip the ancilla for each of the first r basis states of the system register."""
     for k in range(r):
         qc.append(MCXGate(len(sysq), ctrl_state=k), list(sysq) + [anc])
 
 
 def projective_sequence_circuit(psi, projectors, order, form='dynamic'):
-    """Sequential yes/no questions. psi: state (length d); projectors: {name: d x d 'yes' projector}.
-    decode(counts) -> {answer tuple: probability} with 1 = yes, in the order asked."""
+    """Circuit for a sequence of yes/no questions.
+
+    Parameters
+    ----------
+    psi : array_like
+        State of length d (normalised here).
+    projectors : dict
+        ``{name: d x d "yes" projector}``.
+    order : sequence of str
+        Questions in the order asked.
+    form : {'dynamic', 'deferred'}, optional
+        Mid-circuit measurement, or deferred measurement on fresh ancillas.
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> ``{answer tuple: probability}`` with 1 = yes, in the order asked.
+    """
     psi = np.asarray(psi, complex); psi = psi / np.linalg.norm(psi)
     n = n_qubits(len(psi))
     s = QuantumRegister(n, 'sys'); m = len(order)
@@ -89,19 +143,49 @@ def projective_sequence_circuit(psi, projectors, order, form='dynamic'):
 
 
 def _order_cells(probs):
+    """Answer-sequence probabilities as [yy, yn, ny, nn]."""
     return np.array([probs[(1, 1)], probs[(1, 0)], probs[(0, 1)], probs[(0, 0)]])
 
 
 def order_effects_circuit(model, order='AB', form='dynamic'):
-    """Circuit for a QuantumOrderModel (or ProjectiveQuestionModel); decode -> [yy, yn, ny, nn]."""
+    """Circuit for a question-order model.
+
+    Parameters
+    ----------
+    model : QuantumOrderModel, QuantumOrderModel4D or ProjectiveQuestionModel
+        The model.
+    order : {'AB', 'BA'}, optional
+        Question order.
+    form : {'dynamic', 'deferred'}, optional
+        Circuit form.
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> ``[yy, yn, ny, nn]``.
+    """
     pm = model.as_projective() if hasattr(model, 'as_projective') else model
     qc, dec = projective_sequence_circuit(pm.psi, pm.projectors, tuple(order), form)
     return qc, (lambda counts: _order_cells(dec(counts)))
 
 
 def conjunction_circuit(model, form='dynamic'):
-    """Circuit for a QuantumConjunctionModel: the two events asked in the model's order (more likely
-    first); decode -> {'A&B': ..., 'A|B': ...}."""
+    """Circuit for a :class:`~qlcog.families.conjunction.QuantumConjunctionModel`.
+
+    The two events are asked in the model's order (more likely first).
+
+    Parameters
+    ----------
+    model : QuantumConjunctionModel
+    form : {'dynamic', 'deferred'}, optional
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> ``{'A&B': ..., 'A|B': ...}``.
+    """
     psi = np.array([1.0, 0, 0]); P = model.projectors(); j = model.judgements()
     order = ('A', 'B') if j['A'] >= j['B'] else ('B', 'A')
     qc, dec = projective_sequence_circuit(psi, P, order, form)
@@ -109,16 +193,48 @@ def conjunction_circuit(model, form='dynamic'):
 
 
 def similarity_circuit(model, a, b, form='dynamic'):
-    """Circuit for Sim(a, b) of a QuantumSimilarityModel; decode -> similarity."""
+    """Circuit for Sim(a, b) of a :class:`~qlcog.families.similarity.QuantumSimilarityModel`.
+
+    Parameters
+    ----------
+    model : QuantumSimilarityModel
+    a, b : str
+        Concepts.
+    form : {'dynamic', 'deferred'}, optional
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> the similarity.
+    """
     qc, dec = projective_sequence_circuit(np.array([1.0, 0, 0]), model.projectors(), (a, b), form)
     return qc, (lambda counts: dec(counts)[(1, 1)])
 
 
 def interference_circuit(p1, p2, c, theta, condition='unknown'):
-    """Two-path interference (InterferenceModel, normalised form). Qubit 0: path (event), qubit 1:
-    action (|0> = act). Known conditions prepare one path; 'unknown' superposes both with relative
-    phase theta and erases the path with a Hadamard gate, post-selecting path = 0.
-    decode -> [P(act), P(not act)]."""
+    """Two-path interference circuit (normalised form of the interference model).
+
+    Qubit 0 is the path (event) and qubit 1 the action (``|0>`` = act). Known conditions prepare one path;
+    ``'unknown'`` superposes both paths with relative phase theta, erases the path with a Hadamard gate
+    and post-selects path = 0.
+
+    Parameters
+    ----------
+    p1, p2 : float
+        P(act) on each path.
+    c : float
+        Weight of path 1.
+    theta : float
+        Relative phase.
+    condition : {'known_1', 'known_2', 'unknown'}, optional
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> ``[P(act), P(not act)]``.
+    """
     qc = QuantumCircuit(2, 2)
     if condition == 'known_1':
         pass
@@ -147,9 +263,25 @@ def interference_circuit(p1, p2, c, theta, condition='unknown'):
 
 
 def qlbn_circuit(net, query, evidence=None, phases=None):
-    """Quantum-like Bayesian network inference: amplitudes sqrt(P(v, e, h)) e^{i theta_h} are loaded
-    with StatePreparation, the hidden register is put through Hadamard gates and post-selected on 0,
-    which sums the amplitudes over the hidden configurations. decode -> distribution of the query."""
+    r"""Quantum-like Bayesian network inference as a circuit.
+
+    The amplitudes :math:`\sqrt{P(v, e, h)}\,e^{i\theta_h}` are loaded with ``StatePreparation``; the
+    hidden register goes through Hadamard gates and is post-selected on 0, which sums the amplitudes
+    over the hidden configurations.
+
+    Parameters
+    ----------
+    net : BayesNet
+    query : str
+    evidence : dict, optional
+    phases : array_like, optional
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> distribution of the query.
+    """
     from ..families.qlbn.models import _hidden
     evidence = evidence or {}
     vals = net.variables[query]; hid = _hidden(net, query, evidence)
@@ -177,8 +309,22 @@ def qlbn_circuit(net, query, evidence=None, phases=None):
 
 
 def walk_circuit(model, t):
-    """Quantum walk at time t (QuantumWalk): state preparation, U(t) = exp(-iHt) as a unitary gate on
-    the padded space, measurement of every qubit. decode -> distribution over the model's categories."""
+    """Quantum-walk circuit at time t.
+
+    State preparation, :math:`U(t) = e^{-iHt}` as a unitary gate on the padded space, and measurement of
+    every qubit.
+
+    Parameters
+    ----------
+    model : QuantumWalk
+    t : float
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> distribution over the model's response categories.
+    """
     from scipy.linalg import expm
     N = model.N; n = n_qubits(N); D = 2 ** n
     Hp = np.zeros((D, D), complex); Hp[:N, :N] = model.H
@@ -197,8 +343,23 @@ def walk_circuit(model, t):
 
 
 def belief_circuit(model, events, queries, form='dynamic'):
-    """OpenSystemBelief over a sequence of events. Dephasing of strength gamma is applied by an
-    ancilla that triggers Z with probability gamma/2. decode -> P(yes) at the last query."""
+    """Circuit for an :class:`~qlcog.families.dynamics.OpenSystemBelief` over a sequence of events.
+
+    Dephasing of strength gamma is applied by an ancilla that triggers Z with probability gamma / 2.
+
+    Parameters
+    ----------
+    model : OpenSystemBelief
+    events : sequence of int
+    queries : sequence of int
+    form : {'dynamic', 'deferred'}, optional
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> P(yes) at the last query.
+    """
     queries = list(queries); nq = len(queries)
     s = QuantumRegister(1, 'sys')
     if form == 'dynamic':
@@ -229,7 +390,21 @@ def belief_circuit(model, events, queries, form='dynamic'):
 
 
 def chsh_circuit(a, b):
-    """Bell pair measured at angles a (qubit 0) and b (qubit 1) in the x-z plane; decode -> E(a, b)."""
+    """Bell pair measured in the x-z plane.
+
+    Parameters
+    ----------
+    a : float
+        Measurement angle of qubit 0.
+    b : float
+        Measurement angle of qubit 1.
+
+    Returns
+    -------
+    circuit : qiskit.QuantumCircuit
+    decode : callable
+        ``decode(counts)`` -> the correlation E(a, b).
+    """
     qc = QuantumCircuit(2, 2)
     qc.h(0); qc.cx(0, 1); qc.ry(-a, 0); qc.ry(-b, 1); qc.measure([0, 1], [0, 1])
 

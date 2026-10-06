@@ -1,6 +1,18 @@
 # Changelog
 
-## 1.4.0 — 6 October 2026
+## Unreleased
+
+- **Documentation site (Sphinx).** User guide, an example gallery with the output of every example,
+  the executed notebooks and an API reference generated from the docstrings, with the
+  pydata-sphinx-theme in the project colours. Built into the GitHub Pages site under `/docs/` and
+  ready for Read the Docs (`.readthedocs.yaml`); CI builds it with warnings as errors.
+- **Docstrings.** Every public class, function and method now has a NumPy-style docstring with
+  parameters, returns and errors; doctests in the docstrings run in CI.
+- **Examples** are split into explained steps (`# %%` blocks) and locate the package through
+  `sys.argv[0]`, so they run both as scripts and in the gallery.
+- README and website: emoji removed, wording made plainer, stale counts updated.
+
+## 1.4.0 (6 October 2026)
 
 New model families and algorithms (examples 23–31, `tests/test_v14.py`).
 
@@ -26,7 +38,7 @@ New model families and algorithms (examples 23–31, `tests/test_v14.py`).
   simulator in `tests/test_site.py`), interactive animations, documentation pages, executed notebooks,
   social preview card, sitemap. plotly.js is self-hosted.
 
-## 1.3.0 — 6 October 2026
+## 1.3.0 (6 October 2026)
 
 Closes the gaps listed as "not yet" in 1.2.0.
 
@@ -49,7 +61,7 @@ Closes the gaps listed as "not yet" in 1.2.0.
   callbacks are tested with stand-in `rclpy` / `std_msgs` modules, not yet in a ROS 2 installation.
 - 7 new tests (51 in total), about 90% line coverage.
 
-## 1.2.0 — 5 October 2026
+## 1.2.0 (5 October 2026)
 
 Fixes from a critical audit of 1.1.0. Backward compatible, except that QAOA results now carry
 `p_optimal` and `weights` as regular fields.
@@ -66,7 +78,7 @@ Fixes from a critical audit of 1.1.0. Backward compatible, except that QAOA resu
 - **Hardware paths.** IBM and Braket submission code split into `run_on_ibm_backend` and
   `run_on_braket_device` and tested against a fake IBM device and the Braket local simulator. The
   "ready" badges were replaced by a status table; no hardware results are claimed.
-- **Honest comparisons.** Example 13 runs 10 seeds (mean ± sd) and adds a quadratic-feature logistic
+- **Fairer comparisons.** Example 13 runs 10 seeds (mean ± sd) and adds a quadratic-feature logistic
   regression, which is the most accurate model on that task. QIEA and the MPS classifier are
   documented as simplified variants of the cited algorithms.
 - **Robotics.** `ask_or_act` decision rule and example 21 (when to ask for help); README states what
@@ -84,7 +96,7 @@ Fixes from a critical audit of 1.1.0. Backward compatible, except that QAOA resu
   examples instead of committed); static test-count badge removed.
 - Known issue: Qiskit Runtime `SamplerV2` is deprecated as of qiskit-ibm-runtime 0.50.
 
-## 1.1.0 — 5 October 2026
+## 1.1.0 (5 October 2026)
 
 Three pillars in one package: quantum-like, quantum and quantum-inspired, plus a 3D Bloch-sphere
 viewer. Backward compatible with 1.0.0.
@@ -111,7 +123,7 @@ viewer. Backward compatible with 1.0.0.
 - Extras: `[viz]`; `[dev]` adds ruff. CI installs the viewer, runs the tests, lints and smoke-tests
   the examples.
 
-## 1.0.0 — 5 October 2026
+## 1.0.0 (5 October 2026)
 
 First release.
 

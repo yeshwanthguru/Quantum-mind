@@ -1,0 +1,59 @@
+/* qlcog documentation theme: the colours of the project website and the Bloch-sphere viewer. */
+html[data-theme="dark"] {
+  --pst-color-primary: #79c0ff;
+  --pst-color-secondary: #d2a8ff;
+  --pst-color-background: #0d1117;
+  --pst-color-on-background: #161b22;
+  --pst-color-surface: #161b22;
+  --pst-color-border: #30363d;
+  --pst-color-link: #79c0ff;
+  --pst-color-link-hover: #d2a8ff;
+  --qlcog-like: #ff7b72; --qlcog-quantum: #79c0ff; --qlcog-inspired: #d2a8ff; --qlcog-viz: #7ee787;
+}
+html[data-theme="light"] {
+  --pst-color-primary: #0969da;
+  --pst-color-secondary: #8250df;
+  --pst-color-link: #0969da;
+  --pst-color-link-hover: #8250df;
+  --qlcog-like: #cf222e; --qlcog-quantum: #0969da; --qlcog-inspired: #8250df; --qlcog-viz: #1a7f37;
+}
+
+/* landing page: the page title is kept for the browser tab and search, the banner replaces it */
+section#qlcog > h1:first-child { display: none; }
+.qlcog-hero { padding: 2.2rem 0 1rem; }
+.qlcog-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin-bottom: 0.6rem; font-weight: 800;
+  background: linear-gradient(90deg, var(--qlcog-like), var(--qlcog-inspired) 45%, var(--qlcog-quantum));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.qlcog-hero .lead { font-size: 1.15rem; max-width: 52rem; color: var(--pst-color-text-muted); }
+.qlcog-hero img.banner { border-radius: 14px; margin: 0.5rem 0 1.2rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); }
+.qlcog-badges { margin: 0.4rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.qlcog-badges span {
+  border: 1px solid var(--pst-color-border); border-radius: 999px; padding: 0.15rem 0.7rem; font-size: 0.85rem;
+  color: var(--pst-color-text-muted);
+}
+
+/* pillar cards: a coloured top border per kind of model */
+.sd-card.pillar-like { border-top: 4px solid var(--qlcog-like); }
+.sd-card.pillar-quantum { border-top: 4px solid var(--qlcog-quantum); }
+.sd-card.pillar-inspired { border-top: 4px solid var(--qlcog-inspired); }
+.sd-card.pillar-viz { border-top: 4px solid var(--qlcog-viz); }
+.sd-card { transition: transform 0.15s ease, box-shadow 0.15s ease; border-radius: 12px; }
+.sd-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25); }
+.sd-card .sd-card-title { font-weight: 700; }
+
+/* interactive figures */
+.qlcog-frame { width: 100%; height: 500px; border: 1px solid var(--pst-color-border); border-radius: 12px; background: #0d1117; }
+@media (max-width: 720px) { .qlcog-frame { height: 380px; } }
+
+/* example gallery */
+.sphx-glr-thumbcontainer { border-radius: 12px !important; border: 1px solid var(--pst-color-border) !important; }
+.sphx-glr-thumbcontainer:hover { border-color: var(--pst-color-primary) !important; box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25) !important; }
+.sphx-glr-script-out .highlight pre { font-size: 0.82rem; }
+
+/* tables in the guide pages */
+.bd-article table { font-size: 0.92rem; }
+html[data-theme="dark"] .sphx-glr-script-out .highlight pre,
+html[data-theme="dark"] div.sphx-glr-script-out pre { background: #0b0f15 !important; color: #c9d1d9 !important; }
+html[data-theme="dark"] .sphx-glr-download a { background: #161b22 !important; border-color: #30363d !important; }

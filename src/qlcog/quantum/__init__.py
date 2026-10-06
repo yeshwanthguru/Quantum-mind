@@ -1,15 +1,22 @@
 """Quantum models: quantum machine learning and quantum algorithms (gate-model circuits).
 
-  statevector   batched NumPy simulator for parameterised circuits; to_qiskit() export
-  ansatz        angle encoding, ZZ feature map, hardware-efficient ansatz, parameter-shift gradient
-  classifiers   VariationalClassifier (data re-uploading), QuantumKernel, QuantumKernelClassifier
-  algorithms    QAOA (for qlcog.problems.Qubo), VQE (Pauli Hamiltonians), Grover search
-  fourier       quantum Fourier transform, period finding
-  estimation    amplitude estimation (maximum likelihood) for expected values / risk; Monte Carlo baseline
-  walks         continuous-time quantum walks, quantum-walk centrality; PageRank and degree baselines
-  classifiers   also VariationalRegressor, QuantumKernelAnomalyDetector, QuantumKernelClustering
+* :mod:`~qlcog.quantum.statevector`: batched NumPy simulator for parameterised circuits, adjoint
+  gradients, ``to_qiskit()`` export.
+* :mod:`~qlcog.quantum.ansatz`: angle encoding, ZZ feature map, hardware-efficient ansatz,
+  parameter-shift gradient.
+* :mod:`~qlcog.quantum.classifiers`: variational classifier and regressor, quantum kernel, kernel
+  classifier, anomaly detection and clustering (with RBF baselines).
+* :mod:`~qlcog.quantum.algorithms`: QAOA (for :class:`qlcog.problems.Qubo`), VQE (Pauli
+  Hamiltonians), Grover search.
+* :mod:`~qlcog.quantum.fourier`: quantum Fourier transform and period finding.
+* :mod:`~qlcog.quantum.estimation`: amplitude estimation (maximum likelihood) for expected values,
+  with a Monte Carlo baseline.
+* :mod:`~qlcog.quantum.walks`: continuous-time quantum walks and quantum-walk centrality, with
+  PageRank and degree baselines.
 
-See README.md in this folder."""
+Everything runs on the built-in simulator; circuits export to Qiskit for Aer, IBM Quantum or Amazon
+Braket. See README.md in this folder.
+"""
 from .statevector import Circuit, W, X, XX, apply_matrix, expectation_z
 from .ansatz import angle_encoding, zz_feature_map, hardware_efficient, reuploading_classifier_circuit, parameter_shift
 from .classifiers import (VariationalClassifier, VariationalRegressor, QuantumKernel, QuantumKernelClassifier,

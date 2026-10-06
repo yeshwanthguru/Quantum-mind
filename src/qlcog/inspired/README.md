@@ -34,5 +34,5 @@ clf = MPSClassifier(bond=6, local_dim=3).fit(X_train, y_train)      # local_dim 
 objects as QAOA, so one instance can be solved by quantum, quantum-inspired and classical methods and
 compared with the exact optimum (`brute_force()` for up to about 22 variables).
 
-**Honest expectations.** "Quantum-inspired" names the origin of the idea, not a speed-up. Compare
+**What to expect.** "Quantum-inspired" names the origin of the idea, not a speed-up. Compare
 against the classical baseline on the problem at hand (the examples always print it).

@@ -7,3 +7,16 @@ examples/output/
 .ipynb_checkpoints/
 .ruff_cache/
 _site/
+# generated documentation sources (docs/_ext/generate.py) and build output
+docs/_build/
+docs/_generated/
+docs/auto_examples/
+docs/api/
+docs/notebooks/*.ipynb
+docs/user_guide/*.md
+!docs/user_guide/index.md
+docs/user_guide/families/*.md
+!docs/user_guide/families/index.md
+docs/about/*.md
+!docs/about/index.md
+docs/sg_execution_times.rst

@@ -54,7 +54,7 @@ autoregression. Anomaly AUC: 0.905 with the quantum kernel, 1.000 with the RBF k
 encoding, inputs outside the training range wrap around (the encoding is periodic), so out-of-range
 anomalies can look normal. Clustering accuracy 0.931 against 1.000.
 
-**Honest expectations.** These are small, exactly simulable models (up to about 12–16 qubits on a
+**What to expect.** These are small, exactly simulable models (up to about 12–16 qubits on a
 laptop). There is no proven quantum advantage for them on classical data, and at low depth QAOA puts
 only a few percent of its probability on the optimum of a 9-variable problem
 (`examples/14_qaoa_multi_robot_allocation.py`). They belong in the package so that

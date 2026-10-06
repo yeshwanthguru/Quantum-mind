@@ -1,4 +1,15 @@
-"""Matplotlib Bloch spheres: static figures, animations and GIF/MP4 export."""
+"""Matplotlib Bloch spheres: static figures, animations, GIF and MP4 export, an entanglement timeline and
+the Q-sphere.
+
+Examples
+--------
+>>> from qiskit import QuantumCircuit                       # doctest: +SKIP
+>>> from qlcog.viz import circuit_trajectory, animate_trajectory, plot_entanglement
+>>> qc = QuantumCircuit(2); qc.h(0); qc.cx(0, 1)            # doctest: +SKIP
+>>> traj = circuit_trajectory(qc, steps=15)                 # doctest: +SKIP
+>>> animate_trajectory(traj, save='bell.gif', rotate=0.5)   # doctest: +SKIP
+>>> plot_entanglement(traj).savefig('bell_timeline.png')    # doctest: +SKIP
+"""
 from __future__ import annotations
 
 import numpy as np
@@ -11,7 +22,25 @@ __all__ = ['BlochSphere', 'plot_bloch', 'animate_trajectory', 'plot_entanglement
 class BlochSphere:
     """One Bloch sphere on a Matplotlib 3D axis.
 
-        b = BlochSphere(title='q0'); b.add_vector([0, 1, 0]); b.add_trajectory(points); b.show()"""
+    Parameters
+    ----------
+    ax : mpl_toolkits.mplot3d.Axes3D, optional
+        Axis to draw on (a new figure by default).
+    title : str, optional
+        Caption under the sphere.
+    theme : str or dict, optional
+        ``'dark'`` (default), ``'light'`` or a custom theme.
+    figsize : tuple, optional
+        Figure size for a new figure.
+    elev, azim : float, optional
+        Camera angles in degrees.
+
+    Examples
+    --------
+    >>> b = BlochSphere(title='q0')            # doctest: +SKIP
+    >>> b.add_vector([0, 1, 0])                # doctest: +SKIP
+    >>> b.save('sphere.png')                   # doctest: +SKIP
+    """
 
     def __init__(self, ax=None, title='', theme='dark', figsize=(5, 5), elev=20, azim=35):
         from .._optional import require
@@ -27,6 +56,7 @@ class BlochSphere:
         self._draw_frame(elev, azim)
 
     def _draw_frame(self, elev, azim):
+        """Draw the translucent sphere, latitude and meridian circles, axes and state labels."""
         ax, t = self.ax, self.t
         ax.set_facecolor(t['bg'])
         u, v = np.mgrid[0:2 * np.pi:60j, 0:np.pi:30j]
@@ -48,28 +78,84 @@ class BlochSphere:
             ax.text2D(0.5, 0.0, self.title, transform=ax.transAxes, color=t["text"], fontsize=12, ha="center")
 
     def _color(self, color):
+        """Use the given colour, or the next colour of the theme palette."""
         if color is None:
             color = self.t['palette'][self._n % len(self.t['palette'])]; self._n += 1
         return color
 
     def add_vector(self, r, color=None, label=None, lw=3):
-        """Arrow from the origin to Bloch vector r. Returns the artists (line, tip)."""
+        """Arrow from the origin to a Bloch vector.
+
+        Parameters
+        ----------
+        r : array_like
+            ``(x, y, z)``.
+        color : str, optional
+            Colour (next palette colour by default).
+        label : str, optional
+            Legend label.
+        lw : float, optional
+            Line width.
+
+        Returns
+        -------
+        tuple
+            ``(line, tip)`` artists, which animations update.
+        """
         color = self._color(color); r = np.asarray(r, float)
         line, = self.ax.plot([0, r[0]], [0, r[1]], [0, r[2]], color=color, lw=lw, label=label)
         tip, = self.ax.plot([r[0]], [r[1]], [r[2]], 'o', color=color, ms=7)
         return line, tip
 
     def add_state(self, state, **kw):
-        """Arrow for a qubit state (vector, density matrix or Qiskit object)."""
+        """Arrow for a qubit state.
+
+        Parameters
+        ----------
+        state : array_like or Qiskit state
+            2-vector, 2 x 2 density matrix, ``Statevector`` or ``DensityMatrix``.
+        **kw
+            Passed to :meth:`add_vector`.
+
+        Returns
+        -------
+        tuple
+        """
         return self.add_vector(bloch_vectors(state, 1)[0], **kw)
 
     def add_points(self, points, color=None, size=12, alpha=0.9):
-        """Scatter points (n, 3) on or inside the sphere."""
+        """Scatter points on or inside the sphere.
+
+        Parameters
+        ----------
+        points : array_like
+            Shape ``(n, 3)``.
+        color : str, optional
+        size : float, optional
+        alpha : float, optional
+
+        Returns
+        -------
+        matplotlib artist
+        """
         p = np.atleast_2d(points)
         return self.ax.scatter(p[:, 0], p[:, 1], p[:, 2], color=self._color(color), s=size, alpha=alpha)
 
     def add_trajectory(self, points, color=None, lw=1.8, alpha=0.8):
-        """Draw a path of Bloch vectors (n, 3)."""
+        """Draw a path of Bloch vectors.
+
+        Parameters
+        ----------
+        points : array_like
+            Shape ``(n, 3)``.
+        color : str, optional
+        lw : float, optional
+        alpha : float, optional
+
+        Returns
+        -------
+        matplotlib line
+        """
         p = np.atleast_2d(points)
         line, = self.ax.plot(p[:, 0], p[:, 1], p[:, 2], color=self._color(color), lw=lw, alpha=alpha)
         return line
@@ -80,12 +166,36 @@ class BlochSphere:
         plt.show()
 
     def save(self, path, dpi=150):
-        """Save the figure to `path`."""
+        """Save the figure.
+
+        Parameters
+        ----------
+        path : str
+            File name (format from the extension).
+        dpi : int, optional
+        """
         self.fig.savefig(path, dpi=dpi, facecolor=self.t['bg'], bbox_inches='tight')
 
 
 def plot_bloch(vectors, names=None, theme='dark', title=None, size=3.6):
-    """Static figure with one sphere per qubit. vectors: (qubits, 3) or a state (vector/density/Qiskit)."""
+    """Static figure with one sphere per qubit.
+
+    Parameters
+    ----------
+    vectors : array_like or state
+        Bloch vectors ``(qubits, 3)``, or a state vector, density matrix or Qiskit state.
+    names : list of str, optional
+        Qubit names.
+    theme : str or dict, optional
+    title : str, optional
+    size : float, optional
+        Size per sphere in inches.
+
+    Returns
+    -------
+    figure : matplotlib.figure.Figure
+    spheres : list of BlochSphere
+    """
     import matplotlib.pyplot as plt
     v = np.asarray(vectors) if (np.ndim(vectors) == 2 and np.shape(vectors)[-1] == 3) else bloch_vectors(vectors)
     n = len(v); t = _theme(theme)
@@ -102,8 +212,33 @@ def plot_bloch(vectors, names=None, theme='dark', title=None, size=3.6):
 
 def animate_trajectory(traj, theme='dark', interval=40, trail=True, save=None, fps=25, size=3.6,
                        rotate=0.0, title=None, dpi=90):
-    """Animate a Trajectory (one sphere per qubit). save: path ending in .gif (Pillow) or .mp4
-    (ffmpeg). rotate: degrees of camera rotation per frame. Returns the FuncAnimation."""
+    """Animate a trajectory, one sphere per qubit.
+
+    Parameters
+    ----------
+    traj : Trajectory or array_like
+        Trajectory, or Bloch vectors ``(frames, qubits, 3)``.
+    theme : str or dict, optional
+    interval : int, optional
+        Milliseconds between frames on screen.
+    trail : bool, optional
+        Draw the path followed so far.
+    save : str, optional
+        Path ending in ``.gif`` (Pillow) or ``.mp4`` (ffmpeg).
+    fps : int, optional
+        Frames per second of the saved file.
+    size : float, optional
+        Size per sphere in inches.
+    rotate : float, optional
+        Camera rotation per frame, in degrees.
+    title : str, optional
+    dpi : int, optional
+        Resolution of the saved file.
+
+    Returns
+    -------
+    matplotlib.animation.FuncAnimation
+    """
     import matplotlib.pyplot as plt
     from matplotlib.animation import FuncAnimation, PillowWriter
     if not isinstance(traj, Trajectory):
@@ -145,9 +280,26 @@ def animate_trajectory(traj, theme='dark', interval=40, trail=True, save=None, f
 
 
 def plot_entanglement(traj, pairs=None, theme='dark', size=(8, 3.2)):
-    """Timeline of a circuit trajectory: the Bloch-vector length of every qubit (1 = not entangled with
-    the others, for a pure global state) and the concurrence of qubit pairs (0 = separable,
-    1 = maximally entangled), with the gate labels on the x axis."""
+    """Entanglement timeline of a circuit trajectory.
+
+    Plots the Bloch-vector length of every qubit (1 = not entangled with the others, for a pure global
+    state) and the concurrence of qubit pairs (0 = separable, 1 = maximally entangled), with the gate
+    labels on the x axis.
+
+    Parameters
+    ----------
+    traj : Trajectory
+        Circuit trajectory (with stored states, for the concurrence).
+    pairs : list of tuple, optional
+        Qubit pairs (default: up to six pairs).
+    theme : str or dict, optional
+    size : tuple, optional
+        Figure size.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+    """
     from .._optional import require
     require('matplotlib')
     import matplotlib.pyplot as plt
@@ -177,8 +329,20 @@ def plot_entanglement(traj, pairs=None, theme='dark', size=(8, 3.2)):
 
 
 def plot_qsphere(state, **kw):
-    """Q-sphere of a multi-qubit state (basis states placed by Hamming weight, amplitude as size and phase
-    as colour), drawn by Qiskit's plot_state_qsphere."""
+    """Q-sphere of a multi-qubit state, drawn by Qiskit's ``plot_state_qsphere``.
+
+    Basis states are placed by Hamming weight, with amplitude as size and phase as colour.
+
+    Parameters
+    ----------
+    state : array_like or qiskit.quantum_info.Statevector
+    **kw
+        Passed to ``plot_state_qsphere``.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+    """
     from .._optional import require
     require('qiskit'); require('matplotlib'); require('seaborn', 'viz')     # Qiskit's Q-sphere needs seaborn
     from qiskit.quantum_info import Statevector

@@ -1,19 +1,32 @@
-"""Tensor-network (matrix product state) classifier: quantum-inspired supervised learning.
+r"""Tensor-network (matrix product state) classifier: quantum-inspired supervised learning.
 
-Each feature x_j in [0, 1] is mapped to a local state of dimension d: for d = 2 the 'qubit' state
-(cos(pi x_j / 2), sin(pi x_j / 2)); for d > 2 the spin-coherent state with components
-sqrt(C(d-1, s)) cos^(d-1-s) sin^s, a polynomial feature map of degree d - 1. The input becomes a
-product state in a d^n-dimensional space. The classifier is a weight tensor in that space stored as a
-matrix product state with bond dimension at most D (Stoudenmire and Schwab, NeurIPS 2016), so its
-cost is linear in the number of features. One core carries the class (label) index.
+Each feature :math:`x_j \in [0, 1]` is mapped to a local state of dimension d. For d = 2 this is the
+"qubit" state :math:`(\cos(\pi x_j/2), \sin(\pi x_j/2))`; for d > 2 it is the spin-coherent state with
+components :math:`\sqrt{\binom{d-1}{s}}\cos^{d-1-s}\sin^s`, a polynomial feature map of degree d - 1.
+The input becomes a product state in a :math:`d^n`-dimensional space. The classifier is a weight
+tensor in that space stored as a matrix product state with bond dimension at most D (Stoudenmire and
+Schwab, NeurIPS 2016), so its cost is linear in the number of features. One core carries the class
+(label) index.
 
 Two training methods:
-  method='sweep'  DMRG-style sweeps as in Stoudenmire and Schwab: the two cores on a bond are merged,
-                  optimised together, and split again by an SVD truncated to D, which adapts the bond
-                  dimensions and moves the label index along the chain. Loss: softmax cross-entropy
-                  (the original paper used a squared loss).
-  method='adam'   all cores updated together by Adam with exact gradients from left and right
-                  environments; fixed bond dimension, label on the last site (fast, the default)."""
+
+* ``method='sweep'``: DMRG-style sweeps as in Stoudenmire and Schwab. The two cores on a bond are
+  merged, optimised together, and split again by an SVD truncated to D, which adapts the bond
+  dimensions and moves the label index along the chain. Loss: softmax cross-entropy (the original
+  paper used a squared loss).
+* ``method='adam'``: all cores updated together by Adam with exact gradients from left and right
+  environments; fixed bond dimension, label on the last site (fast; the default).
+
+Examples
+--------
+>>> import numpy as np
+>>> from qlcog.inspired import MPSClassifier
+>>> rng = np.random.default_rng(0)
+>>> X = rng.random((120, 4)); y = (X[:, 0] + X[:, 1] > 1).astype(int)
+>>> clf = MPSClassifier(bond=4, epochs=30).fit(X, y)
+>>> clf.score(X, y) > 0.9
+True
+"""
 from __future__ import annotations
 
 import numpy as np
@@ -22,17 +35,51 @@ __all__ = ['MPSClassifier']
 
 
 def _softmax(S):
+    """Row-wise softmax."""
     S = S - S.max(1, keepdims=True); P = np.exp(S); return P / P.sum(1, keepdims=True)
 
 
 class MPSClassifier:
-    """Parameters: bond (maximum bond dimension D), local_dim (d), method ('adam' or 'sweep'),
-    epochs, lr, batch (Adam training); sweeps (back-and-forth sweeps), steps (optimisation steps per
-    bond), sweep_lr, cutoff (relative singular-value cutoff) (sweep training); seed.
+    """Matrix product state classifier.
 
-    On the package's test problems the two methods reach similar accuracy (two-moons: both 1.00 with
-    d = 4; an 8-feature, 3-class Gaussian task: Adam 0.85, sweeps 0.81); Adam is faster, sweeps adapt
-    the bond dimensions."""
+    On the package's test problems the two training methods reach similar accuracy (two moons: both 1.00
+    with d = 4; an 8-feature, 3-class Gaussian task: Adam 0.85, sweeps 0.81). Adam is faster; sweeps
+    adapt the bond dimensions.
+
+    Parameters
+    ----------
+    bond : int, optional
+        Maximum bond dimension D.
+    local_dim : int, optional
+        Local dimension d of the feature map.
+    epochs : int, optional
+        Epochs (Adam training).
+    lr : float, optional
+        Learning rate (Adam training).
+    batch : int, optional
+        Mini-batch size (Adam training).
+    seed : int, optional
+        Seed.
+    method : {'adam', 'sweep'}, optional
+        Training method.
+    sweeps : int, optional
+        Back-and-forth sweeps (sweep training).
+    steps : int, optional
+        Optimisation steps per bond (sweep training).
+    sweep_lr : float, optional
+        Learning rate per bond (sweep training).
+    cutoff : float, optional
+        Relative singular-value cutoff (sweep training).
+
+    Attributes
+    ----------
+    cores : list of numpy.ndarray
+        MPS cores, shape (left, d, right); the label core has shape (left, d, C, right).
+    classes_ : numpy.ndarray
+        Class labels.
+    history_ : list of float
+        Loss per epoch or sweep.
+    """
 
     def __init__(self, bond=6, local_dim=2, epochs=60, lr=0.02, batch=32, seed=0, method='adam', sweeps=6,
                  steps=40, sweep_lr=0.05, cutoff=1e-10):
@@ -43,11 +90,13 @@ class MPSClassifier:
 
     # ------------------------------------------------------------------------------- feature map
     def _phi(self, Xs):
+        """Local feature map: (B, n) scaled features to (B, n, d) local states."""
         from scipy.special import comb
         c, s = np.cos(np.pi * Xs / 2), np.sin(np.pi * Xs / 2); d = self.d
         return np.stack([np.sqrt(comb(d - 1, k)) * c ** (d - 1 - k) * s ** k for k in range(d)], -1)   # (B, n, d)
 
     def _scale(self, X):
+        """Min-max scale features to [0, 1] using the training ranges."""
         span = np.where(self.mx > self.mn, self.mx - self.mn, 1.0)
         return np.clip((np.asarray(X, float) - self.mn) / span, 0, 1)
 
@@ -68,6 +117,7 @@ class MPSClassifier:
         return R
 
     def _scores(self, Phi):
+        """Class scores: contract the MPS with the product state of each sample."""
         p = self.label_
         L, R = self._left(Phi, p), self._right(Phi, p + 1)
         return np.einsum('bl,bs,lscr,br->bc', L, Phi[:, p], self.cores[p], R)
@@ -92,6 +142,7 @@ class MPSClassifier:
         return loss, grads, Pr
 
     def _fit_adam(self, Phi, Y, rng):
+        """Train all cores jointly with Adam (label on the last site)."""
         n = Phi.shape[1]
         m = [np.zeros_like(c) for c in self.cores]; v = [np.zeros_like(c) for c in self.cores]; t = 0
         for _ in range(self.epochs):
@@ -135,6 +186,7 @@ class MPSClassifier:
         return loss
 
     def _fit_sweep(self, Phi, Y):
+        """Train by DMRG-style sweeps: right to left, then left to right, per sweep."""
         n = Phi.shape[1]
         if n < 2:
             raise ValueError("method='sweep' needs at least two features")
@@ -145,7 +197,25 @@ class MPSClassifier:
 
     # ------------------------------------------------------------------------------- public API
     def fit(self, X, y):
-        """Train on X (samples x features) and labels y; returns self."""
+        """Train the classifier.
+
+        Parameters
+        ----------
+        X : array_like
+            Samples, shape ``(n_samples, n_features)``.
+        y : array_like
+            Labels, at least two classes.
+
+        Returns
+        -------
+        MPSClassifier
+            ``self``.
+
+        Raises
+        ------
+        ValueError
+            On malformed input or fewer than two classes.
+        """
         X = np.asarray(X, float); y = np.asarray(y)
         if X.ndim != 2 or len(X) != len(y):
             raise ValueError('X must be samples x features with one label per sample')
@@ -174,23 +244,56 @@ class MPSClassifier:
         return self
 
     def predict_proba(self, X):
-        """Class probabilities (softmax of the MPS scores)."""
+        """Class probabilities (softmax of the MPS scores).
+
+        Parameters
+        ----------
+        X : array_like
+            Samples.
+
+        Returns
+        -------
+        numpy.ndarray
+            Shape ``(n_samples, n_classes)``.
+        """
         return _softmax(self._scores(self._phi(self._scale(X))))
 
     def predict(self, X):
-        """Most probable class for each sample."""
+        """Most probable class for each sample.
+
+        Parameters
+        ----------
+        X : array_like
+            Samples.
+
+        Returns
+        -------
+        numpy.ndarray
+        """
         return self.classes_[np.argmax(self.predict_proba(X), 1)]
 
     def score(self, X, y):
-        """Accuracy on (X, y)."""
+        """Accuracy.
+
+        Parameters
+        ----------
+        X : array_like
+            Samples.
+        y : array_like
+            True labels.
+
+        Returns
+        -------
+        float
+        """
         return float(np.mean(self.predict(X) == np.asarray(y)))
 
     @property
     def bond_dimensions(self):
-        """Bond dimensions between neighbouring sites (adapted by SVD truncation in sweep training)."""
+        """list of int: bond dimensions between neighbouring sites (adapted by sweep training)."""
         return [c.shape[-1] for c in self.cores[:-1]]
 
     @property
     def n_parameters(self):
-        """Number of trainable numbers in the MPS cores."""
+        """int: number of trainable numbers in the MPS cores."""
         return int(sum(c.size for c in self.cores))

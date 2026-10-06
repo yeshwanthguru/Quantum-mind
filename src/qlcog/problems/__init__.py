@@ -1,16 +1,25 @@
-"""Binary optimisation problems shared by the quantum and quantum-inspired solvers.
+r"""Binary optimisation problems shared by the quantum and quantum-inspired solvers.
 
-Every problem is a QUBO: minimise  x^T Q x + offset  over x in {0, 1}^n  (Q upper triangular after
-`Qubo.normalised()`). The same object can be solved by QAOA (`qlcog.quantum`), simulated quantum
-annealing or the quantum-inspired evolutionary algorithm (`qlcog.inspired`), or exactly by brute force
-for small n, so the three approaches can be compared on identical instances.
+Every problem is a QUBO: minimise :math:`x^T Q x + \text{offset}` over :math:`x \in \{0, 1\}^n`
+(:math:`Q` upper triangular after :meth:`Qubo.normalised`). The same object can be solved by QAOA
+(:mod:`qlcog.quantum`), by simulated quantum annealing or the quantum-inspired evolutionary algorithm
+(:mod:`qlcog.inspired`), or exactly by brute force for small n, so the three approaches can be compared
+on identical instances.
 
-Builders
-  maxcut(edges, n)                      graph partitioning, clustering, network design
-  knapsack(values, weights, capacity)   resource selection under a budget
-  task_allocation(costs)                assign tasks to agents (multi-robot, scheduling), one agent per task
-  portfolio(mu, cov, budget, risk)      select assets: return against risk with a cardinality budget
-  from_ising(h, J)                      any Ising model"""
+* :func:`maxcut`: graph partitioning, clustering, network design.
+* :func:`knapsack`: resource selection under a budget.
+* :func:`task_allocation`: assign tasks to agents (multi-robot, scheduling), one agent per task.
+* :func:`portfolio`: select assets, return against risk, with a cardinality budget.
+* :func:`from_ising`: any Ising model.
+
+Examples
+--------
+>>> from qlcog.problems import maxcut
+>>> q = maxcut([(0, 1), (1, 2), (2, 0)])             # a triangle: the best cut has 2 edges
+>>> x, e = q.brute_force()
+>>> e
+-2.0
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -22,7 +31,21 @@ __all__ = ['Qubo', 'maxcut', 'knapsack', 'task_allocation', 'portfolio', 'from_i
 
 @dataclass
 class Qubo:
-    """Quadratic unconstrained binary optimisation problem: minimise x^T Q x + offset over x in {0, 1}^n."""
+    r"""Quadratic unconstrained binary optimisation problem.
+
+    Minimise :math:`x^T Q x + \text{offset}` over :math:`x \in \{0, 1\}^n`.
+
+    Parameters
+    ----------
+    Q : array_like
+        ``(n, n)`` coefficient matrix (any square matrix; see :meth:`normalised`).
+    offset : float, optional
+        Constant energy offset.
+    labels : list of str, optional
+        Variable names (default ``x0, x1, ...``).
+    name : str, optional
+        Problem name.
+    """
     Q: np.ndarray
     offset: float = 0.0
     labels: list = field(default_factory=list)
@@ -35,24 +58,50 @@ class Qubo:
 
     @property
     def n(self):
-        """Number of binary variables."""
+        """int: number of binary variables."""
         return self.Q.shape[0]
 
     def normalised(self):
-        """Upper-triangular form with the same energies."""
+        """Upper-triangular form with the same energies.
+
+        Returns
+        -------
+        Qubo
+        """
         U = np.triu(self.Q) + np.triu(self.Q.T, 1)
         return Qubo(U, self.offset, list(self.labels), self.name)
 
     def energy(self, x):
-        """Energy of one bit string (1-D) or of each row of a 2-D array of bit strings."""
+        """Energy of bit strings.
+
+        Parameters
+        ----------
+        x : array_like
+            One bit string (1-D) or one per row (2-D).
+
+        Returns
+        -------
+        float or numpy.ndarray
+        """
         x = np.asarray(x, float)
         if x.ndim == 1:
             return float(x @ self.Q @ x + self.offset)
         return np.einsum('bi,ij,bj->b', x, self.Q, x) + self.offset
 
     def all_energies(self):
-        """Energies of all 2^n bit strings, index k <-> bits of k with x_0 the least significant bit
-        (Qiskit ordering)."""
+        """Energies of all :math:`2^n` bit strings.
+
+        Index k holds the bits of k with :math:`x_0` the least significant bit (Qiskit ordering).
+
+        Returns
+        -------
+        numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            If n > 22.
+        """
         if self.n > 22:
             raise ValueError('too many variables for exhaustive enumeration')
         k = np.arange(2 ** self.n)
@@ -60,12 +109,29 @@ class Qubo:
         return self.energy(X)
 
     def brute_force(self):
-        """Exact minimum (x, energy) for small n."""
+        """Exact minimum by enumeration (small n).
+
+        Returns
+        -------
+        x : numpy.ndarray
+            Optimal bit string.
+        energy : float
+        """
         e = self.all_energies(); k = int(np.argmin(e))
         return np.array([(k >> i) & 1 for i in range(self.n)]), float(e[k])
 
     def to_ising(self):
-        """Spins s = 1 - 2x in {+1, -1}. Returns (h, J, c) with energy = h.s + sum_{i<j} J_ij s_i s_j + c."""
+        r"""Equivalent Ising model with spins :math:`s = 1 - 2x \in \{+1, -1\}`.
+
+        Returns
+        -------
+        h : numpy.ndarray
+            Local fields.
+        J : numpy.ndarray
+            Upper-triangular couplings.
+        c : float
+            Constant, so that energy :math:`= h \cdot s + \sum_{i<j} J_{ij} s_i s_j + c`.
+        """
         U = self.normalised().Q; n = self.n
         h = np.zeros(n); J = np.zeros((n, n)); c = self.offset
         for i in range(n):
@@ -78,7 +144,21 @@ class Qubo:
 
 
 def maxcut(edges, n=None, weights=None):
-    """Maximum cut of a graph as a minimisation (energy = -cut weight)."""
+    """Maximum cut of a graph, written as a minimisation (energy = minus the cut weight).
+
+    Parameters
+    ----------
+    edges : iterable of tuple
+        ``(i, j)`` pairs.
+    n : int, optional
+        Number of nodes.
+    weights : array_like, optional
+        Edge weights (default 1).
+
+    Returns
+    -------
+    Qubo
+    """
     edges = list(edges); n = n or 1 + max(max(e) for e in edges)
     w = np.ones(len(edges)) if weights is None else np.asarray(weights, float)
     Q = np.zeros((n, n))
@@ -89,7 +169,24 @@ def maxcut(edges, n=None, weights=None):
 
 
 def knapsack(values, weights, capacity, penalty=None):
-    """Maximise value subject to total weight <= capacity, using binary slack variables."""
+    """0-1 knapsack: maximise value subject to total weight <= capacity.
+
+    The inequality becomes an equality with binary slack variables, enforced by a quadratic penalty.
+
+    Parameters
+    ----------
+    values, weights : array_like
+        Item values and weights.
+    capacity : int
+        Weight limit.
+    penalty : float, optional
+        Penalty coefficient (default large enough to make violations unprofitable).
+
+    Returns
+    -------
+    Qubo
+        Items first, then the slack bits.
+    """
     v, w = np.asarray(values, float), np.asarray(weights, float); n = len(v)
     ns = int(np.ceil(np.log2(capacity + 1)))
     coef = np.r_[w, -(2 ** np.arange(ns))]                  # sum w x - slack = 0  (slack <= capacity)
@@ -104,8 +201,20 @@ def knapsack(values, weights, capacity, penalty=None):
 
 
 def task_allocation(costs, penalty=None):
-    """costs[a, t]: cost of agent a doing task t. Every task goes to exactly one agent.
-    Variable x_{a,t} has index a * n_tasks + t."""
+    """Assignment of tasks to agents; every task goes to exactly one agent.
+
+    Parameters
+    ----------
+    costs : array_like
+        ``costs[a, t]``: cost of agent a doing task t.
+    penalty : float, optional
+        Penalty for a task with zero or several agents.
+
+    Returns
+    -------
+    Qubo
+        Variable :math:`x_{a,t}` has index ``a * n_tasks + t``.
+    """
     C = np.asarray(costs, float); na, nt = C.shape
     A = penalty or 2 * (np.abs(C).max() * nt + 1)
     n = na * nt; Q = np.zeros((n, n)); off = 0.0
@@ -125,7 +234,27 @@ def task_allocation(costs, penalty=None):
 
 
 def portfolio(mu, cov, budget, risk=0.5, penalty=None):
-    """Choose exactly `budget` assets: minimise risk * x' cov x - mu' x."""
+    r"""Portfolio selection with a cardinality budget.
+
+    Choose exactly ``budget`` assets, minimising :math:`\text{risk}\; x^T \Sigma x - \mu^T x`.
+
+    Parameters
+    ----------
+    mu : array_like
+        Expected returns.
+    cov : array_like
+        Covariance matrix.
+    budget : int
+        Number of assets to select.
+    risk : float, optional
+        Risk aversion.
+    penalty : float, optional
+        Budget-constraint penalty.
+
+    Returns
+    -------
+    Qubo
+    """
     mu, cov = np.asarray(mu, float), np.asarray(cov, float); n = len(mu)
     A = penalty or 2 * (np.abs(mu).sum() + risk * np.abs(cov).sum())
     Q = risk * cov - np.diag(mu)
@@ -134,7 +263,22 @@ def portfolio(mu, cov, budget, risk=0.5, penalty=None):
 
 
 def from_ising(h, J, c=0.0):
-    """QUBO with the same energies as  h.s + sum_{i<j} J_ij s_i s_j + c,  s = 1 - 2x."""
+    r"""QUBO with the same energies as an Ising model.
+
+    Parameters
+    ----------
+    h : array_like
+        Local fields.
+    J : array_like
+        Couplings (the strict upper triangle is used).
+    c : float, optional
+        Constant.
+
+    Returns
+    -------
+    Qubo
+        Energies of :math:`h \cdot s + \sum_{i<j} J_{ij} s_i s_j + c` with :math:`s = 1 - 2x`.
+    """
     h = np.asarray(h, float); J = np.triu(np.asarray(J, float), 1); n = len(h)
     Q = np.zeros((n, n)); off = c + h.sum() + J.sum()
     for i in range(n):

@@ -8,10 +8,10 @@
   <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white" alt="Python 3.10-3.12">
   <img src="https://img.shields.io/badge/Qiskit-2.x-6929C4?logo=qiskit&logoColor=white" alt="Qiskit 2.x">
   <img src="https://img.shields.io/badge/coverage-%E2%89%A580%25%20enforced-2ea44f" alt="coverage enforced in CI">
-  <a href="docs/API.md"><img src="https://img.shields.io/badge/docs-API%20reference-0969da" alt="API reference"></a>
+  <a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/"><img src="https://img.shields.io/badge/docs-Sphinx-0969da" alt="Documentation"></a>
 </p>
 
-<p align="center"><b>🌐 Website with a live Bloch-sphere playground: <a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/">yeshwanthguru.github.io/quantum-cognition-robotics</a></b></p>
+<p align="center"><b><a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/">Website and live Bloch-sphere playground</a> · <a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/">Documentation</a> (user guide, example gallery, API reference)</b></p>
 
 <p align="center">
   <b><a href="#pillars">Three pillars</a></b> ·
@@ -22,7 +22,7 @@
   <b><a href="#hardware">Hardware</a></b> ·
   <b><a href="#status">Status</a></b> ·
   <b><a href="notebooks/">Notebooks</a></b> ·
-  <b><a href="docs/API.md">API</a></b> ·
+  <b><a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/api/index.html">API</a></b> ·
   <b><a href="docs/concepts.md">Concepts</a></b>
 </p>
 
@@ -48,13 +48,13 @@ research, physics and operations research.
 
 <a id="pillars"></a>
 
-## 🧭 Three pillars
+## Three pillars
 
 <table>
 <tr>
-<th width="33%">🧠 Quantum-like</th>
-<th width="33%">⚛️ Quantum</th>
-<th width="33%">✨ Quantum-inspired</th>
+<th width="33%">Quantum-like</th>
+<th width="33%">Quantum</th>
+<th width="33%">Quantum-inspired</th>
 </tr>
 <tr valign="top">
 <td>
@@ -66,7 +66,8 @@ classical baselines and distinctive tests.
 - quantum-like Bayesian networks
 - quantum, Markov and open-system dynamics
 - quantum decision theory · contextuality · similarity
-- **robotics**: questioning designs, trust, human-model ensemble
+- quantum games · episodic memory · concept combination
+- **robotics**: questioning designs, trust, intent resolution, human-model ensemble
 
 `qlcog.families`, `qlcog.applications`
 
@@ -76,12 +77,12 @@ classical baselines and distinctive tests.
 **Gate-model** machine learning and algorithms. They train on a fast built-in simulator and export
 to Qiskit.
 
-- variational (re-uploading) classifier
-- quantum-kernel classifier (ZZ feature map)
-- QAOA for any QUBO
-- VQE for Pauli Hamiltonians
-- Grover search
-- circuits for all quantum-like families
+- variational (re-uploading) classifier and regressor
+- quantum kernel: classification, anomaly detection, clustering
+- QAOA for any QUBO · VQE for Pauli Hamiltonians
+- Grover search · quantum Fourier transform
+- amplitude estimation · continuous-time quantum walks
+- circuits for the quantum-like families
 
 `qlcog.quantum`, `qlcog.circuits`
 
@@ -94,6 +95,8 @@ to Qiskit.
 - quantum-behaved particle swarm (QPSO)
 - simulated quantum annealing (path-integral Monte Carlo)
 - tensor-network (MPS) classifier
+- quantum reinforcement learning (amplitude-based exploration)
+- quantum language model for document ranking
 - classical simulated-annealing baseline
 
 `qlcog.inspired`
@@ -108,7 +111,7 @@ builders for MaxCut, knapsack, multi-robot task allocation, portfolio and Ising 
 
 <a id="viewer"></a>
 
-## 🌐 See the qubits
+## See the qubits
 
 <table>
 <tr>
@@ -140,14 +143,14 @@ and shown inline in the [notebooks](notebooks/). The [viewer README](src/qlcog/v
 
 <a id="quick-start"></a>
 
-## 🚀 Quick start
+## Quick start
 
 ```bash
 pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"
 ```
 
 <details open>
-<summary><b>🧠 Quantum-like: is there a question-order effect, and which model explains it?</b></summary>
+<summary><b>Quantum-like: is there a question-order effect, and which model explains it?</b></summary>
 
 ```python
 import numpy as np
@@ -163,7 +166,7 @@ for r in compare([QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel], co
 </details>
 
 <details>
-<summary><b>⚛️ Quantum: classify with a circuit, then run it under IBM device noise</b></summary>
+<summary><b>Quantum: classify with a circuit, then run it under IBM device noise</b></summary>
 
 ```python
 from qlcog.quantum import VariationalClassifier
@@ -176,7 +179,7 @@ counts = run(clf.to_qiskit(X_test[0]), 'aer:FakeTorino', shots=4000)
 </details>
 
 <details>
-<summary><b>✨ Quantum-inspired: one robot task-allocation problem, three kinds of solver</b></summary>
+<summary><b>Quantum-inspired: one robot task-allocation problem, three kinds of solver</b></summary>
 
 ```python
 from qlcog.problems import task_allocation
@@ -192,7 +195,7 @@ print(q.brute_force()[1],                        # exact
 </details>
 
 <details>
-<summary><b>🤖 Robotics: a human model with uncertainty, for a planner or a ROS 2 system</b></summary>
+<summary><b>Robotics: a human model with uncertainty, for a planner or a ROS 2 system</b></summary>
 
 ```python
 from qlcog.applications.robotics import HumanModelService
@@ -213,24 +216,24 @@ The same service runs as a ROS 2 node with standard `std_msgs/String` JSON topic
 
 <a id="catalogue"></a>
 
-## 📚 Model catalogue
+## Model catalogue
 
 <details>
-<summary><b>🧠 Quantum-like families</b>: 11 families, each with classical baselines and a README</summary>
+<summary><b>Quantum-like families</b>: 11 families, each with classical baselines and a README</summary>
 
 | Family | Phenomenon | Quantum-like model(s) | Classical baselines | Circuit | README |
 |---|---|---|---|---|---|
-| `order_effects` | Answers depend on question order | `QuantumOrderModel4D` (nests Bayes), `QuantumOrderModel` (3D, ranks) | Bayes, anchoring, saturated | ✓ | [link](src/qlcog/families/order_effects/README.md) |
-| `conjunction` | Conjunction and disjunction fallacies | `QuantumConjunctionModel` | classical joint, averaging, probability theory plus noise | ✓ | [link](src/qlcog/families/conjunction/README.md) |
-| `interference` | Disjunction effect, sure-thing violations | `InterferenceModel` (normalised or not) | classical mixture | ✓ | [link](src/qlcog/families/interference/README.md) |
-| `qlbn` | Inference with unresolved hidden causes | quantum-like Bayesian network | classical Bayesian network | ✓ | [link](src/qlcog/families/qlbn/README.md) |
-| `dynamics` | Belief change over time; judgements that change later judgements | `QuantumWalk`, `OpenSystemWalk`, `OpenSystemBelief` | `MarkovWalk`, `MarkovBelief` | ✓ | [link](src/qlcog/families/dynamics/README.md) |
-| `decision` | Risky choice | `QDTModel` (quantum decision theory) | expected utility, prospect theory | – | [link](src/qlcog/families/decision/README.md) |
-| `contextuality` | Is there one joint distribution? | CHSH, Contextuality-by-Default criterion | classical bounds | ✓ | [link](src/qlcog/families/contextuality/README.md) |
-| `similarity` | Asymmetric similarity | `QuantumSimilarityModel` | biased geometric (Nosofsky), geometric | ✓ | [link](src/qlcog/families/similarity/README.md) |
-| `game_theory` | Strategic choice with shared quantum resources | `EWLGame` (Eisert–Wilkens–Lewenstein), best responses, Nash checks | classical Nash equilibria | – | [link](src/qlcog/families/game_theory/README.md) |
-| `memory` | Episodic overdistribution in recall | `QuantumEpisodicModel` (Brainerd) | additive (verbatim + gist) | – | [link](src/qlcog/families/memory/README.md) |
-| `concepts` | Overextension in concept combination ("pet fish") | `FockSpaceConceptModel` (Aerts) | product, minimum (fuzzy), weighted average | – | [link](src/qlcog/families/concepts/README.md) |
+| `order_effects` | Answers depend on question order | `QuantumOrderModel4D` (nests Bayes), `QuantumOrderModel` (3D, ranks) | Bayes, anchoring, saturated | yes | [link](src/qlcog/families/order_effects/README.md) |
+| `conjunction` | Conjunction and disjunction fallacies | `QuantumConjunctionModel` | classical joint, averaging, probability theory plus noise | yes | [link](src/qlcog/families/conjunction/README.md) |
+| `interference` | Disjunction effect, sure-thing violations | `InterferenceModel` (normalised or not) | classical mixture | yes | [link](src/qlcog/families/interference/README.md) |
+| `qlbn` | Inference with unresolved hidden causes | quantum-like Bayesian network | classical Bayesian network | yes | [link](src/qlcog/families/qlbn/README.md) |
+| `dynamics` | Belief change over time; judgements that change later judgements | `QuantumWalk`, `OpenSystemWalk`, `OpenSystemBelief` | `MarkovWalk`, `MarkovBelief` | yes | [link](src/qlcog/families/dynamics/README.md) |
+| `decision` | Risky choice | `QDTModel` (quantum decision theory) | expected utility, prospect theory | no | [link](src/qlcog/families/decision/README.md) |
+| `contextuality` | Is there one joint distribution? | CHSH, Contextuality-by-Default criterion | classical bounds | yes | [link](src/qlcog/families/contextuality/README.md) |
+| `similarity` | Asymmetric similarity | `QuantumSimilarityModel` | biased geometric (Nosofsky), geometric | yes | [link](src/qlcog/families/similarity/README.md) |
+| `game_theory` | Strategic choice with shared quantum resources | `EWLGame` (Eisert–Wilkens–Lewenstein), best responses, Nash checks | classical Nash equilibria | no | [link](src/qlcog/families/game_theory/README.md) |
+| `memory` | Episodic overdistribution in recall | `QuantumEpisodicModel` (Brainerd) | additive (verbatim + gist) | no | [link](src/qlcog/families/memory/README.md) |
+| `concepts` | Overextension in concept combination ("pet fish") | `FockSpaceConceptModel` (Aerts) | product, minimum (fuzzy), weighted average | no | [link](src/qlcog/families/concepts/README.md) |
 
 Robotics application ([README](src/qlcog/applications/README.md)): question domains (object
 clarification, trust and hand-over, preference elicitation), questioning designs (fixed, probe,
@@ -239,7 +242,7 @@ split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like in
 </details>
 
 <details>
-<summary><b>⚛️ Quantum models</b>: QML and algorithms (<a href="src/qlcog/quantum/README.md">README</a>)</summary>
+<summary><b>Quantum models</b>: QML and algorithms (<a href="src/qlcog/quantum/README.md">README</a>)</summary>
 
 | Model | Use | Reference |
 |---|---|---|
@@ -257,7 +260,7 @@ split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like in
 </details>
 
 <details>
-<summary><b>✨ Quantum-inspired models</b>: optimisers, tensor networks, learning and ranking (<a href="src/qlcog/inspired/README.md">README</a>)</summary>
+<summary><b>Quantum-inspired models</b>: optimisers, tensor networks, learning and ranking (<a href="src/qlcog/inspired/README.md">README</a>)</summary>
 
 | Model | Problem | Reference |
 |---|---|---|
@@ -270,18 +273,18 @@ split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like in
 | `simulated_annealing` | classical baseline | Kirkpatrick et al., *Science* 1983 |
 </details>
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart TB
     core["qlcog.core<br/>Model · Param · fit · compare · recovery"]
-    fam["🧠 qlcog.families<br/>8 quantum-like families"]
-    app["🤖 qlcog.applications<br/>robotics"]
+    fam["qlcog.families<br/>11 quantum-like families"]
+    app["qlcog.applications<br/>robotics"]
     prob["qlcog.problems<br/>QUBO builders"]
-    qm["⚛️ qlcog.quantum<br/>VQC · kernel · QAOA · VQE · Grover"]
-    ins["✨ qlcog.inspired<br/>QIEA · QPSO · SQA · MPS"]
+    qm["qlcog.quantum<br/>VQC · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
+    ins["qlcog.inspired<br/>QIEA · QPSO · SQA · MPS · QRL · QLM"]
     circ["qlcog.circuits<br/>circuits + run()"]
-    viz["🌐 qlcog.viz<br/>Bloch-sphere viewer"]
+    viz["qlcog.viz<br/>Bloch-sphere viewer"]
     hw[("Aer · IBM Quantum · Amazon Braket")]
     core --> fam --> app
     fam --> circ
@@ -297,15 +300,15 @@ flowchart TB
 ```
 src/qlcog/
 ├── core/           Lüders rule, density matrices, Lindblad · Model/Param · fit, compare, recovery
-├── families/       🧠 order_effects · conjunction · interference · qlbn · dynamics · decision · contextuality · similarity
-├── applications/   🤖 robotics: question domains, questioning designs, trust, human-model ensemble, ask_or_act, HumanModelService
-├── quantum/        ⚛️ statevector simulator · ansatz · classifiers · QAOA · VQE · Grover
-├── inspired/       ✨ QIEA · QPSO · SQA · simulated annealing · MPS classifier
+├── families/       order_effects · conjunction · interference · qlbn · dynamics · decision · contextuality · similarity · game_theory · memory · concepts
+├── applications/   robotics: question domains, questioning designs, trust, intent resolution, human-model ensemble, ask_or_act, HumanModelService
+├── quantum/        statevector simulator · ansatz · classifiers · QAOA · VQE · Grover · QFT · amplitude estimation · walks
+├── inspired/       QIEA · QPSO · SQA · simulated annealing · MPS classifier · QRL · quantum language model
 ├── problems/       QUBO builders shared by quantum and quantum-inspired solvers
 ├── circuits/       Qiskit circuits of the families · run() on Aer, IBM Quantum, Amazon Braket
-├── viz/            🌐 Bloch vectors, trajectories, tomography · Matplotlib and Plotly viewers · LiveBloch
+├── viz/            Bloch vectors, trajectories, tomography · Matplotlib and Plotly viewers · LiveBloch
 └── data/           published aggregate data sets
-examples/           31 scripts across domains        docs/       concepts, API reference, assets
+examples/           31 scripts across domains        docs/       Sphinx documentation, concepts, assets
 notebooks/          2 Jupyter notebooks              tests/      63 tests
 integrations/ros2/  ROS 2 node (qlcog_ros)
 site/               project website (built and deployed to GitHub Pages by CI)
@@ -314,41 +317,43 @@ site/               project website (built and deployed to GitHub Pages by CI)
 
 <a id="examples"></a>
 
-## 🧪 Examples across domains
+## Examples across domains
+
+Pillar: QL quantum-like, Q quantum, QI quantum-inspired, viz Bloch-sphere viewer.
 
 | # | Domain | Pillar | Script |
 |---|---|---|---|
-| 01 | Surveys, market research | 🧠 | [question-order effects, QQ test](examples/01_survey_question_order.py) |
-| 02 | Behavioural finance | 🧠 | [disjunction effect, interference, QLBN](examples/02_finance_disjunction_effect.py) |
-| 03 | Medical decision support | 🧠 | [quantum-like Bayesian network](examples/03_medical_diagnosis_qlbn.py) |
-| 04 | Consumer choice | 🧠 | [quantum decision theory vs EU and PT](examples/04_consumer_choice_qdt.py) |
-| 05 | AI / LLM evaluation | 🧠 | [order effects in judgements](examples/05_llm_evaluation_order.py) |
-| 06 | Human–computer interaction | 🧠 | [trust dynamics](examples/06_hci_trust_dynamics.py) |
-| 07 | Perception, confidence | 🧠 | [Markov vs quantum walk](examples/07_evidence_accumulation.py) |
-| 08 | Physics, psychology | 🧠⚛️ | [CHSH and Contextuality-by-Default](examples/08_contextuality_analysis.py) |
-| 09 | Marketing, linguistics | 🧠 | [asymmetric similarity](examples/09_similarity_asymmetry.py) |
-| 10 | – | ⚛️ | [every family as a circuit (Aer, FakeTorino, Braket)](examples/10_circuits_quickstart.py) |
-| 11 | – | ⚛️ | [IBM Quantum / Amazon Braket hardware](examples/11_cloud_run.py) |
-| 12 | Robotics, HRI | 🧠 | [robot questioning and trust](examples/12_robot_questioning_trust.py) |
-| 13 | Medicine (simulated) | ⚛️✨ | [VQC, quantum kernel, MPS vs logistic regression](examples/13_quantum_classifiers_triage.py) |
-| 14 | Robotics | ⚛️✨ | [multi-robot task allocation: QAOA, SQA, QIEA, SA](examples/14_qaoa_multi_robot_allocation.py) |
-| 15 | Finance (simulated) | ⚛️✨ | [portfolio selection](examples/15_portfolio_selection.py) |
-| 16 | Physics, materials | ⚛️ | [VQE on a transverse-field Ising chain](examples/16_vqe_ising_chain.py) |
-| 17 | Scheduling | ⚛️ | [Grover search for valid schedules](examples/17_grover_schedule_search.py) |
-| 18 | Control, robotics | ✨ | [PID tuning with QPSO](examples/18_qpso_controller_tuning.py) |
-| 19 | Visualisation | 🌐 | [Bloch-sphere viewer, HTML, GIF, live, tomography](examples/19_bloch_sphere_viewer.py) |
-| 20 | Robotics, HRI | 🧠🌐 | [trust on the Bloch sphere](examples/20_trust_on_the_bloch_sphere.py) |
-| 21 | Robotics | 🧠 | [when to ask for help: ensemble uncertainty and `ask_or_act`](examples/21_robot_ask_for_help.py) |
-| 22 | Surveys, HRI | 🧠 | [individual differences: pooled versus per-person model comparison](examples/22_individual_differences.py) |
-| 23 | Economics, multi-agent | 🧠 | [quantum games: EWL Prisoner's Dilemma and Chicken](examples/23_quantum_games.py) |
-| 24 | Memory, language | 🧠 | [episodic overdistribution and concept combination (simulated)](examples/24_memory_and_concepts.py) |
-| 25 | Robotics, HRI | 🧠 | [resolving an ambiguous command: Bayesian vs quantum-like intent](examples/25_intent_resolution_robot.py) |
-| 26 | Finance, risk | ⚛️ | [amplitude estimation vs Monte Carlo](examples/26_risk_amplitude_estimation.py) |
-| 27 | Signal processing | ⚛️ | [quantum Fourier transform and period finding](examples/27_qft_period_finding.py) |
-| 28 | Networks | ⚛️ | [quantum-walk centrality vs PageRank and degree](examples/28_network_centrality_quantum_walk.py) |
-| 29 | Forecasting, monitoring (simulated) | ⚛️ | [variational regressor, anomaly detection, clustering vs classical](examples/29_forecasting_and_anomalies.py) |
-| 30 | Robotics | ✨ | [navigation: quantum-inspired RL vs Q-learning](examples/30_robot_navigation_qrl.py) |
-| 31 | Information retrieval | ✨ | [document ranking: quantum language model vs query likelihood](examples/31_document_ranking_qlm.py) |
+| 01 | Surveys, market research | QL | [question-order effects, QQ test](examples/01_survey_question_order.py) |
+| 02 | Behavioural finance | QL | [disjunction effect, interference, QLBN](examples/02_finance_disjunction_effect.py) |
+| 03 | Medical decision support | QL | [quantum-like Bayesian network](examples/03_medical_diagnosis_qlbn.py) |
+| 04 | Consumer choice | QL | [quantum decision theory vs EU and PT](examples/04_consumer_choice_qdt.py) |
+| 05 | AI / LLM evaluation | QL | [order effects in judgements](examples/05_llm_evaluation_order.py) |
+| 06 | Human–computer interaction | QL | [trust dynamics](examples/06_hci_trust_dynamics.py) |
+| 07 | Perception, confidence | QL | [Markov vs quantum walk](examples/07_evidence_accumulation.py) |
+| 08 | Physics, psychology | QL, Q | [CHSH and Contextuality-by-Default](examples/08_contextuality_analysis.py) |
+| 09 | Marketing, linguistics | QL | [asymmetric similarity](examples/09_similarity_asymmetry.py) |
+| 10 | – | Q | [every family as a circuit (Aer, FakeTorino, Braket)](examples/10_circuits_quickstart.py) |
+| 11 | – | Q | [IBM Quantum / Amazon Braket hardware](examples/11_cloud_run.py) |
+| 12 | Robotics, HRI | QL | [robot questioning and trust](examples/12_robot_questioning_trust.py) |
+| 13 | Medicine (simulated) | Q, QI | [VQC, quantum kernel, MPS vs logistic regression](examples/13_quantum_classifiers_triage.py) |
+| 14 | Robotics | Q, QI | [multi-robot task allocation: QAOA, SQA, QIEA, SA](examples/14_qaoa_multi_robot_allocation.py) |
+| 15 | Finance (simulated) | Q, QI | [portfolio selection](examples/15_portfolio_selection.py) |
+| 16 | Physics, materials | Q | [VQE on a transverse-field Ising chain](examples/16_vqe_ising_chain.py) |
+| 17 | Scheduling | Q | [Grover search for valid schedules](examples/17_grover_schedule_search.py) |
+| 18 | Control, robotics | QI | [PID tuning with QPSO](examples/18_qpso_controller_tuning.py) |
+| 19 | Visualisation | viz | [Bloch-sphere viewer, HTML, GIF, live, tomography](examples/19_bloch_sphere_viewer.py) |
+| 20 | Robotics, HRI | QL, viz | [trust on the Bloch sphere](examples/20_trust_on_the_bloch_sphere.py) |
+| 21 | Robotics | QL | [when to ask for help: ensemble uncertainty and `ask_or_act`](examples/21_robot_ask_for_help.py) |
+| 22 | Surveys, HRI | QL | [individual differences: pooled versus per-person model comparison](examples/22_individual_differences.py) |
+| 23 | Economics, multi-agent | QL | [quantum games: EWL Prisoner's Dilemma and Chicken](examples/23_quantum_games.py) |
+| 24 | Memory, language | QL | [episodic overdistribution and concept combination (simulated)](examples/24_memory_and_concepts.py) |
+| 25 | Robotics, HRI | QL | [resolving an ambiguous command: Bayesian vs quantum-like intent](examples/25_intent_resolution_robot.py) |
+| 26 | Finance, risk | Q | [amplitude estimation vs Monte Carlo](examples/26_risk_amplitude_estimation.py) |
+| 27 | Signal processing | Q | [quantum Fourier transform and period finding](examples/27_qft_period_finding.py) |
+| 28 | Networks | Q | [quantum-walk centrality vs PageRank and degree](examples/28_network_centrality_quantum_walk.py) |
+| 29 | Forecasting, monitoring (simulated) | Q | [variational regressor, anomaly detection, clustering vs classical](examples/29_forecasting_and_anomalies.py) |
+| 30 | Robotics | QI | [navigation: quantum-inspired RL vs Q-learning](examples/30_robot_navigation_qrl.py) |
+| 31 | Information retrieval | QI | [document ranking: quantum language model vs query likelihood](examples/31_document_ranking_qlm.py) |
 
 Notebooks: [`01_bloch_sphere_live`](notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
 tomography under device noise) and [`02_robot_questioning_and_trust`](notebooks/02_robot_questioning_and_trust.ipynb)
@@ -375,7 +380,7 @@ well-specified classical model wins (bold):
 
 <a id="hardware"></a>
 
-## 🛰️ Running on quantum hardware
+## Running on quantum hardware
 
 ```bash
 python3 examples/11_cloud_run.py --dry-run                                  # local, no account
@@ -399,7 +404,7 @@ Sampler (`qiskit_ibm_runtime.executor_sampler`), falling back to `SamplerV2` on 
 
 <a id="status"></a>
 
-## 🔎 Status, scope and honest limits
+## Status and scope
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
@@ -420,7 +425,7 @@ quantum and quantum-inspired toolkits sit beside it so that all three can be com
 problems. The repository name reflects the main application, robots that work with people.
 
 
-## 📦 Installation
+## Installation
 
 ```bash
 pip install "qlcog @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"          # core: numpy, scipy
@@ -439,7 +444,7 @@ pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition
 From a clone: `pip install -e ".[all,dev]"`. Python 3.10 or later. Examples and tests also run
 without installing, because they add `src/` to the path.
 
-## ✅ Choosing and testing a model
+## Choosing and testing a model
 
 1. **Check the phenomenon first.** Look for an order effect, a violation of total probability, or
    asymmetric similarity. If there is none, a classical model is enough.
@@ -459,9 +464,10 @@ The tests check the simulator against Qiskit gate by gate, adjoint and parameter
 against finite differences, exported circuits against simulation, circuit builders against the
 analytic models, the IBM and Braket submission code against local stand-ins, Bloch trajectories
 against Qiskit's partial trace and the trust model, input validation and size limits. CI also lints,
-checks that the API reference is current, runs the examples and notebooks, and builds the wheel.
+checks that the API reference is current, runs the docstring examples, the examples and the notebooks,
+builds the Sphinx documentation with warnings as errors, and builds the wheel.
 
-## ⚠️ Limitations
+## Limitations
 
 - Fitting aggregate counts assumes a homogeneous population. Individual differences can hide or mimic
   quantum-like structure: in example 22 a pooled fit picks the quantum-like model for a population that
@@ -477,7 +483,7 @@ checks that the API reference is current, runs the examples and notebooks, and b
 - Hardware noise distorts circuits by a few percent of total variation for small circuits, and more
   for deep ones.
 
-## 📊 Data
+## Data
 
 `qlcog.data` contains the only human data in the package. All of it is published aggregate data:
 
@@ -488,7 +494,7 @@ checks that the API reference is current, runs the examples and notebooks, and b
 
 Every other data set in the examples is simulated and labelled as such.
 
-## 📝 Citing and licence
+## Citing and licence
 
 To cite `qlcog`, use `CITATION.cff` (GitHub's "Cite this repository" button), together with the
 original papers of the models used, which are listed in each README. The package is released under the
