@@ -18,8 +18,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SITE = ROOT / 'site'
 OUT = ROOT / '_site'
-REPO = 'https://github.com/yeshwanthguru/quantum-mind'
-URL = 'https://yeshwanthguru.github.io/quantum-mind/'
+REPO = 'https://github.com/yeshwanthguru/Quantum-mind'
+URL = 'https://yeshwanthguru.github.io/Quantum-mind/'
 sys.path.insert(0, str(ROOT / 'src'))
 os.environ.setdefault('MPLBACKEND', 'Agg')
 

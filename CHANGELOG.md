@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1 (6 October 2026)
+
+- Website and documentation links use the repository's exact name, `Quantum-mind`: GitHub Pages
+  addresses are case-sensitive, so the lowercase links in 2.0.0 (including those on the PyPI page)
+  returned 404.
+
 ## 2.0.0 (6 October 2026)
 
 First release on PyPI.

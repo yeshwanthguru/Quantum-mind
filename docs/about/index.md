@@ -13,7 +13,7 @@ the models used, which each user-guide page lists.
   author  = {Guru, Yeshwanth},
   title   = {Quantum Mind: quantum-like, quantum and quantum-inspired models with classical baselines},
   version = {__VERSION__},
-  url     = {https://github.com/yeshwanthguru/quantum-mind},
+  url     = {https://github.com/yeshwanthguru/Quantum-mind},
   license = {Apache-2.0}
 }
 ```
@@ -21,8 +21,8 @@ the models used, which each user-guide page lists.
 ## Licence
 
 Apache License 2.0, which permits commercial and research use and includes an explicit patent grant.
-See [LICENSE](https://github.com/yeshwanthguru/quantum-mind/blob/main/LICENSE) and
-[NOTICE](https://github.com/yeshwanthguru/quantum-mind/blob/main/NOTICE).
+See [LICENSE](https://github.com/yeshwanthguru/Quantum-mind/blob/main/LICENSE) and
+[NOTICE](https://github.com/yeshwanthguru/Quantum-mind/blob/main/NOTICE).
 
 ## Data
 

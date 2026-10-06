@@ -1,7 +1,7 @@
 name: release
 # Builds the package on every published GitHub release and uploads it to PyPI with trusted publishing.
 # One-time setup on pypi.org: add a "pending publisher" for project quantum-mind with owner yeshwanthguru,
-# repository quantum-mind, workflow release.yml and environment pypi.
+# repository Quantum-mind, workflow release.yml and environment pypi.
 on:
   release:
     types: [published]

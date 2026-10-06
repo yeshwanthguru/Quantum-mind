@@ -24,8 +24,8 @@ project = 'Quantum Mind'
 author = 'Yeshwanth Guru'
 copyright = '2026, Yeshwanth Guru'
 version = release = quantum_mind.__version__
-REPO = 'https://github.com/yeshwanthguru/quantum-mind'
-SITE = 'https://yeshwanthguru.github.io/quantum-mind/'
+REPO = 'https://github.com/yeshwanthguru/Quantum-mind'
+SITE = 'https://yeshwanthguru.github.io/Quantum-mind/'
 
 # -- extensions -------------------------------------------------------------------------------------
 extensions = [

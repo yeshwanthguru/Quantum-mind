@@ -83,7 +83,7 @@ qc = QuantumCircuit(2); qc.h(0); qc.cx(0, 1); qc.ry(0.6, 1)
 save_html(animate_bloch(circuit_trajectory(qc, steps=15)), 'bell.html')
 ```
 
-The [two-qubit playground](https://yeshwanthguru.github.io/quantum-mind/#playground-section)
+The [two-qubit playground](https://yeshwanthguru.github.io/Quantum-mind/#playground-section)
 runs the same simulation in the browser.
 
 ## Where to go next

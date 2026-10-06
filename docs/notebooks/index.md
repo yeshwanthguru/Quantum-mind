@@ -2,7 +2,7 @@
 
 The notebooks are executed when the documentation is built, so every output below is current.
 Live widgets update in place only when a notebook runs in Jupyter; the
-[source notebooks](https://github.com/yeshwanthguru/quantum-mind/tree/main/notebooks)
+[source notebooks](https://github.com/yeshwanthguru/Quantum-mind/tree/main/notebooks)
 can be opened there.
 
 ```{toctree}
