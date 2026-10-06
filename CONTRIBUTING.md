@@ -43,9 +43,26 @@ docstring whose first line is a title underlined with `=`, and split the code in
 `# %%` comment blocks that explain what each step does; the gallery shows them as text between the
 code cells.
 
-Open a pull request against `main` with tests, a README entry for the model, and an example if the
+Open a pull request against `develop` with tests, a README entry for the model, and an example if the
 change adds a new use case. If figures in the README change, regenerate them with
 `python3 docs/make_assets.py`. Please describe how the model was checked against its original paper.
+
+## Branches and releases
+
+| Branch | Purpose |
+|---|---|
+| `develop` | All day-to-day work. Push here, or open pull requests against it. CI runs on every push. |
+| `main` | Released code only. It changes only through a pull request from `develop`, and every merge is a release. The website and documentation are deployed from `main`. |
+
+Release steps:
+
+1. On `develop`, update the version in `pyproject.toml`, `src/qlcog/__init__.py` and `CITATION.cff`,
+   and move the changelog entries under a new version heading.
+2. Open a pull request from `develop` to `main`; merge it when CI is green.
+3. Create a GitHub release from `main` with the tag `v<version>` (for example `v1.6.0`). The release
+   workflow checks that the tag matches the package version, builds the package and publishes it to
+   PyPI.
+4. Bring `develop` up to date with `main` if anything was changed during the release.
 
 ## Reporting problems
 
