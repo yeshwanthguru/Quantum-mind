@@ -13,4 +13,4 @@ labels: bug
 
 **Expected behaviour**
 
-**Environment** (Python version, `pip show qlcog qiskit qiskit-aer`, OS)
+**Environment** (Python version, `pip show quantum-mind qiskit qiskit-aer`, OS)

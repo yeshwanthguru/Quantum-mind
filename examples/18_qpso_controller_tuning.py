@@ -12,7 +12,7 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/qi.png'
 import numpy as np
-from qlcog.inspired import QPSO
+from quantum_mind.inspired import QPSO
 
 # %%
 # Plant and cost

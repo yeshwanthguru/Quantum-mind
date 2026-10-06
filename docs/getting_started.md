@@ -3,9 +3,9 @@
 ## Install
 
 ```bash
-pip install qlcog              # core: numpy, scipy
-pip install "qlcog[all]"       # everything (Qiskit, cloud back ends, viewer)
-pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"   # latest development version
+pip install quantum-mind              # core: numpy, scipy
+pip install "quantum-mind[all]"       # everything (Qiskit, cloud back ends, viewer)
+pip install "quantum-mind[all] @ git+https://github.com/yeshwanthguru/quantum-mind"   # latest development version
 ```
 
 | Extra | Adds | For |
@@ -29,8 +29,8 @@ Is there a question-order effect, and which model explains it?
 
 ```python
 import numpy as np
-from qlcog import compare
-from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel, qq_test
+from quantum_mind import compare
+from quantum_mind.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel, qq_test
 
 counts = {'AB': np.array([212, 48, 61, 179]),   # A asked first: yes-yes, yes-no, no-yes, no-no
           'BA': np.array([240, 33, 52, 175])}   # B asked first
@@ -44,8 +44,8 @@ for r in compare([QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel], co
 Classify with a circuit, then run it under IBM device noise.
 
 ```python
-from qlcog.quantum import VariationalClassifier
-from qlcog.circuits import run
+from quantum_mind.quantum import VariationalClassifier
+from quantum_mind.circuits import run
 
 clf = VariationalClassifier(layers=3).fit(X_train, y_train)
 print(clf.score(X_test, y_test))
@@ -57,9 +57,9 @@ counts = run(clf.to_qiskit(X_test[0]), 'aer:FakeTorino', shots=4000)
 One robot task-allocation problem, three kinds of solver.
 
 ```python
-from qlcog.problems import task_allocation
-from qlcog.quantum import QAOA
-from qlcog.inspired import SQA, QIEA, simulated_annealing
+from quantum_mind.problems import task_allocation
+from quantum_mind.quantum import QAOA
+from quantum_mind.inspired import SQA, QIEA, simulated_annealing
 
 q = task_allocation(costs)                       # costs[robot, task]
 print(q.brute_force()[1],                        # exact
@@ -73,7 +73,7 @@ print(q.brute_force()[1],                        # exact
 A human model with uncertainty, for a planner or a ROS 2 system.
 
 ```python
-from qlcog.applications.robotics import HumanModelService
+from quantum_mind.applications.robotics import HumanModelService
 
 svc = HumanModelService()
 svc.add_answer({'order': 'AB', 'answers': [1, 0]})          # one person's two answers (1 = yes)
@@ -87,7 +87,7 @@ Watch a circuit on the Bloch sphere and measure the same state on a noisy simula
 
 ```python
 from qiskit import QuantumCircuit
-from qlcog.viz import circuit_trajectory, animate_bloch, save_html, LiveBloch, bloch_tomography
+from quantum_mind.viz import circuit_trajectory, animate_bloch, save_html, LiveBloch, bloch_tomography
 
 qc = QuantumCircuit(2); qc.h(0); qc.cx(0, 1); qc.ry(0.6, 1)
 traj = circuit_trajectory(qc, steps=15)
@@ -102,11 +102,11 @@ bloch_tomography(qc, 'aer:FakeTorino')             # Bloch vectors under IBM dev
 
 1. **Check the phenomenon first.** Look for an order effect, a violation of total probability, or
    asymmetric similarity. If there is none, a classical model is enough.
-2. **Fit quantum-like models and classical baselines together** with {func}`~qlcog.core.fit.compare`
+2. **Fit quantum-like models and classical baselines together** with {func}`~quantum_mind.core.fit.compare`
    and report all of them.
 3. **Use each family's distinctive test**: the QQ equality, total-probability bounds,
    Contextuality-by-Default, or the effect of an intermediate judgement.
-4. **Run a recovery study** ({func}`~qlcog.core.fit.recovery`) at the planned sample size before
+4. **Run a recovery study** ({func}`~quantum_mind.core.fit.recovery`) at the planned sample size before
    collecting data.
 5. **For quantum and quantum-inspired solvers, always print the exact or classical baseline**, as
    every example does.
@@ -114,7 +114,7 @@ bloch_tomography(qc, 'aer:FakeTorino')             # Bloch vectors under IBM dev
 ## Running the tests
 
 ```bash
-python3 -m pytest -q --cov=qlcog
+python3 -m pytest -q --cov=quantum_mind
 ```
 
 The tests check the simulator against Qiskit gate by gate, gradients against finite differences,

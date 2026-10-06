@@ -9,7 +9,7 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/robot.png'
 import numpy as np
-from qlcog.inspired import GridWorld, QuantumInspiredQLearning, QLearning, train
+from quantum_mind.inspired import GridWorld, QuantumInspiredQLearning, QLearning, train
 
 # %%
 # The grid and two learners

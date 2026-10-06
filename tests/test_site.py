@@ -12,7 +12,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 def _ref(seq):
-    from qlcog.quantum import Circuit
+    from quantum_mind.quantum import Circuit
     c = Circuit(2)
     for g, q, _ in seq:
         if g == 'CX01':
@@ -32,7 +32,7 @@ def _ref(seq):
 
 @pytest.mark.skipif(shutil.which('node') is None, reason='Node.js not installed')
 def test_playground_matches_the_simulator():
-    from qlcog.viz import bloch_vectors, concurrence, reduced_density_pair
+    from quantum_mind.viz import bloch_vectors, concurrence, reduced_density_pair
     rng = np.random.default_rng(0)
     gates = ['H', 'X', 'Y', 'Z', 'S', 'T', 'Rx', 'Ry', 'Rz', 'Sdg', 'CX01', 'CX10']
     seqs = [[(str(rng.choice(gates)), int(rng.integers(0, 2)), 1.0) for _ in range(rng.integers(3, 12))] for _ in range(60)]
@@ -55,9 +55,9 @@ def test_docs_link_rewriting():
     spec = importlib.util.spec_from_file_location('generate', ROOT / 'docs' / '_ext' / 'generate.py')
     g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
     md = g._rewrite('[api](API.md) [ex](../examples/13_quantum_classifiers_triage.py) [web](https://x.org) [a](#h) '
-                    '[q](../src/qlcog/quantum/README.md) [lic](../LICENSE) ![gif](assets/entanglement.gif)', 'docs/concepts.md')
+                    '[q](../src/quantum_mind/quantum/README.md) [lic](../LICENSE) ![gif](assets/entanglement.gif)', 'docs/concepts.md')
     assert '(../api/index.rst)' in md and '(../auto_examples/13_quantum_classifiers_triage.rst)' in md
     assert '(quantum.md)' in md and g.REPO + '/blob/main/LICENSE' in md
     assert '(../assets/entanglement.gif)' in md and '(https://x.org)' in md and '(#h)' in md
-    fam = g._rewrite('<img src="../../../../docs/assets/x.png">', 'src/qlcog/families/memory/README.md')
+    fam = g._rewrite('<img src="../../../../docs/assets/x.png">', 'src/quantum_mind/families/memory/README.md')
     assert 'src="../../_static/assets/x.png"' in fam

@@ -1,53 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="quantum-cognition-robotics: quantum-like, quantum and quantum-inspired models">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="Quantum Mind: quantum-like, quantum and quantum-inspired models for robots, agents and people">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0d1117"/>
-      <stop offset="0.55" stop-color="#161b33"/>
-      <stop offset="1" stop-color="#1f1240"/>
-    </linearGradient>
-    <radialGradient id="sphere" cx="0.38" cy="0.32" r="0.75">
-      <stop offset="0" stop-color="#79c0ff" stop-opacity="0.55"/>
-      <stop offset="0.6" stop-color="#3b5bdb" stop-opacity="0.22"/>
-      <stop offset="1" stop-color="#0d1117" stop-opacity="0.05"/>
-    </radialGradient>
-    <linearGradient id="arrow" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#ff7b72"/>
-      <stop offset="1" stop-color="#d2a8ff"/>
+      <stop offset="0" stop-color="#0d1117"/><stop offset="0.55" stop-color="#161b33"/><stop offset="1" stop-color="#1f1240"/>
     </linearGradient>
     <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#e6edf3"/>
-      <stop offset="1" stop-color="#b9c6ff"/>
+      <stop offset="0" stop-color="#ff7b72"/><stop offset="0.5" stop-color="#d2a8ff"/><stop offset="1" stop-color="#79c0ff"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="300" rx="18" fill="url(#bg)"/>
-  <g opacity="0.18" stroke="#79c0ff" stroke-width="1">
+  <g opacity="0.16" stroke="#79c0ff" stroke-width="1">
     <path d="M0 250 C 200 200, 400 290, 600 240 S 1000 190, 1200 240" fill="none"/>
     <path d="M0 270 C 220 230, 420 300, 640 262 S 1020 220, 1200 262" fill="none"/>
   </g>
-  <!-- Bloch sphere -->
-  <g transform="translate(170,150)">
-    <circle r="104" fill="url(#sphere)" stroke="#58a6ff" stroke-opacity="0.75" stroke-width="2"/>
-    <ellipse rx="104" ry="30" fill="none" stroke="#8b949e" stroke-opacity="0.7" stroke-width="1.4"/>
-    <ellipse rx="30" ry="104" fill="none" stroke="#8b949e" stroke-opacity="0.35" stroke-width="1.2"/>
-    <line x1="0" y1="-120" x2="0" y2="120" stroke="#8b949e" stroke-dasharray="4 4" stroke-width="1.2"/>
-    <line x1="-122" y1="0" x2="122" y2="0" stroke="#8b949e" stroke-dasharray="4 4" stroke-width="1.2"/>
-    <path d="M 0 -104 A 104 104 0 0 1 72 -40" fill="none" stroke="#d2a8ff" stroke-width="2.5" stroke-dasharray="3 5" stroke-linecap="round"/>
-    <line x1="0" y1="0" x2="72" y2="-60" stroke="url(#arrow)" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="72" cy="-60" r="9" fill="#ff7b72"/>
-    <text x="0" y="-128" fill="#e6edf3" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" text-anchor="middle">|0⟩</text>
-    <text x="0" y="142" fill="#e6edf3" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" text-anchor="middle">|1⟩</text>
+  <svg x="48" y="40" width="220" height="220" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="qm-ring" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff7b72"/>
+      <stop offset="0.5" stop-color="#d2a8ff"/>
+      <stop offset="1" stop-color="#79c0ff"/>
+    </linearGradient>
+    <radialGradient id="qm-fill" cx="0.36" cy="0.3" r="0.85">
+      <stop offset="0" stop-color="#2a3f7a"/>
+      <stop offset="0.6" stop-color="#151b33"/>
+      <stop offset="1" stop-color="#0d1117"/>
+    </radialGradient>
+    <linearGradient id="qm-arrow" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff7b72"/>
+      <stop offset="1" stop-color="#ffb3ad"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="52" fill="url(#qm-fill)" stroke="url(#qm-ring)" stroke-width="7"/>
+  <ellipse cx="64" cy="64" rx="52" ry="16" transform="rotate(-24 64 64)" fill="none" stroke="#a5b4d6" stroke-opacity="0.7" stroke-width="3"/>
+  <g stroke="#e6edf3" stroke-opacity="0.55" stroke-width="2.4" stroke-linecap="round">
+    <line x1="40" y1="54" x2="54" y2="40"/>
+    <line x1="54" y1="40" x2="64" y2="64"/>
+    <line x1="40" y1="54" x2="64" y2="64"/>
+    <line x1="40" y1="54" x2="46" y2="78"/>
+    <line x1="46" y1="78" x2="64" y2="64"/>
+    <line x1="46" y1="78" x2="70" y2="88"/>
+    <line x1="70" y1="88" x2="64" y2="64"/>
   </g>
-  <text x="330" y="112" fill="url(#title)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="50" font-weight="700">quantum-cognition-robotics</text>
-  <text x="332" y="152" fill="#8b949e" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22">Quantum-like, quantum and quantum-inspired models for robots, agents and people</text>
+  <g fill="#e6edf3">
+    <circle cx="40" cy="54" r="4.2"/>
+    <circle cx="54" cy="40" r="4.2"/>
+    <circle cx="46" cy="78" r="4.2"/>
+    <circle cx="70" cy="88" r="4.2"/>
+  </g>
+  <line x1="64" y1="64" x2="96" y2="30" stroke="url(#qm-arrow)" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="96" cy="30" r="9" fill="#ff7b72"/>
+  <circle cx="96" cy="30" r="4" fill="#ffe2df"/>
+  <circle cx="64" cy="64" r="5.5" fill="#d2a8ff"/>
+</svg>
+  <text x="320" y="118" fill="url(#title)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="64" font-weight="800">Quantum Mind</text>
+  <text x="323" y="158" fill="#8b949e" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22">Quantum-like, quantum and quantum-inspired models for robots, agents and people</text>
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" font-weight="600">
-    <rect x="332" y="186" width="196" height="40" rx="20" fill="#ff7b72" fill-opacity="0.16" stroke="#ff7b72"/>
-    <text x="430" y="212" fill="#ffb3ad" text-anchor="middle">quantum-like</text>
-    <rect x="544" y="186" width="150" height="40" rx="20" fill="#79c0ff" fill-opacity="0.16" stroke="#79c0ff"/>
-    <text x="619" y="212" fill="#a5d6ff" text-anchor="middle">quantum</text>
-    <rect x="710" y="186" width="218" height="40" rx="20" fill="#d2a8ff" fill-opacity="0.16" stroke="#d2a8ff"/>
-    <text x="819" y="212" fill="#e2c5ff" text-anchor="middle">quantum-inspired</text>
-    <rect x="944" y="186" width="200" height="40" rx="20" fill="#7ee787" fill-opacity="0.14" stroke="#7ee787"/>
-    <text x="1044" y="212" fill="#aff5b4" text-anchor="middle">3D Bloch viewer</text>
+    <rect x="323" y="186" width="196" height="40" rx="20" fill="#ff7b72" fill-opacity="0.16" stroke="#ff7b72"/>
+    <text x="421" y="212" fill="#ffb3ad" text-anchor="middle">quantum-like</text>
+    <rect x="535" y="186" width="150" height="40" rx="20" fill="#79c0ff" fill-opacity="0.16" stroke="#79c0ff"/>
+    <text x="610" y="212" fill="#a5d6ff" text-anchor="middle">quantum</text>
+    <rect x="701" y="186" width="218" height="40" rx="20" fill="#d2a8ff" fill-opacity="0.16" stroke="#d2a8ff"/>
+    <text x="810" y="212" fill="#e2c5ff" text-anchor="middle">quantum-inspired</text>
+    <rect x="935" y="186" width="200" height="40" rx="20" fill="#7ee787" fill-opacity="0.14" stroke="#7ee787"/>
+    <text x="1035" y="212" fill="#aff5b4" text-anchor="middle">3D Bloch viewer</text>
   </g>
-  <text x="332" y="262" fill="#6e7681" font-family="SFMono-Regular, Consolas, Menlo, monospace" font-size="17">python package: qlcog  ·  Qiskit  ·  IBM Quantum  ·  Amazon Braket  ·  Apache-2.0</text>
+  <text x="323" y="262" fill="#6e7681" font-family="SFMono-Regular, Consolas, Menlo, monospace" font-size="17">pip install quantum-mind  ·  Qiskit  ·  IBM Quantum  ·  Amazon Braket  ·  ROS 2  ·  Apache-2.0</text>
 </svg>

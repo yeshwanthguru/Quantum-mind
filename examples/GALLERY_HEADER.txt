@@ -4,6 +4,6 @@ Example gallery
 Runnable scripts across surveys, finance, medicine, robotics, physics, networks and information
 retrieval. Each page shows the code next to its printed output, produced when the documentation was
 built. Every script also runs on its own (``python3 examples/<script>.py``), without installing the
-package. Only the data in :mod:`qlcog.data` are human data; every simulated data set is labelled as
+package. Only the data in :mod:`quantum_mind.data` are human data; every simulated data set is labelled as
 such. The colour of a thumbnail shows the pillar: red quantum-like, blue quantum, purple
 quantum-inspired, green viewer, orange robotics.

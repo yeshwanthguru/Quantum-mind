@@ -13,10 +13,10 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/ql.png'
 import numpy as np
-from qlcog.core import compare
-from qlcog.data import TWO_STAGE_GAMBLE, proportions_to_counts
-from qlcog.families.interference import InterferenceModel, ClassicalMixtureModel, total_probability_bounds
-from qlcog.families.qlbn import BayesNet, classical_marginal, quantum_like_marginal
+from quantum_mind.core import compare
+from quantum_mind.data import TWO_STAGE_GAMBLE, proportions_to_counts
+from quantum_mind.families.interference import InterferenceModel, ClassicalMixtureModel, total_probability_bounds
+from quantum_mind.families.qlbn import BayesNet, classical_marginal, quantum_like_marginal
 
 # %%
 # Observed proportions and the classical range

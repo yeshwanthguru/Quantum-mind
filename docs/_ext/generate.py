@@ -15,49 +15,58 @@ import shutil
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 GEN = DOCS / '_generated'          # static files for the build (demos, assets)
-REPO = 'https://github.com/yeshwanthguru/quantum-cognition-robotics'
+REPO = 'https://github.com/yeshwanthguru/quantum-mind'
 
 # README -> documentation page (path under docs/, without the suffix)
 READMES = {
     'docs/concepts.md': 'user_guide/concepts',
-    'src/qlcog/quantum/README.md': 'user_guide/quantum',
-    'src/qlcog/inspired/README.md': 'user_guide/inspired',
-    'src/qlcog/problems/README.md': 'user_guide/problems',
-    'src/qlcog/circuits/README.md': 'user_guide/circuits',
-    'src/qlcog/viz/README.md': 'user_guide/viz',
-    'src/qlcog/applications/README.md': 'user_guide/robotics',
+    'src/quantum_mind/quantum/README.md': 'user_guide/quantum',
+    'src/quantum_mind/inspired/README.md': 'user_guide/inspired',
+    'src/quantum_mind/problems/README.md': 'user_guide/problems',
+    'src/quantum_mind/circuits/README.md': 'user_guide/circuits',
+    'src/quantum_mind/viz/README.md': 'user_guide/viz',
+    'src/quantum_mind/applications/README.md': 'user_guide/robotics',
     'integrations/ros2/README.md': 'user_guide/ros2',
     'CHANGELOG.md': 'about/changelog',
     'CONTRIBUTING.md': 'about/contributing',
     'SECURITY.md': 'about/security',
 }
 FAMILIES = ['order_effects', 'conjunction', 'interference', 'qlbn', 'dynamics', 'decision', 'contextuality',
-            'similarity', 'game_theory', 'memory', 'concepts']
+            'similarity', 'game_theory', 'memory', 'concepts', 'perception']
 for _f in FAMILIES:
-    READMES['src/qlcog/families/%s/README.md' % _f] = 'user_guide/families/' + _f
+    READMES['src/quantum_mind/families/%s/README.md' % _f] = 'user_guide/families/' + _f
 
 # API pages: (module, title)
 API = [
-    ('qlcog.core.model', 'Model base class'), ('qlcog.core.fit', 'Fitting and comparison'),
-    ('qlcog.core.linalg', 'Linear algebra'),
-] + [('qlcog.families.%s.models' % f, f.replace('_', ' ').capitalize()) for f in FAMILIES] + [
-    ('qlcog.applications.robotics', 'Robotics'), ('qlcog.applications.intent', 'Intent resolution'),
-    ('qlcog.quantum.statevector', 'State-vector simulator'), ('qlcog.quantum.ansatz', 'Feature maps and ansatz'),
-    ('qlcog.quantum.classifiers', 'Machine-learning models'), ('qlcog.quantum.algorithms', 'QAOA, VQE and Grover'),
-    ('qlcog.quantum.fourier', 'Quantum Fourier transform'), ('qlcog.quantum.estimation', 'Amplitude estimation'),
-    ('qlcog.quantum.walks', 'Quantum walks'),
-    ('qlcog.inspired.optimisers', 'Quantum-inspired optimisers'), ('qlcog.inspired.tensor', 'Tensor-network classifier'),
-    ('qlcog.inspired.rl', 'Quantum-inspired reinforcement learning'), ('qlcog.inspired.text', 'Quantum language model'),
-    ('qlcog.problems', 'QUBO problems'),
-    ('qlcog.circuits.builders', 'Circuit builders'), ('qlcog.circuits.backends', 'Running circuits'),
-    ('qlcog.viz.states', 'Bloch vectors and trajectories'), ('qlcog.viz.mpl', 'Matplotlib viewer'),
-    ('qlcog.viz.interactive', 'Interactive viewer'), ('qlcog.viz.themes', 'Themes'),
-    ('qlcog.data', 'Published data'),
+    ('quantum_mind.core.model', 'Model base class'), ('quantum_mind.core.fit', 'Fitting and comparison'),
+    ('quantum_mind.core.linalg', 'Linear algebra'),
+] + [('quantum_mind.families.%s.models' % f, f.replace('_', ' ').capitalize()) for f in FAMILIES] + [
+    ('quantum_mind.applications.robotics', 'Robotics'), ('quantum_mind.applications.intent', 'Intent resolution'),
+    ('quantum_mind.applications.calibration', 'Calibration'), ('quantum_mind.applications.orchestration', 'Orchestration gate'),
+    ('quantum_mind.applications.questioning', 'Adaptive questioning'),
+    ('quantum_mind.applications.personalisation', 'Personalised human models'),
+    ('quantum_mind.applications.handover', 'Trust-aware hand-over'), ('quantum_mind.applications.fusion', 'Multimodal fusion'),
+    ('quantum_mind.envs.hri', 'Reinforcement-learning environments'),
+    ('quantum_mind.quantum.statevector', 'State-vector simulator'), ('quantum_mind.quantum.ansatz', 'Feature maps and ansatz'),
+    ('quantum_mind.quantum.classifiers', 'Machine-learning models'), ('quantum_mind.quantum.algorithms', 'QAOA, VQE and Grover'),
+    ('quantum_mind.quantum.fourier', 'Quantum Fourier transform'), ('quantum_mind.quantum.estimation', 'Amplitude estimation'),
+    ('quantum_mind.quantum.walks', 'Quantum walks'), ('quantum_mind.quantum.policy', 'Variational quantum policy'),
+    ('quantum_mind.quantum.quanvolution', 'Quanvolutional filter'),
+    ('quantum_mind.inspired.optimisers', 'Quantum-inspired optimisers'), ('quantum_mind.inspired.tensor', 'Tensor-network classifier'),
+    ('quantum_mind.inspired.rl', 'Quantum-inspired reinforcement learning'), ('quantum_mind.inspired.text', 'Quantum language model'),
+    ('quantum_mind.inspired.exploration', 'Exploration strategies'),
+    ('quantum_mind.inspired.tensor_layers', 'Tensor-train layers'),
+    ('quantum_mind.problems', 'QUBO problems'),
+    ('quantum_mind.circuits.builders', 'Circuit builders'), ('quantum_mind.circuits.backends', 'Running circuits'),
+    ('quantum_mind.viz.states', 'Bloch vectors and trajectories'), ('quantum_mind.viz.mpl', 'Matplotlib viewer'),
+    ('quantum_mind.viz.interactive', 'Interactive viewer'), ('quantum_mind.viz.themes', 'Themes'),
+    ('quantum_mind.data', 'Published data'),
 ]
-API_GROUPS = [('Core', 'qlcog.core.'), ('Quantum-like families', 'qlcog.families.'),
-              ('Applications', 'qlcog.applications.'), ('Quantum', 'qlcog.quantum.'),
-              ('Quantum-inspired', 'qlcog.inspired.'), ('Problems', 'qlcog.problems'),
-              ('Circuits', 'qlcog.circuits.'), ('Bloch-sphere viewer', 'qlcog.viz.'), ('Data', 'qlcog.data')]
+API_GROUPS = [('Core', 'quantum_mind.core.'), ('Quantum-like families', 'quantum_mind.families.'),
+              ('Applications', 'quantum_mind.applications.'),
+              ('Environments', 'quantum_mind.envs.'), ('Quantum', 'quantum_mind.quantum.'),
+              ('Quantum-inspired', 'quantum_mind.inspired.'), ('Problems', 'quantum_mind.problems'),
+              ('Circuits', 'quantum_mind.circuits.'), ('Bloch-sphere viewer', 'quantum_mind.viz.'), ('Data', 'quantum_mind.data')]
 
 
 def _rewrite(md, src):
@@ -141,7 +150,7 @@ def api_pages():
     idx = ['API reference', '=============', '',
            'Every public class and function, generated from the docstrings (NumPy style). Each page starts',
            'with a summary table; the most used names are also importable from the subpackages, for example',
-           '``from qlcog.quantum import VariationalClassifier``.', '']
+           '``from quantum_mind.quantum import VariationalClassifier``.', '']
     for head, prefix in API_GROUPS:
         mods = [(mod, title) for mod, title in API if mod.startswith(prefix)]
         idx += [head, '-' * len(head), '', '.. toctree::', '   :maxdepth: 1', '']
@@ -180,8 +189,8 @@ def demos(static):
     """Interactive Bloch-sphere animations for the landing page (needs qiskit and plotly)."""
     import numpy as np
     from qiskit import QuantumCircuit
-    from qlcog.viz import circuit_trajectory, belief_trajectory, animate_bloch, save_html
-    from qlcog.families.dynamics import OpenSystemBelief
+    from quantum_mind.viz import circuit_trajectory, belief_trajectory, animate_bloch, save_html
+    from quantum_mind.families.dynamics import OpenSystemBelief
     out = static / 'demos'
     out.mkdir(parents=True, exist_ok=True)
     qc = QuantumCircuit(2)

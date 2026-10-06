@@ -1,7 +1,7 @@
 """Build the project website into _site/ (python3 site/build.py).
 
 The landing page (with the in-browser playground) comes from site/templates_index.html and the
-interactive animations from qlcog.viz; the documentation under _site/docs/ is the Sphinx site in
+interactive animations from quantum_mind.viz; the documentation under _site/docs/ is the Sphinx site in
 docs/ (API reference, user guide, example gallery, executed notebooks). GitHub Actions runs this on
 every push to main and deploys _site/ to GitHub Pages (.github/workflows/pages.yml).
 
@@ -18,8 +18,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SITE = ROOT / 'site'
 OUT = ROOT / '_site'
-REPO = 'https://github.com/yeshwanthguru/quantum-cognition-robotics'
-URL = 'https://yeshwanthguru.github.io/quantum-cognition-robotics/'
+REPO = 'https://github.com/yeshwanthguru/quantum-mind'
+URL = 'https://yeshwanthguru.github.io/quantum-mind/'
 sys.path.insert(0, str(ROOT / 'src'))
 os.environ.setdefault('MPLBACKEND', 'Agg')
 
@@ -47,7 +47,7 @@ RESULTS = [
 
 
 def version():
-    return re.search(r"__version__ = '([^']+)'", (ROOT / 'src/qlcog/__init__.py').read_text()).group(1)
+    return re.search(r"__version__ = '([^']+)'", (ROOT / 'src/quantum_mind/__init__.py').read_text()).group(1)
 
 
 def fill(text, **kw):
@@ -68,8 +68,8 @@ def local_plotly(path, rel):
 def build_demos(out):
     import numpy as np
     from qiskit import QuantumCircuit
-    from qlcog.viz import circuit_trajectory, belief_trajectory, animate_bloch, save_html
-    from qlcog.families.dynamics import OpenSystemBelief
+    from quantum_mind.viz import circuit_trajectory, belief_trajectory, animate_bloch, save_html
+    from quantum_mind.families.dynamics import OpenSystemBelief
     out.mkdir(parents=True, exist_ok=True)
     qc = QuantumCircuit(2)
     qc.h(0); qc.ry(np.pi / 3, 1); qc.cx(0, 1); qc.rz(np.pi / 2, 0); qc.cx(0, 1); qc.h(0)
@@ -88,7 +88,7 @@ def build_demos(out):
 def build_docs(out, fast=False):
     """Build the Sphinx documentation (docs/) into out."""
     import subprocess
-    env = dict(os.environ, QLCOG_DOCS_FAST='1' if fast else '0')
+    env = dict(os.environ, QUANTUM_MIND_DOCS_FAST='1' if fast else '0')
     subprocess.run([sys.executable, '-m', 'sphinx', '-b', 'html', '-q', str(ROOT / 'docs'), str(out)], check=True, env=env)
     shutil.rmtree(out.parent / 'jupyter_execute', ignore_errors=True)       # MyST-NB's scratch folder
 

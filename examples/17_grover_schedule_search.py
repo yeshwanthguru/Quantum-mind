@@ -11,7 +11,7 @@ is then sampled on the Aer simulator.
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
-from qlcog.quantum import grover
+from quantum_mind.quantum import grover
 
 # %%
 # The validity rule as an oracle
@@ -25,7 +25,7 @@ print('%d valid schedules of 32; %d Grover iterations; P(valid) = %.3f (random g
 # Sample the circuit on Aer
 # -------------------------
 try:
-    from qlcog.circuits import run
+    from quantum_mind.circuits import run
     counts = run(g.to_qiskit(), 'aer', 4000)
     hit = sum(k for b, k in counts.items() if valid(tuple(int(c) for c in b[::-1]))) / 4000
     print('Aer: fraction of valid samples %.3f' % hit)

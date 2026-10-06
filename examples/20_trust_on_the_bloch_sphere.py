@@ -1,7 +1,7 @@
 """Trust as a qubit
 ================
 
-Robotics / HRI: a person's trust in a robot as a qubit (qlcog OpenSystemBelief, simulated
+Robotics / HRI: a person's trust in a robot as a qubit (quantum_mind OpenSystemBelief, simulated
 parameters). Successes rotate the belief towards ``|0>`` ('I trust the robot'), failures away from it,
 and dephasing pulls it towards the z axis. The animation shows the belief over the event sequence;
 the printout compares P(trust) read from the Bloch vector with the model's prediction.
@@ -11,9 +11,9 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/viz.png'
 import pathlib
-from qlcog.families.dynamics import OpenSystemBelief, final_yes
-from qlcog.applications.robotics import TRUST_EVENTS
-from qlcog.viz import belief_trajectory
+from quantum_mind.families.dynamics import OpenSystemBelief, final_yes
+from quantum_mind.applications.robotics import TRUST_EVENTS
+from quantum_mind.viz import belief_trajectory
 
 # %%
 # The belief trajectory
@@ -29,7 +29,7 @@ print('Bloch-vector length (coherence lost to dephasing): start %.3f, end %.3f' 
 # Interactive animation
 # ---------------------
 try:
-    from qlcog.viz import animate_bloch, save_html
+    from quantum_mind.viz import animate_bloch, save_html
     out = pathlib.Path(sys.argv[0]).resolve().parent / 'output'; out.mkdir(exist_ok=True)
     save_html(animate_bloch(traj, title='Trust belief (simulated person)'), out / 'trust_belief.html')
     print('interactive figure:', out / 'trust_belief.html')

@@ -1,5 +1,5 @@
 import numpy as np
-from qlcog.core import projector, sequence_probabilities, luders, lindblad_superoperator, evolve_density, fit, Param, Model
+from quantum_mind.core import projector, sequence_probabilities, luders, lindblad_superoperator, evolve_density, fit, Param, Model
 
 
 def test_projector_and_luders():

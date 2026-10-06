@@ -8,12 +8,38 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 
-MODULES = ['qlcog.core', 'qlcog.families.order_effects', 'qlcog.families.conjunction', 'qlcog.families.interference',
-           'qlcog.families.qlbn', 'qlcog.families.dynamics', 'qlcog.families.decision', 'qlcog.families.contextuality',
-           'qlcog.families.similarity', 'qlcog.families.game_theory', 'qlcog.families.memory',
-           'qlcog.families.concepts', 'qlcog.applications.robotics', 'qlcog.applications.intent',
-           'qlcog.quantum', 'qlcog.inspired', 'qlcog.problems',
-           'qlcog.circuits', 'qlcog.viz', 'qlcog.data']
+MODULES = [
+    'quantum_mind.core',
+    'quantum_mind.families.order_effects',
+    'quantum_mind.families.conjunction',
+    'quantum_mind.families.interference',
+    'quantum_mind.families.qlbn',
+    'quantum_mind.families.dynamics',
+    'quantum_mind.families.decision',
+    'quantum_mind.families.contextuality',
+    'quantum_mind.families.similarity',
+    'quantum_mind.families.game_theory',
+    'quantum_mind.families.memory',
+    'quantum_mind.families.concepts',
+    'quantum_mind.families.perception',
+    'quantum_mind.applications.robotics',
+    'quantum_mind.applications.intent',
+    'quantum_mind.applications.calibration',
+    'quantum_mind.applications.orchestration',
+    'quantum_mind.applications.questioning',
+    'quantum_mind.applications.personalisation',
+    'quantum_mind.applications.handover',
+    'quantum_mind.applications.fusion',
+    'quantum_mind.quantum',
+    'quantum_mind.inspired',
+    'quantum_mind.inspired.exploration',
+    'quantum_mind.inspired.tensor_layers',
+    'quantum_mind.envs',
+    'quantum_mind.problems',
+    'quantum_mind.circuits',
+    'quantum_mind.viz',
+    'quantum_mind.data',
+]
 
 
 def first_paragraph(obj):
@@ -37,7 +63,7 @@ def public(mod):
             continue
         if inspect.ismodule(obj):
             continue
-        if (inspect.isclass(obj) or inspect.isfunction(obj)) and getattr(obj, '__module__', '').startswith('qlcog'):
+        if (inspect.isclass(obj) or inspect.isfunction(obj)) and getattr(obj, '__module__', '').startswith('quantum_mind'):
             yield n, obj
         elif n.isupper() and not callable(obj):
             yield n, obj
@@ -45,7 +71,7 @@ def public(mod):
 
 lines = ['# API reference', '',
          'Generated from the docstrings by `docs/make_api.py`; each entry shows the signature and the first',
-         'paragraph of the docstring. Full docstrings: `help(qlcog.<module>.<name>)`.', '']
+         'paragraph of the docstring. Full docstrings: `help(quantum_mind.<module>.<name>)`.', '']
 for name in MODULES:
     mod = importlib.import_module(name)
     lines += ['## `%s`' % name, '', first_paragraph(mod), '']

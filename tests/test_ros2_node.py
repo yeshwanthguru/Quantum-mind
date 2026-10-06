@@ -7,7 +7,7 @@ import types
 
 import numpy as np
 import pytest
-from qlcog.applications.robotics import HumanModelService, domain_models
+from quantum_mind.applications.robotics import HumanModelService, domain_models
 
 
 def _answers(n, rng):
@@ -66,10 +66,10 @@ def _fake_ros(monkeypatch):
 
 def test_ros2_node_callbacks(monkeypatch):
     String, published = _fake_ros(monkeypatch)
-    pkg = pathlib.Path(__file__).resolve().parents[1] / 'integrations' / 'ros2' / 'qlcog_ros'
+    pkg = pathlib.Path(__file__).resolve().parents[1] / 'integrations' / 'ros2' / 'quantum_mind_ros'
     monkeypatch.syspath_prepend(str(pkg))
-    sys.modules.pop('qlcog_ros.human_model_node', None)
-    from qlcog_ros.human_model_node import HumanModelNode
+    sys.modules.pop('quantum_mind_ros.human_model_node', None)
+    from quantum_mind_ros.human_model_node import HumanModelNode
     node = HumanModelNode()
     node.on_query(String(''))
     assert json.loads(published[-1].data)['action'] == 'ask'

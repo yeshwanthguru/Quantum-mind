@@ -18,8 +18,8 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
 import numpy as np
 from scipy.optimize import minimize
-from qlcog.quantum import VariationalClassifier, QuantumKernelClassifier
-from qlcog.inspired import MPSClassifier
+from quantum_mind.quantum import VariationalClassifier, QuantumKernelClassifier
+from quantum_mind.inspired import MPSClassifier
 
 
 # %%
@@ -80,7 +80,7 @@ for name, v in sorted(scores.items(), key=lambda kv: -np.mean(kv[1])):
 X, y, tr, te = make_data(0)
 vqc = makers['variational quantum classifier (4 qubits)']().fit(X[tr], y[tr])
 try:
-    from qlcog.circuits import run
+    from quantum_mind.circuits import run
     qc = vqc.to_qiskit(X[te[0]]); counts = run(qc, 'aer', 20000)
     p1 = sum(k for b, k in counts.items() if b[-1] == '1') / 20000
     print('one patient: simulator P(class 1) = %.3f, Aer circuit = %.3f' % (vqc.predict_proba(X[te[:1]])[0, 1], p1))

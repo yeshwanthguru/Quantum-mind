@@ -1,5 +1,5 @@
-quantum-cognition-robotics (Python package: qlcog)
+Quantum Mind (repository quantum-mind; install name quantum-mind; import name quantum_mind)
 Copyright 2026 Yeshwanth Guru
 
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
-The published aggregate data in src/qlcog/data are cited from their original sources.
+The published aggregate data in src/quantum_mind/data are cited from their original sources.

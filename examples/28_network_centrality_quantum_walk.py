@@ -13,7 +13,7 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
 import numpy as np
 from scipy.stats import spearmanr
-from qlcog.quantum import adjacency, ctqw_probabilities, quantum_walk_centrality, pagerank, degree_centrality
+from quantum_mind.quantum import adjacency, ctqw_probabilities, quantum_walk_centrality, pagerank, degree_centrality
 
 # %%
 # A small network and three centralities

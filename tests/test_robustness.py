@@ -1,11 +1,11 @@
 """Edge cases, input validation, limits and exactness of gradients."""
 import numpy as np
 import pytest
-from qlcog.quantum import Circuit, W, X, VariationalClassifier, QuantumKernelClassifier, QAOA, grover
-from qlcog.quantum.statevector import MAX_QUBITS
-from qlcog.problems import Qubo, maxcut
-from qlcog.inspired import MPSClassifier
-from qlcog.applications.robotics import ask_or_act
+from quantum_mind.quantum import Circuit, W, X, VariationalClassifier, QuantumKernelClassifier, QAOA, grover
+from quantum_mind.quantum.statevector import MAX_QUBITS
+from quantum_mind.problems import Qubo, maxcut
+from quantum_mind.inspired import MPSClassifier
+from quantum_mind.applications.robotics import ask_or_act
 
 
 def test_adjoint_gradient_matches_finite_differences():
@@ -83,7 +83,7 @@ def test_ask_or_act():
 
 def test_missing_optional_dependency_message(monkeypatch):
     import builtins
-    from qlcog._optional import require
+    from quantum_mind._optional import require
     real = builtins.__import__
 
     def fake(name, *a, **k):
@@ -93,5 +93,5 @@ def test_missing_optional_dependency_message(monkeypatch):
     monkeypatch.setattr(builtins, '__import__', fake)
     import importlib
     monkeypatch.setattr(importlib, 'import_module', lambda n: fake(n))
-    with pytest.raises(ImportError, match=r'qlcog\[viz\]'):
+    with pytest.raises(ImportError, match=r'quantum-mind\[viz\]'):
         require('plotly')

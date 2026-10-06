@@ -1,6 +1,6 @@
 import numpy as np
-from qlcog.problems import maxcut, knapsack
-from qlcog.inspired import QIEA, QPSO, SQA, simulated_annealing, MPSClassifier
+from quantum_mind.problems import maxcut, knapsack
+from quantum_mind.inspired import QIEA, QPSO, SQA, simulated_annealing, MPSClassifier
 
 
 def test_binary_optimisers_reach_the_optimum():
