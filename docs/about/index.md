@@ -1,8 +1,7 @@
 # About
 
 **Author and maintainer:** Yeshwanth Guru (yeshwanth445@gmail.com; ORCID
-[0009-0007-6353-4033](https://orcid.org/0009-0007-6353-4033)), Department of Mechanical Engineering,
-Amrita Vishwa Vidyapeetham, Chennai, India.
+[0009-0007-6353-4033](https://orcid.org/0009-0007-6353-4033)).
 
 ## Citing
 
