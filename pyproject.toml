@@ -3,8 +3,8 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "qlcog"
-version = "1.5.0"
+name = "quantum-mind"
+version = "2.0.0"
 description = "Quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a 3D Bloch-sphere viewer"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,11 +36,11 @@ classifiers = [
 dependencies = ["numpy>=1.24", "scipy>=1.10"]
 
 [project.urls]
-Homepage = "https://yeshwanthguru.github.io/quantum-cognition-robotics/"
-Source = "https://github.com/yeshwanthguru/quantum-cognition-robotics"
-Issues = "https://github.com/yeshwanthguru/quantum-cognition-robotics/issues"
-Documentation = "https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/"
-Changelog = "https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/about/changelog.html"
+Homepage = "https://yeshwanthguru.github.io/quantum-mind/"
+Source = "https://github.com/yeshwanthguru/quantum-mind"
+Issues = "https://github.com/yeshwanthguru/quantum-mind/issues"
+Documentation = "https://yeshwanthguru.github.io/quantum-mind/docs/"
+Changelog = "https://yeshwanthguru.github.io/quantum-mind/docs/about/changelog.html"
 
 [project.optional-dependencies]
 qiskit = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40"]

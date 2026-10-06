@@ -1,5 +1,6 @@
 """Regenerate the images and animations used in the README and docs (python3 docs/make_assets.py).
-All figures come from the package itself; nothing is drawn by hand except the SVG banner. The
+All figures come from the package itself; nothing is drawn by hand except the SVG logo, wordmark and banner
+(docs/assets/logo.svg, logo-wordmark.svg, banner.svg) and the social card rendered from them. The
 interactive HTML versions are not committed (they are large); examples/19 and 20 write them to
 examples/output/."""
 import pathlib
@@ -15,11 +16,11 @@ sys.path.insert(0, str(ROOT / 'src'))
 OUT = ROOT / 'docs' / 'assets'; OUT.mkdir(parents=True, exist_ok=True)
 
 from qiskit import QuantumCircuit                                 # noqa: E402
-from qlcog.viz import circuit_trajectory, belief_trajectory, animate_trajectory  # noqa: E402
-from qlcog.families.dynamics import OpenSystemBelief              # noqa: E402
-from qlcog.problems import maxcut                                 # noqa: E402
-from qlcog.quantum import QAOA, VariationalClassifier            # noqa: E402
-from qlcog.inspired import QIEA, SQA, simulated_annealing, MPSClassifier  # noqa: E402
+from quantum_mind.viz import circuit_trajectory, belief_trajectory, animate_trajectory  # noqa: E402
+from quantum_mind.families.dynamics import OpenSystemBelief              # noqa: E402
+from quantum_mind.problems import maxcut                                 # noqa: E402
+from quantum_mind.quantum import QAOA, VariationalClassifier            # noqa: E402
+from quantum_mind.inspired import QIEA, SQA, simulated_annealing, MPSClassifier  # noqa: E402
 
 BG, FG, GRID = '#0d1117', '#e6edf3', '#30363d'
 PAL = ['#ff7b72', '#79c0ff', '#d2a8ff', '#7ee787', '#ffa657']
@@ -37,7 +38,7 @@ tr = circuit_trajectory(qc, steps=9)
 tr.names = ['qubit 0', 'qubit 1']; tr.title = 'H · RY(π/3) · CNOT · RZ(π/2) · CNOT · H'
 animate_trajectory(tr, save=OUT / 'entanglement.gif', fps=16, rotate=0.9, dpi=64)
 
-# 2. Trust belief of a person watching a robot (qlcog OpenSystemBelief, simulated parameters)
+# 2. Trust belief of a person watching a robot (quantum_mind OpenSystemBelief, simulated parameters)
 m = OpenSystemBelief(phi0=1.6, a_pos=0.8, a_neg=1.2, gamma=0.3)
 bt = belief_trajectory(m, (1, 1, 0, 1, 0, 1), steps=6)
 bt.title = 'Trust belief (simulated person)'
@@ -82,6 +83,6 @@ for a, (name, mdl) in zip(ax, models):
 fig.tight_layout(); fig.savefig(OUT / 'classifiers.png', dpi=130, facecolor=BG)
 
 # 5. Entanglement along the circuit of animation 1: Bloch-vector lengths and concurrence
-from qlcog.viz import plot_entanglement                           # noqa: E402
+from quantum_mind.viz import plot_entanglement                           # noqa: E402
 plot_entanglement(tr, size=(9, 2.8)).savefig(OUT / 'entanglement_timeline.png', dpi=130, facecolor=BG)
 print('assets written to', OUT)

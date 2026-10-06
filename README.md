@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-cognition-robotics/main/docs/assets/banner.svg" alt="quantum-cognition-robotics: quantum-like, quantum and quantum-inspired models" width="100%">
+  <img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-mind/main/docs/assets/banner.svg" alt="quantum-mind: quantum-like, quantum and quantum-inspired models" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/yeshwanthguru/quantum-cognition-robotics/actions/workflows/tests.yml"><img src="https://github.com/yeshwanthguru/quantum-cognition-robotics/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
-  <a href="https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0"></a>
+  <a href="https://github.com/yeshwanthguru/quantum-mind/actions/workflows/tests.yml"><img src="https://github.com/yeshwanthguru/quantum-mind/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
+  <a href="https://github.com/yeshwanthguru/quantum-mind/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0"></a>
   <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white" alt="Python 3.10-3.12">
   <img src="https://img.shields.io/badge/Qiskit-2.x-6929C4?logo=qiskit&logoColor=white" alt="Qiskit 2.x">
   <img src="https://img.shields.io/badge/coverage-%E2%89%A580%25%20enforced-2ea44f" alt="coverage enforced in CI">
-  <a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/"><img src="https://img.shields.io/badge/docs-Sphinx-0969da" alt="Documentation"></a>
+  <a href="https://yeshwanthguru.github.io/quantum-mind/docs/"><img src="https://img.shields.io/badge/docs-Sphinx-0969da" alt="Documentation"></a>
 </p>
 
-<p align="center"><b><a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/">Website and live Bloch-sphere playground</a> · <a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/">Documentation</a> (user guide, example gallery, API reference)</b></p>
+<p align="center"><b><a href="https://yeshwanthguru.github.io/quantum-mind/">Website and live Bloch-sphere playground</a> · <a href="https://yeshwanthguru.github.io/quantum-mind/docs/">Documentation</a> (user guide, example gallery, API reference)</b></p>
 
 <p align="center">
   <b><a href="#pillars">Three pillars</a></b> ·
@@ -21,14 +21,14 @@
   <b><a href="#examples">Examples</a></b> ·
   <b><a href="#hardware">Hardware</a></b> ·
   <b><a href="#status">Status</a></b> ·
-  <b><a href="https://github.com/yeshwanthguru/quantum-cognition-robotics/tree/main/notebooks">Notebooks</a></b> ·
-  <b><a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/api/index.html">API</a></b> ·
-  <b><a href="https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/docs/concepts.md">Concepts</a></b>
+  <b><a href="https://github.com/yeshwanthguru/quantum-mind/tree/main/notebooks">Notebooks</a></b> ·
+  <b><a href="https://yeshwanthguru.github.io/quantum-mind/docs/api/index.html">API</a></b> ·
+  <b><a href="https://github.com/yeshwanthguru/quantum-mind/blob/main/docs/concepts.md">Concepts</a></b>
 </p>
 
 ---
 
-**quantum-cognition-robotics** (Python package **`qlcog`**) is one library for the three ways
+**Quantum Mind** (`pip install quantum-mind`, `import quantum_mind`) is one library for the three ways
 "quantum" enters modelling today:
 
 - **quantum-like** models of how people judge, decide and trust, each paired with the classical models
@@ -44,7 +44,7 @@ research, physics and operations research.
 > Quantum-like models use the mathematics of quantum probability to describe judgements. They run on
 > ordinary computers and do not claim that the brain is a quantum computer. Quantum models are
 > circuits for quantum hardware. Quantum-inspired models are classical algorithms. The
-> [concepts page](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/docs/concepts.md) explains the difference and how to test each.
+> [concepts page](https://github.com/yeshwanthguru/quantum-mind/blob/main/docs/concepts.md) explains the difference and how to test each.
 
 <a id="pillars"></a>
 
@@ -69,7 +69,7 @@ classical baselines and distinctive tests.
 - quantum games · episodic memory · concept combination
 - **robotics**: questioning designs, trust, intent resolution, human-model ensemble
 
-`qlcog.families`, `qlcog.applications`
+`quantum_mind.families`, `quantum_mind.applications`
 
 </td>
 <td>
@@ -84,7 +84,7 @@ to Qiskit.
 - amplitude estimation · continuous-time quantum walks
 - circuits for the quantum-like families
 
-`qlcog.quantum`, `qlcog.circuits`
+`quantum_mind.quantum`, `quantum_mind.circuits`
 
 </td>
 <td>
@@ -99,15 +99,15 @@ to Qiskit.
 - quantum language model for document ranking
 - classical simulated-annealing baseline
 
-`qlcog.inspired`
+`quantum_mind.inspired`
 
 </td>
 </tr>
 </table>
 
-Shared layers: `qlcog.core` (fitting, BIC/AIC comparison, model recovery), `qlcog.problems` (QUBO
+Shared layers: `quantum_mind.core` (fitting, BIC/AIC comparison, model recovery), `quantum_mind.problems` (QUBO
 builders for MaxCut, knapsack, multi-robot task allocation, portfolio and Ising problems) and
-`qlcog.viz` (the 3D Bloch-sphere viewer).
+`quantum_mind.viz` (the 3D Bloch-sphere viewer).
 
 <a id="viewer"></a>
 
@@ -115,16 +115,16 @@ builders for MaxCut, knapsack, multi-robot task allocation, portfolio and Ising 
 
 <table>
 <tr>
-<td align="center" width="62%"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-cognition-robotics/main/docs/assets/entanglement.gif" alt="Two qubits entangled and disentangled by a circuit" width="100%"><br>
+<td align="center" width="62%"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-mind/main/docs/assets/entanglement.gif" alt="Two qubits entangled and disentangled by a circuit" width="100%"><br>
 <sub>A Qiskit circuit, gate by gate. While the qubits are entangled, their vectors leave the sphere.<br><code>circuit_trajectory(qc)</code> → <code>animate_trajectory</code> / <code>animate_bloch</code></sub></td>
-<td align="center" width="38%"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-cognition-robotics/main/docs/assets/trust_belief.gif" alt="Trust belief of a simulated person on the Bloch sphere" width="100%"><br>
+<td align="center" width="38%"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-mind/main/docs/assets/trust_belief.gif" alt="Trust belief of a simulated person on the Bloch sphere" width="100%"><br>
 <sub>Trust in a robot as a qubit, over successes and failures, with dephasing.<br><code>belief_trajectory(OpenSystemBelief(), events)</code></sub></td>
 </tr>
 </table>
 
 ```python
 from qiskit import QuantumCircuit
-from qlcog.viz import circuit_trajectory, animate_bloch, save_html, LiveBloch, bloch_tomography
+from quantum_mind.viz import circuit_trajectory, animate_bloch, save_html, LiveBloch, bloch_tomography
 
 qc = QuantumCircuit(2); qc.h(0); qc.cx(0, 1); qc.ry(0.6, 1)
 traj = circuit_trajectory(qc, steps=15)
@@ -134,19 +134,19 @@ bloch_tomography(qc, 'aer:FakeTorino')             # Bloch vectors measured unde
 traj.concurrence(0, 1)                              # entanglement of the pair along the circuit
 ```
 
-<p align="center"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-cognition-robotics/main/docs/assets/entanglement_timeline.png" alt="Bloch-vector lengths and concurrence along the circuit" width="88%"><br>
+<p align="center"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-mind/main/docs/assets/entanglement_timeline.png" alt="Bloch-vector lengths and concurrence along the circuit" width="88%"><br>
 <sub>The same circuit as a timeline: <code>plot_entanglement(traj)</code> shows each qubit's Bloch-vector length and the pair's concurrence (Wootters); <code>plot_qsphere(state)</code> draws the Q-sphere.</sub></p>
 
 Interactive versions of both animations (rotate, zoom, play, slider) are written by
-[`examples/19`](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/19_bloch_sphere_viewer.py) and [`examples/20`](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/20_trust_on_the_bloch_sphere.py),
-and shown inline in the [notebooks](https://github.com/yeshwanthguru/quantum-cognition-robotics/tree/main/notebooks). The [viewer README](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/viz/README.md) covers everything else.
+[`examples/19`](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/19_bloch_sphere_viewer.py) and [`examples/20`](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/20_trust_on_the_bloch_sphere.py),
+and shown inline in the [notebooks](https://github.com/yeshwanthguru/quantum-mind/tree/main/notebooks). The [viewer README](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/viz/README.md) covers everything else.
 
 <a id="quick-start"></a>
 
 ## Quick start
 
 ```bash
-pip install "qlcog[all]"
+pip install "quantum-mind[all]"
 ```
 
 <details open>
@@ -154,8 +154,8 @@ pip install "qlcog[all]"
 
 ```python
 import numpy as np
-from qlcog.core import compare
-from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel, qq_test
+from quantum_mind.core import compare
+from quantum_mind.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel, qq_test
 
 counts = {'AB': np.array([212, 48, 61, 179]),   # A asked first: yes-yes, yes-no, no-yes, no-no
           'BA': np.array([240, 33, 52, 175])}   # B asked first
@@ -169,8 +169,8 @@ for r in compare([QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel], co
 <summary><b>Quantum: classify with a circuit, then run it under IBM device noise</b></summary>
 
 ```python
-from qlcog.quantum import VariationalClassifier
-from qlcog.circuits import run
+from quantum_mind.quantum import VariationalClassifier
+from quantum_mind.circuits import run
 
 clf = VariationalClassifier(layers=3).fit(X_train, y_train)
 print(clf.score(X_test, y_test))
@@ -182,9 +182,9 @@ counts = run(clf.to_qiskit(X_test[0]), 'aer:FakeTorino', shots=4000)
 <summary><b>Quantum-inspired: one robot task-allocation problem, three kinds of solver</b></summary>
 
 ```python
-from qlcog.problems import task_allocation
-from qlcog.quantum import QAOA
-from qlcog.inspired import SQA, QIEA, simulated_annealing
+from quantum_mind.problems import task_allocation
+from quantum_mind.quantum import QAOA
+from quantum_mind.inspired import SQA, QIEA, simulated_annealing
 
 q = task_allocation(costs)                       # costs[robot, task]
 print(q.brute_force()[1],                        # exact
@@ -198,7 +198,7 @@ print(q.brute_force()[1],                        # exact
 <summary><b>Robotics: a human model with uncertainty, for a planner or a ROS 2 system</b></summary>
 
 ```python
-from qlcog.applications.robotics import HumanModelService
+from quantum_mind.applications.robotics import HumanModelService
 
 svc = HumanModelService()                                   # wraps HumanModelEnsemble + ask_or_act
 svc.add_answer({'order': 'AB', 'answers': [1, 0]})          # one person's two answers (1 = yes)
@@ -207,11 +207,11 @@ svc.query({'order': 'AB', 'ask_cost': 1.0, 'error_cost': 3.0})
 ```
 
 The same service runs as a ROS 2 node with standard `std_msgs/String` JSON topics:
-[`integrations/ros2`](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/integrations/ros2/README.md).
+[`integrations/ros2`](https://github.com/yeshwanthguru/quantum-mind/blob/main/integrations/ros2/README.md).
 </details>
 
-<p align="center"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-cognition-robotics/main/docs/assets/optimisers.png" alt="Optimisers on MaxCut and the QAOA output distribution" width="92%"></p>
-<p align="center"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-cognition-robotics/main/docs/assets/classifiers.png" alt="Decision regions of the variational quantum classifier and the MPS classifier" width="92%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-mind/main/docs/assets/optimisers.png" alt="Optimisers on MaxCut and the QAOA output distribution" width="92%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/yeshwanthguru/quantum-mind/main/docs/assets/classifiers.png" alt="Decision regions of the variational quantum classifier and the MPS classifier" width="92%"></p>
 <p align="center"><sub>Generated by <code>docs/make_assets.py</code> from the package itself (simulated data).</sub></p>
 
 <a id="catalogue"></a>
@@ -223,26 +223,26 @@ The same service runs as a ROS 2 node with standard `std_msgs/String` JSON topic
 
 | Family | Phenomenon | Quantum-like model(s) | Classical baselines | Circuit | README |
 |---|---|---|---|---|---|
-| `order_effects` | Answers depend on question order | `QuantumOrderModel4D` (nests Bayes), `QuantumOrderModel` (3D, ranks) | Bayes, anchoring, saturated | yes | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/order_effects/README.md) |
-| `conjunction` | Conjunction and disjunction fallacies | `QuantumConjunctionModel` | classical joint, averaging, probability theory plus noise | yes | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/conjunction/README.md) |
-| `interference` | Disjunction effect, sure-thing violations | `InterferenceModel` (normalised or not) | classical mixture | yes | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/interference/README.md) |
-| `qlbn` | Inference with unresolved hidden causes | quantum-like Bayesian network | classical Bayesian network | yes | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/qlbn/README.md) |
-| `dynamics` | Belief change over time; judgements that change later judgements | `QuantumWalk`, `OpenSystemWalk`, `OpenSystemBelief` | `MarkovWalk`, `MarkovBelief` | yes | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/dynamics/README.md) |
-| `decision` | Risky choice | `QDTModel` (quantum decision theory) | expected utility, prospect theory | no | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/decision/README.md) |
-| `contextuality` | Is there one joint distribution? | CHSH, Contextuality-by-Default criterion | classical bounds | yes | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/contextuality/README.md) |
-| `similarity` | Asymmetric similarity | `QuantumSimilarityModel` | biased geometric (Nosofsky), geometric | yes | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/similarity/README.md) |
-| `game_theory` | Strategic choice with shared quantum resources | `EWLGame` (Eisert–Wilkens–Lewenstein), best responses, Nash checks | classical Nash equilibria | no | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/game_theory/README.md) |
-| `memory` | Episodic overdistribution in recall | `QuantumEpisodicModel` (Brainerd) | additive (verbatim + gist) | no | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/memory/README.md) |
-| `concepts` | Overextension in concept combination ("pet fish") | `FockSpaceConceptModel` (Aerts) | product, minimum (fuzzy), weighted average | no | [link](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/families/concepts/README.md) |
+| `order_effects` | Answers depend on question order | `QuantumOrderModel4D` (nests Bayes), `QuantumOrderModel` (3D, ranks) | Bayes, anchoring, saturated | yes | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/order_effects/README.md) |
+| `conjunction` | Conjunction and disjunction fallacies | `QuantumConjunctionModel` | classical joint, averaging, probability theory plus noise | yes | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/conjunction/README.md) |
+| `interference` | Disjunction effect, sure-thing violations | `InterferenceModel` (normalised or not) | classical mixture | yes | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/interference/README.md) |
+| `qlbn` | Inference with unresolved hidden causes | quantum-like Bayesian network | classical Bayesian network | yes | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/qlbn/README.md) |
+| `dynamics` | Belief change over time; judgements that change later judgements | `QuantumWalk`, `OpenSystemWalk`, `OpenSystemBelief` | `MarkovWalk`, `MarkovBelief` | yes | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/dynamics/README.md) |
+| `decision` | Risky choice | `QDTModel` (quantum decision theory) | expected utility, prospect theory | no | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/decision/README.md) |
+| `contextuality` | Is there one joint distribution? | CHSH, Contextuality-by-Default criterion | classical bounds | yes | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/contextuality/README.md) |
+| `similarity` | Asymmetric similarity | `QuantumSimilarityModel` | biased geometric (Nosofsky), geometric | yes | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/similarity/README.md) |
+| `game_theory` | Strategic choice with shared quantum resources | `EWLGame` (Eisert–Wilkens–Lewenstein), best responses, Nash checks | classical Nash equilibria | no | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/game_theory/README.md) |
+| `memory` | Episodic overdistribution in recall | `QuantumEpisodicModel` (Brainerd) | additive (verbatim + gist) | no | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/memory/README.md) |
+| `concepts` | Overextension in concept combination ("pet fish") | `FockSpaceConceptModel` (Aerts) | product, minimum (fuzzy), weighted average | no | [link](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/families/concepts/README.md) |
 
-Robotics application ([README](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/applications/README.md)): question domains (object
+Robotics application ([README](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/applications/README.md)): question domains (object
 clarification, trust and hand-over, preference elicitation), questioning designs (fixed, probe,
 split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like intent resolvers
 (`applications.intent`) for ambiguous commands.
 </details>
 
 <details>
-<summary><b>Quantum models</b>: QML and algorithms (<a href="https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/quantum/README.md">README</a>)</summary>
+<summary><b>Quantum models</b>: QML and algorithms (<a href="https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/quantum/README.md">README</a>)</summary>
 
 | Model | Use | Reference |
 |---|---|---|
@@ -256,11 +256,11 @@ split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like in
 | `qft_circuit`, `find_period` | quantum Fourier transform and period finding | Coppersmith, 1994; Shor, 1994 |
 | `AmplitudeEstimation` | expected values (risk, pricing) with maximum-likelihood amplitude estimation | Suzuki et al., *QIP* 2020 |
 | `ctqw_probabilities`, `quantum_walk_centrality` | continuous-time quantum walks on graphs; node centrality | Farhi and Gutmann, *PRA* 1998 |
-| `qlcog.circuits` | circuits of the quantum-like families; `run()` on any backend | [circuits README](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/circuits/README.md) |
+| `quantum_mind.circuits` | circuits of the quantum-like families; `run()` on any backend | [circuits README](https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/circuits/README.md) |
 </details>
 
 <details>
-<summary><b>Quantum-inspired models</b>: optimisers, tensor networks, learning and ranking (<a href="https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/src/qlcog/inspired/README.md">README</a>)</summary>
+<summary><b>Quantum-inspired models</b>: optimisers, tensor networks, learning and ranking (<a href="https://github.com/yeshwanthguru/quantum-mind/blob/main/src/quantum_mind/inspired/README.md">README</a>)</summary>
 
 | Model | Problem | Reference |
 |---|---|---|
@@ -277,14 +277,14 @@ split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like in
 
 ```mermaid
 flowchart TB
-    core["qlcog.core<br/>Model · Param · fit · compare · recovery"]
-    fam["qlcog.families<br/>11 quantum-like families"]
-    app["qlcog.applications<br/>robotics"]
-    prob["qlcog.problems<br/>QUBO builders"]
-    qm["qlcog.quantum<br/>VQC · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
-    ins["qlcog.inspired<br/>QIEA · QPSO · SQA · MPS · QRL · QLM"]
-    circ["qlcog.circuits<br/>circuits + run()"]
-    viz["qlcog.viz<br/>Bloch-sphere viewer"]
+    core["quantum_mind.core<br/>Model · Param · fit · compare · recovery"]
+    fam["quantum_mind.families<br/>11 quantum-like families"]
+    app["quantum_mind.applications<br/>robotics"]
+    prob["quantum_mind.problems<br/>QUBO builders"]
+    qm["quantum_mind.quantum<br/>VQC · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
+    ins["quantum_mind.inspired<br/>QIEA · QPSO · SQA · MPS · QRL · QLM"]
+    circ["quantum_mind.circuits<br/>circuits + run()"]
+    viz["quantum_mind.viz<br/>Bloch-sphere viewer"]
     hw[("Aer · IBM Quantum · Amazon Braket")]
     core --> fam --> app
     fam --> circ
@@ -298,7 +298,7 @@ flowchart TB
 ```
 
 ```
-src/qlcog/
+src/quantum_mind/
 ├── core/           Lüders rule, density matrices, Lindblad · Model/Param · fit, compare, recovery
 ├── families/       order_effects · conjunction · interference · qlbn · dynamics · decision · contextuality · similarity · game_theory · memory · concepts
 ├── applications/   robotics: question domains, questioning designs, trust, intent resolution, human-model ensemble, ask_or_act, HumanModelService
@@ -310,7 +310,7 @@ src/qlcog/
 └── data/           published aggregate data sets
 examples/           31 scripts across domains        docs/       Sphinx documentation, concepts, assets
 notebooks/          2 Jupyter notebooks              tests/      63 tests
-integrations/ros2/  ROS 2 node (qlcog_ros)
+integrations/ros2/  ROS 2 node (quantum_mind_ros)
 site/               project website (built and deployed to GitHub Pages by CI)
 .github/            CI, release, website, CODEOWNERS, issue and pull-request templates
 ```
@@ -323,40 +323,40 @@ Pillar: QL quantum-like, Q quantum, QI quantum-inspired, viz Bloch-sphere viewer
 
 | # | Domain | Pillar | Script |
 |---|---|---|---|
-| 01 | Surveys, market research | QL | [question-order effects, QQ test](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/01_survey_question_order.py) |
-| 02 | Behavioural finance | QL | [disjunction effect, interference, QLBN](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/02_finance_disjunction_effect.py) |
-| 03 | Medical decision support | QL | [quantum-like Bayesian network](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/03_medical_diagnosis_qlbn.py) |
-| 04 | Consumer choice | QL | [quantum decision theory vs EU and PT](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/04_consumer_choice_qdt.py) |
-| 05 | AI / LLM evaluation | QL | [order effects in judgements](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/05_llm_evaluation_order.py) |
-| 06 | Human–computer interaction | QL | [trust dynamics](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/06_hci_trust_dynamics.py) |
-| 07 | Perception, confidence | QL | [Markov vs quantum walk](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/07_evidence_accumulation.py) |
-| 08 | Physics, psychology | QL, Q | [CHSH and Contextuality-by-Default](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/08_contextuality_analysis.py) |
-| 09 | Marketing, linguistics | QL | [asymmetric similarity](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/09_similarity_asymmetry.py) |
-| 10 | – | Q | [every family as a circuit (Aer, FakeTorino, Braket)](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/10_circuits_quickstart.py) |
-| 11 | – | Q | [IBM Quantum / Amazon Braket hardware](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/11_cloud_run.py) |
-| 12 | Robotics, HRI | QL | [robot questioning and trust](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/12_robot_questioning_trust.py) |
-| 13 | Medicine (simulated) | Q, QI | [VQC, quantum kernel, MPS vs logistic regression](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/13_quantum_classifiers_triage.py) |
-| 14 | Robotics | Q, QI | [multi-robot task allocation: QAOA, SQA, QIEA, SA](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/14_qaoa_multi_robot_allocation.py) |
-| 15 | Finance (simulated) | Q, QI | [portfolio selection](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/15_portfolio_selection.py) |
-| 16 | Physics, materials | Q | [VQE on a transverse-field Ising chain](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/16_vqe_ising_chain.py) |
-| 17 | Scheduling | Q | [Grover search for valid schedules](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/17_grover_schedule_search.py) |
-| 18 | Control, robotics | QI | [PID tuning with QPSO](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/18_qpso_controller_tuning.py) |
-| 19 | Visualisation | viz | [Bloch-sphere viewer, HTML, GIF, live, tomography](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/19_bloch_sphere_viewer.py) |
-| 20 | Robotics, HRI | QL, viz | [trust on the Bloch sphere](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/20_trust_on_the_bloch_sphere.py) |
-| 21 | Robotics | QL | [when to ask for help: ensemble uncertainty and `ask_or_act`](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/21_robot_ask_for_help.py) |
-| 22 | Surveys, HRI | QL | [individual differences: pooled versus per-person model comparison](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/22_individual_differences.py) |
-| 23 | Economics, multi-agent | QL | [quantum games: EWL Prisoner's Dilemma and Chicken](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/23_quantum_games.py) |
-| 24 | Memory, language | QL | [episodic overdistribution and concept combination (simulated)](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/24_memory_and_concepts.py) |
-| 25 | Robotics, HRI | QL | [resolving an ambiguous command: Bayesian vs quantum-like intent](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/25_intent_resolution_robot.py) |
-| 26 | Finance, risk | Q | [amplitude estimation vs Monte Carlo](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/26_risk_amplitude_estimation.py) |
-| 27 | Signal processing | Q | [quantum Fourier transform and period finding](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/27_qft_period_finding.py) |
-| 28 | Networks | Q | [quantum-walk centrality vs PageRank and degree](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/28_network_centrality_quantum_walk.py) |
-| 29 | Forecasting, monitoring (simulated) | Q | [variational regressor, anomaly detection, clustering vs classical](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/29_forecasting_and_anomalies.py) |
-| 30 | Robotics | QI | [navigation: quantum-inspired RL vs Q-learning](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/30_robot_navigation_qrl.py) |
-| 31 | Information retrieval | QI | [document ranking: quantum language model vs query likelihood](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/examples/31_document_ranking_qlm.py) |
+| 01 | Surveys, market research | QL | [question-order effects, QQ test](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/01_survey_question_order.py) |
+| 02 | Behavioural finance | QL | [disjunction effect, interference, QLBN](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/02_finance_disjunction_effect.py) |
+| 03 | Medical decision support | QL | [quantum-like Bayesian network](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/03_medical_diagnosis_qlbn.py) |
+| 04 | Consumer choice | QL | [quantum decision theory vs EU and PT](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/04_consumer_choice_qdt.py) |
+| 05 | AI / LLM evaluation | QL | [order effects in judgements](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/05_llm_evaluation_order.py) |
+| 06 | Human–computer interaction | QL | [trust dynamics](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/06_hci_trust_dynamics.py) |
+| 07 | Perception, confidence | QL | [Markov vs quantum walk](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/07_evidence_accumulation.py) |
+| 08 | Physics, psychology | QL, Q | [CHSH and Contextuality-by-Default](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/08_contextuality_analysis.py) |
+| 09 | Marketing, linguistics | QL | [asymmetric similarity](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/09_similarity_asymmetry.py) |
+| 10 | – | Q | [every family as a circuit (Aer, FakeTorino, Braket)](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/10_circuits_quickstart.py) |
+| 11 | – | Q | [IBM Quantum / Amazon Braket hardware](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/11_cloud_run.py) |
+| 12 | Robotics, HRI | QL | [robot questioning and trust](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/12_robot_questioning_trust.py) |
+| 13 | Medicine (simulated) | Q, QI | [VQC, quantum kernel, MPS vs logistic regression](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/13_quantum_classifiers_triage.py) |
+| 14 | Robotics | Q, QI | [multi-robot task allocation: QAOA, SQA, QIEA, SA](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/14_qaoa_multi_robot_allocation.py) |
+| 15 | Finance (simulated) | Q, QI | [portfolio selection](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/15_portfolio_selection.py) |
+| 16 | Physics, materials | Q | [VQE on a transverse-field Ising chain](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/16_vqe_ising_chain.py) |
+| 17 | Scheduling | Q | [Grover search for valid schedules](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/17_grover_schedule_search.py) |
+| 18 | Control, robotics | QI | [PID tuning with QPSO](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/18_qpso_controller_tuning.py) |
+| 19 | Visualisation | viz | [Bloch-sphere viewer, HTML, GIF, live, tomography](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/19_bloch_sphere_viewer.py) |
+| 20 | Robotics, HRI | QL, viz | [trust on the Bloch sphere](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/20_trust_on_the_bloch_sphere.py) |
+| 21 | Robotics | QL | [when to ask for help: ensemble uncertainty and `ask_or_act`](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/21_robot_ask_for_help.py) |
+| 22 | Surveys, HRI | QL | [individual differences: pooled versus per-person model comparison](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/22_individual_differences.py) |
+| 23 | Economics, multi-agent | QL | [quantum games: EWL Prisoner's Dilemma and Chicken](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/23_quantum_games.py) |
+| 24 | Memory, language | QL | [episodic overdistribution and concept combination (simulated)](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/24_memory_and_concepts.py) |
+| 25 | Robotics, HRI | QL | [resolving an ambiguous command: Bayesian vs quantum-like intent](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/25_intent_resolution_robot.py) |
+| 26 | Finance, risk | Q | [amplitude estimation vs Monte Carlo](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/26_risk_amplitude_estimation.py) |
+| 27 | Signal processing | Q | [quantum Fourier transform and period finding](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/27_qft_period_finding.py) |
+| 28 | Networks | Q | [quantum-walk centrality vs PageRank and degree](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/28_network_centrality_quantum_walk.py) |
+| 29 | Forecasting, monitoring (simulated) | Q | [variational regressor, anomaly detection, clustering vs classical](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/29_forecasting_and_anomalies.py) |
+| 30 | Robotics | QI | [navigation: quantum-inspired RL vs Q-learning](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/30_robot_navigation_qrl.py) |
+| 31 | Information retrieval | QI | [document ranking: quantum language model vs query likelihood](https://github.com/yeshwanthguru/quantum-mind/blob/main/examples/31_document_ranking_qlm.py) |
 
-Notebooks: [`01_bloch_sphere_live`](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
-tomography under device noise) and [`02_robot_questioning_and_trust`](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/notebooks/02_robot_questioning_and_trust.ipynb)
+Notebooks: [`01_bloch_sphere_live`](https://github.com/yeshwanthguru/quantum-mind/blob/main/notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
+tomography under device noise) and [`02_robot_questioning_and_trust`](https://github.com/yeshwanthguru/quantum-mind/blob/main/notebooks/02_robot_questioning_and_trust.ipynb)
 (order effects, ensemble, ask-or-act, trust on the sphere). Both run in CI.
 
 Results printed by the examples (simulated data, this version). They illustrate the methods on small
@@ -389,8 +389,8 @@ python3 examples/11_cloud_run.py --backend braket:arn:aws:braket:us-east-1::devi
 ```
 
 `run(circuit, backend)` accepts `aer`, `aer:<FakeBackend>`, `braket_local`, `braket_dm:<p>`,
-`ibm:<device>` and `braket:<ARN>`. Every `to_qiskit()` circuit in `qlcog.quantum` and every builder
-in `qlcog.circuits` works with it. Hardware runs cost queue time or money. Report their results
+`ibm:<device>` and `braket:<ARN>`. Every `to_qiskit()` circuit in `quantum_mind.quantum` and every builder
+in `quantum_mind.circuits` works with it. Hardware runs cost queue time or money. Report their results
 exactly as measured, with backend, date and job identifier.
 
 | Backend | Status |
@@ -420,7 +420,7 @@ CPU: the variational classifier trains 8 features × 400 samples in about 80 s (
 Grover's gate-level export needs about 360 CNOTs per iteration at 8 qubits and 660 at 10, against
 510 and 2,040 for the diagonal-gate export, which grows exponentially.
 
-**Name.** `qlcog` began as the quantum-like cognition library and keeps that name for stability; the
+**Name.** Quantum Mind began as `qlcog`, the quantum-like cognition library (renamed in 2.0); the
 quantum and quantum-inspired toolkits sit beside it so that all three can be compared on the same
 problems. The repository name reflects the main application, robots that work with people.
 
@@ -428,9 +428,9 @@ problems. The repository name reflects the main application, robots that work wi
 ## Installation
 
 ```bash
-pip install qlcog              # core: numpy, scipy
-pip install "qlcog[all]"       # everything (Qiskit, cloud back ends, viewer)
-pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"   # latest development version
+pip install quantum-mind              # core: numpy, scipy
+pip install "quantum-mind[all]"       # everything (Qiskit, cloud back ends, viewer)
+pip install "quantum-mind[all] @ git+https://github.com/yeshwanthguru/quantum-mind"   # latest development version
 ```
 
 | Extra | Adds | For |
@@ -452,13 +452,13 @@ without installing, because they add `src/` to the path.
 2. **Fit quantum-like models and classical baselines together** with `compare`. Report all of them.
 3. **Use each family's distinctive test**: the QQ equality, total-probability bounds,
    Contextuality-by-Default, or the effect of an intermediate judgement.
-4. **Run a recovery study** (`qlcog.core.recovery`) at the planned sample size before collecting
+4. **Run a recovery study** (`quantum_mind.core.recovery`) at the planned sample size before collecting
    data.
 5. **For quantum and quantum-inspired solvers, always print the exact or classical baseline**, as
    every example does.
 
 ```bash
-python3 -m pytest -q --cov=qlcog     # 63 tests, about 90% line coverage (CI requires at least 80%)
+python3 -m pytest -q --cov=quantum_mind     # 63 tests, about 90% line coverage (CI requires at least 80%)
 ```
 
 The tests check the simulator against Qiskit gate by gate, adjoint and parameter-shift gradients
@@ -486,7 +486,7 @@ builds the Sphinx documentation with warnings as errors, and builds the wheel.
 
 ## Data
 
-`qlcog.data` contains the only human data in the package. All of it is published aggregate data:
+`quantum_mind.data` contains the only human data in the package. All of it is published aggregate data:
 
 - the Clinton–Gore order effect (Moore, 2002);
 - the Prisoner's Dilemma disjunction effect (Shafir and Tversky, 1992);
@@ -497,14 +497,14 @@ Every other data set in the examples is simulated and labelled as such.
 
 ## Citing and licence
 
-To cite `qlcog`, use `CITATION.cff` (GitHub's "Cite this repository" button), together with the
+To cite Quantum Mind, use `CITATION.cff` (GitHub's "Cite this repository" button), together with the
 original papers of the models used, which are listed in each README. The package is released under the
-[Apache License 2.0](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/LICENSE) (see also [NOTICE](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/NOTICE)). The licence permits commercial and research
-use and includes an explicit patent grant. For contributing, see [CONTRIBUTING.md](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/CONTRIBUTING.md);
-for release history, see [CHANGELOG.md](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/CHANGELOG.md).
+[Apache License 2.0](https://github.com/yeshwanthguru/quantum-mind/blob/main/LICENSE) (see also [NOTICE](https://github.com/yeshwanthguru/quantum-mind/blob/main/NOTICE)). The licence permits commercial and research
+use and includes an explicit patent grant. For contributing, see [CONTRIBUTING.md](https://github.com/yeshwanthguru/quantum-mind/blob/main/CONTRIBUTING.md);
+for release history, see [CHANGELOG.md](https://github.com/yeshwanthguru/quantum-mind/blob/main/CHANGELOG.md).
 
 **Author and maintainer:** Yeshwanth Guru (yeshwanth445@gmail.com; ORCID
-[0009-0007-6353-4033](https://orcid.org/0009-0007-6353-4033)). Security reports: see [SECURITY.md](https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/SECURITY.md).
+[0009-0007-6353-4033](https://orcid.org/0009-0007-6353-4033)). Security reports: see [SECURITY.md](https://github.com/yeshwanthguru/quantum-mind/blob/main/SECURITY.md).
 
 Companion manuscripts (in preparation): a systematic review of quantum-like cognition for autonomous
 agents, a systematic review of meta-learning orchestration on resource-constrained robots, and

@@ -126,5 +126,5 @@
     animate((s, t) => apply1(s, rot(h[0], h[1], t), 0), 'H(q0)', () => animate((s, t) => cnotPow(s, 0, 1, t), 'CNOT(q0→q1)'));
   });
   draw(psi);
-  window.__qlcogPlayground = { apply1, cnotPow, rot, bloch, concurrence, GATES };   // exposed for the build-time check
+  window.__quantumMindPlayground = { apply1, cnotPow, rot, bloch, concurrence, GATES };   // exposed for the build-time check
 })();

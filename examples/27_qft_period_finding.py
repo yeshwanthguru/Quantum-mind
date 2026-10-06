@@ -11,7 +11,7 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
 import numpy as np
-from qlcog.quantum import qft_circuit, qft_matrix, find_period
+from quantum_mind.quantum import qft_circuit, qft_matrix, find_period
 
 # %%
 # The circuit equals the DFT matrix

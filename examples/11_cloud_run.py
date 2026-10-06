@@ -1,7 +1,7 @@
 """Running on IBM Quantum or Amazon Braket hardware
 ================================================
 
-Run any qlcog circuit on IBM Quantum or Amazon Braket hardware.
+Run any quantum_mind circuit on IBM Quantum or Amazon Braket hardware.
 
   python3 examples/11_cloud_run.py --backend ibm:least_busy --shots 4000
   python3 examples/11_cloud_run.py --backend braket:arn:aws:braket:us-east-1::device/qpu/ionq/Forte-1 --shots 1000
@@ -15,9 +15,9 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
 import argparse, json, datetime
-from qlcog.core import tvd
-from qlcog.circuits import run, order_effects_circuit
-from qlcog.families.order_effects import QuantumOrderModel, qq_statistic
+from quantum_mind.core import tvd
+from quantum_mind.circuits import run, order_effects_circuit
+from quantum_mind.families.order_effects import QuantumOrderModel, qq_statistic
 
 # %%
 # Command-line options

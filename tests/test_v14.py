@@ -5,7 +5,7 @@ import pytest
 
 
 def test_ewl_game_reproduces_published_results():
-    from qlcog.families.game_theory import EWLGame, PRISONERS_DILEMMA, C, D, Q, classical_nash_equilibria
+    from quantum_mind.families.game_theory import EWLGame, PRISONERS_DILEMMA, C, D, Q, classical_nash_equilibria
     G0, G = EWLGame(PRISONERS_DILEMMA, 0.0), EWLGame(PRISONERS_DILEMMA, np.pi / 2)
     for g in (G0, G):                                    # classical strategies give the classical game
         assert np.allclose(g.payoff(C, D), (0, 5)) and np.allclose(g.payoff(D, D), (1, 1))
@@ -17,9 +17,9 @@ def test_ewl_game_reproduces_published_results():
 
 
 def test_memory_and_concept_models():
-    from qlcog.core import compare
-    from qlcog.families.memory import QuantumEpisodicModel, AdditiveMemoryModel, overdistribution
-    from qlcog.families.concepts import FockSpaceConceptModel, ProductConceptModel, MinConceptModel, interference_bound
+    from quantum_mind.core import compare
+    from quantum_mind.families.memory import QuantumEpisodicModel, AdditiveMemoryModel, overdistribution
+    from quantum_mind.families.concepts import FockSpaceConceptModel, ProductConceptModel, MinConceptModel, interference_bound
     gen = QuantumEpisodicModel(c=0.9, a_target=0.6, b_target=0.9)
     pred = gen.predict()
     assert overdistribution(pred, 'target') > 0.1
@@ -35,7 +35,7 @@ def test_memory_and_concept_models():
 
 
 def test_intent_resolver_nests_bayes_and_shows_order_effects():
-    from qlcog.applications.intent import QuantumIntentResolver, BayesIntentResolver
+    from quantum_mind.applications.intent import QuantumIntentResolver, BayesIntentResolver
     q, b = QuantumIntentResolver(['a', 'b', 'c']), BayesIntentResolver(['a', 'b', 'c'])
     for r in (q, b):
         r.add_cue('x', [0.6, 0.3, 0.1]); r.add_cue('y', [0.2, 0.5, 0.3])
@@ -47,7 +47,7 @@ def test_intent_resolver_nests_bayes_and_shows_order_effects():
 
 
 def test_qft_and_period_finding():
-    from qlcog.quantum import qft_circuit, qft_matrix, find_period
+    from quantum_mind.quantum import qft_circuit, qft_matrix, find_period
     for n in (1, 2, 4):
         c, ci = qft_circuit(n), qft_circuit(n, inverse=True)
         U = np.column_stack([c.state(None, None, init=np.eye(2 ** n)[j])[0] for j in range(2 ** n)])
@@ -57,7 +57,7 @@ def test_qft_and_period_finding():
 
 
 def test_qft_export_and_cp_gradient():
-    from qlcog.quantum import qft_circuit, qft_matrix, Circuit, W
+    from quantum_mind.quantum import qft_circuit, qft_matrix, Circuit, W
     pytest.importorskip('qiskit')
     from qiskit.quantum_info import Operator
     assert np.allclose(Operator(qft_circuit(3).to_qiskit(measure=False)).data, qft_matrix(3))
@@ -70,7 +70,7 @@ def test_qft_export_and_cp_gradient():
 
 
 def test_amplitude_estimation():
-    from qlcog.quantum import AmplitudeEstimation, monte_carlo_estimate
+    from quantum_mind.quantum import AmplitudeEstimation, monte_carlo_estimate
     x = np.linspace(-3, 3, 8); p = np.exp(-x ** 2 / 2); f = np.clip((x + 3) / 6, 0, 1)
     ae = AmplitudeEstimation(p, f)
     assert np.allclose(ae.A @ ae.A.T, np.eye(16))
@@ -84,7 +84,7 @@ def test_amplitude_estimation():
 
 
 def test_quantum_walks():
-    from qlcog.quantum import adjacency, ctqw_probabilities, quantum_walk_centrality, pagerank
+    from quantum_mind.quantum import adjacency, ctqw_probabilities, quantum_walk_centrality, pagerank
     A = adjacency([(0, 1), (0, 2), (0, 3), (3, 4)], 5)
     assert np.isclose(ctqw_probabilities(A, 0.7, start=0).sum(), 1)
     T = np.linspace(0, 300, 3001)
@@ -93,7 +93,7 @@ def test_quantum_walks():
 
 
 def test_regressor_anomaly_clustering():
-    from qlcog.quantum import VariationalRegressor, QuantumKernelAnomalyDetector, QuantumKernelClustering
+    from quantum_mind.quantum import VariationalRegressor, QuantumKernelAnomalyDetector, QuantumKernelClustering
     rng = np.random.default_rng(0)
     s = np.sin(np.arange(160) * 0.3); X = np.array([s[i:i + 3] for i in range(150)]); y = s[3:153]
     assert VariationalRegressor(layers=2, maxiter=80).fit(X[:110], y[:110]).score(X[110:], y[110:]) > 0.9
@@ -109,7 +109,7 @@ def test_regressor_anomaly_clustering():
 
 
 def test_quantum_inspired_rl_learns_the_shortest_path():
-    from qlcog.inspired import GridWorld, QuantumInspiredQLearning, QLearning, train
+    from quantum_mind.inspired import GridWorld, QuantumInspiredQLearning, QLearning, train
     env = GridWorld()
     q = QuantumInspiredQLearning(env.n_states, env.n_actions, seed=0); steps = train(q, GridWorld(), 300)
     assert steps[-30:].mean() <= env.shortest_path() + 1 and np.allclose(np.linalg.norm(q.amp, axis=1), 1)
@@ -117,7 +117,7 @@ def test_quantum_inspired_rl_learns_the_shortest_path():
 
 
 def test_quantum_language_model():
-    from qlcog.inspired import QuantumLanguageModel, QueryLikelihoodModel
+    from quantum_mind.inspired import QuantumLanguageModel, QueryLikelihoodModel
     docs = ['the robot picks up the red cup from the table', 'a red apple and a green cup',
             'the cup is on the left', 'robot arms and conveyor belts']
     for M in (QuantumLanguageModel(window=2), QueryLikelihoodModel()):

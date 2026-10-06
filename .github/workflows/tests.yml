@@ -28,9 +28,9 @@ jobs:
       - name: API reference is up to date
         run: python docs/make_api.py --check
       - name: Unit tests with coverage
-        run: pytest -q --cov=qlcog --cov-report=term --cov-fail-under=80
+        run: pytest -q --cov=quantum_mind --cov-report=term --cov-fail-under=80
       - name: Docstring examples
-        run: pytest -q --doctest-modules src/qlcog
+        run: pytest -q --doctest-modules src/quantum_mind
       - name: Examples (smoke test)
         run: |
           for f in examples/0*.py examples/10_*.py examples/12_*.py examples/1[4-9]_*.py examples/2*.py examples/3*.py; do
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MPLBACKEND: Agg
-      QLCOG_DOCS_FAST: "1"
+      QUANTUM_MIND_DOCS_FAST: "1"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -77,4 +77,4 @@ jobs:
           python -m build
           twine check dist/*
           python -m venv /tmp/core && /tmp/core/bin/pip install dist/*.whl
-          cd /tmp && /tmp/core/bin/python -c "import qlcog, qlcog.quantum, qlcog.inspired, qlcog.problems, qlcog.viz; print('core install OK', qlcog.__version__)"
+          cd /tmp && /tmp/core/bin/python -c "import quantum_mind, quantum_mind.quantum, quantum_mind.inspired, quantum_mind.problems, quantum_mind.viz; print('core install OK', quantum_mind.__version__)"

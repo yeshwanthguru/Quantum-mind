@@ -1,5 +1,5 @@
 import numpy as np
-from qlcog.problems import Qubo, maxcut, knapsack, task_allocation, portfolio, from_ising
+from quantum_mind.problems import Qubo, maxcut, knapsack, task_allocation, portfolio, from_ising
 
 
 def test_qubo_energies_and_ising_round_trip():

@@ -1,18 +1,18 @@
 # User guide
 
-`qlcog` covers the three ways "quantum" enters modelling today. They share one problem format, one
+Quantum Mind covers the three ways "quantum" enters modelling today. They share one problem format, one
 fitting and comparison workflow, and one Bloch-sphere viewer.
 
 ```{mermaid}
 flowchart TB
-    core["qlcog.core<br/>Model · Param · fit · compare · recovery"]
-    fam["qlcog.families<br/>11 quantum-like families"]
-    app["qlcog.applications<br/>robotics"]
-    prob["qlcog.problems<br/>QUBO builders"]
-    qm["qlcog.quantum<br/>classifiers · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
-    ins["qlcog.inspired<br/>QIEA · QPSO · SQA · MPS · QRL · QLM"]
-    circ["qlcog.circuits<br/>circuits + run()"]
-    viz["qlcog.viz<br/>Bloch-sphere viewer"]
+    core["quantum_mind.core<br/>Model · Param · fit · compare · recovery"]
+    fam["quantum_mind.families<br/>11 quantum-like families"]
+    app["quantum_mind.applications<br/>robotics"]
+    prob["quantum_mind.problems<br/>QUBO builders"]
+    qm["quantum_mind.quantum<br/>classifiers · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
+    ins["quantum_mind.inspired<br/>QIEA · QPSO · SQA · MPS · QRL · QLM"]
+    circ["quantum_mind.circuits<br/>circuits + run()"]
+    viz["quantum_mind.viz<br/>Bloch-sphere viewer"]
     hw[("Aer · IBM Quantum · Amazon Braket")]
     core --> fam --> app
     fam --> circ

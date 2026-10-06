@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.0.0 (unreleased)
+
+**New name: Quantum Mind.** The package is now installed with `pip install quantum-mind` and imported
+as `import quantum_mind` (previously `qlcog`); the repository is `quantum-mind`. Replace `qlcog` by
+`quantum_mind` in imports. The ROS 2 package is now `quantum_mind_ros`.
+
+- **Robot decision layer** (`quantum_mind.applications`): calibration toolkit (`calibration`),
+  orchestration gate with meta-learned calibration (`orchestration`), value-of-information question
+  planner with order-dependent answer models (`questioning`), personalised human models with partial
+  pooling (`personalisation`), trust-aware hand-over policy (`handover`), hazard-aware ask-or-act
+  (`robotics.risk_aware_ask_or_act`).
+- **Perception**: bistable-perception family (`families.perception`: quantum Zeno, Markov, gamma
+  renewal) and multimodal fusion (`applications.fusion`: detector, speech and gaze adapters; Bayesian,
+  Dempster-Shafer and quantum-like fusion).
+- **Learning**: Gymnasium environments with simulated people (`envs`) and exploration strategies for
+  tabular reinforcement learning (`inspired.exploration`).
+
 ## 1.5.0 (6 October 2026)
 
 First release on PyPI: `pip install qlcog`.

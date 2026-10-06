@@ -15,9 +15,9 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_thumbnail_path = '_static/thumbs/ql.png'
 import numpy as np
 from scipy.optimize import least_squares
-from qlcog.core import compare
-from qlcog.data import CLINTON_GORE
-from qlcog.families.order_effects import (QuantumOrderModel, QuantumOrderModel4D, AnchoringOrderModel, BayesOrderModel, RANK_STRUCTURES,
+from quantum_mind.core import compare
+from quantum_mind.data import CLINTON_GORE
+from quantum_mind.families.order_effects import (QuantumOrderModel, QuantumOrderModel4D, AnchoringOrderModel, BayesOrderModel, RANK_STRUCTURES,
                                           rates, qq_test)
 
 # %%

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>quantum_mind_ros</name>
+  <version>1.3.0</version>
+  <description>ROS 2 node serving quantum_mind's human-model ensemble: predicted answers, uncertainty and ask-or-act decisions.</description>
+  <maintainer email="yeshwanth445@gmail.com">Yeshwanth Guru</maintainer>
+  <license>Apache-2.0</license>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <test_depend>python3-pytest</test_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

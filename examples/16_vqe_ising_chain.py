@@ -10,7 +10,7 @@ with exact diagonalisation.
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
-from qlcog.quantum import Hamiltonian, VQE
+from quantum_mind.quantum import Hamiltonian, VQE
 
 # %%
 # Ground-state energies for three field strengths

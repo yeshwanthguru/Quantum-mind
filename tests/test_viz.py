@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from qlcog.viz import (bloch_vector, bloch_vectors, reduced_density, circuit_trajectory, belief_trajectory,
+from quantum_mind.viz import (bloch_vector, bloch_vectors, reduced_density, circuit_trajectory, belief_trajectory,
                        rotation_trajectory, Trajectory)
 
 
@@ -29,7 +29,7 @@ def test_circuit_trajectory_ends_at_the_final_state():
 
 
 def test_belief_trajectory_matches_the_trust_model():
-    from qlcog.families.dynamics import OpenSystemBelief, final_yes
+    from quantum_mind.families.dynamics import OpenSystemBelief, final_yes
     m = OpenSystemBelief(phi0=1.6, a_pos=0.8, a_neg=1.2, gamma=0.3); ev = (1, 1, 0, 1, 0, 1)
     tr = belief_trajectory(m, ev, steps=6)
     assert np.isclose((1 + tr.vectors[-1, 0, 2]) / 2, final_yes(m, ev, (5,)))
@@ -41,7 +41,7 @@ def test_plotting_back_ends(tmp_path):
     pytest.importorskip('matplotlib'); pytest.importorskip('plotly')
     import matplotlib
     matplotlib.use('Agg')
-    from qlcog.viz import plot_bloch, animate_trajectory, animate_bloch, bloch_figure, save_html, LiveBloch
+    from quantum_mind.viz import plot_bloch, animate_trajectory, animate_bloch, bloch_figure, save_html, LiveBloch
     tr = Trajectory(rotation_trajectory([0, 1, 0], np.pi, steps=6).vectors)
     fig, _ = plot_bloch(np.array([[0, 0, 1], [1, 0, 0]]))
     animate_trajectory(tr, save=tmp_path / 'a.gif', fps=5)
@@ -55,7 +55,7 @@ def test_plotting_back_ends(tmp_path):
 def test_tomography_on_aer():
     pytest.importorskip('qiskit_aer')
     from qiskit import QuantumCircuit
-    from qlcog.viz import bloch_tomography
+    from quantum_mind.viz import bloch_tomography
     qc = QuantumCircuit(1); qc.ry(1.0, 0); qc.rz(0.5, 0)
     r = bloch_tomography(qc, 'aer', 20000)[0]
     assert np.allclose(r, [np.sin(1) * np.cos(0.5), np.sin(1) * np.sin(0.5), np.cos(1)], atol=0.03)

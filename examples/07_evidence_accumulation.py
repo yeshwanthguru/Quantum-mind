@@ -12,8 +12,8 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/ql.png'
 import numpy as np
-from qlcog.core import compare
-from qlcog.families.dynamics import MarkovWalk, QuantumWalk
+from quantum_mind.core import compare
+from quantum_mind.families.dynamics import MarkovWalk, QuantumWalk
 
 # %%
 # Design

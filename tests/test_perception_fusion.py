@@ -2,12 +2,12 @@
 import numpy as np
 import pytest
 
-from qlcog.core import compare
-from qlcog.families.perception import (QuantumZenoBistableModel, MarkovSwitchingModel, GammaRenewalModel,
+from quantum_mind.core import compare
+from quantum_mind.families.perception import (QuantumZenoBistableModel, MarkovSwitchingModel, GammaRenewalModel,
                                        dwell_time_design, dwell_counts, mean_dwell_time)
-from qlcog.applications.fusion import (detector_likelihood, asr_likelihood, direction_likelihood, bayes_fusion,
+from quantum_mind.applications.fusion import (detector_likelihood, asr_likelihood, direction_likelihood, bayes_fusion,
                                        dempster_shafer_fusion, fit_incompatibility, compare_fusion)
-from qlcog.applications.intent import QuantumIntentResolver
+from quantum_mind.applications.intent import QuantumIntentResolver
 
 
 def test_zeno_dwell_time_scales_inversely_with_the_observation_interval():

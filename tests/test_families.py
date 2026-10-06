@@ -1,10 +1,10 @@
 import numpy as np
-from qlcog.core import fit
-from qlcog.data import CLINTON_GORE, TWO_STAGE_GAMBLE, proportions_to_counts
+from quantum_mind.core import fit
+from quantum_mind.data import CLINTON_GORE, TWO_STAGE_GAMBLE, proportions_to_counts
 
 
 def test_order_effects_qq_and_nesting():
-    from qlcog.families.order_effects import (QuantumOrderModel, QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel,
+    from quantum_mind.families.order_effects import (QuantumOrderModel, QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel,
                                               qq_statistic, rates)
     rng = np.random.default_rng(1)
     for _ in range(20):
@@ -24,7 +24,7 @@ def test_order_effects_qq_and_nesting():
 
 def test_order_effects_fit_clinton_gore_rates():
     from scipy.optimize import least_squares
-    from qlcog.families.order_effects import QuantumOrderModel4D, rates
+    from quantum_mind.families.order_effects import QuantumOrderModel4D, rates
     r = CLINTON_GORE['rates']; t = np.array([r['A_first'], r['B_first'], r['A_second'], r['B_second']])
     best = min((least_squares(lambda x: rates(QuantumOrderModel4D(t1=x[0], t2=x[1], t3=x[2], phi=x[3]).predict()) - t,
                               np.random.default_rng(s).uniform(0, 3, 4)) for s in range(30)), key=lambda z: z.cost)
@@ -32,7 +32,7 @@ def test_order_effects_fit_clinton_gore_rates():
 
 
 def test_conjunction_fallacy_possible_and_classical_bound():
-    from qlcog.families.conjunction import QuantumConjunctionModel, ClassicalJointModel, fallacy_rate
+    from quantum_mind.families.conjunction import QuantumConjunctionModel, ClassicalJointModel, fallacy_rate
     j = QuantumConjunctionModel(a=1.910885, b=0.80936, g=0.12292, ranks=(1, 2)).predict()
     assert fallacy_rate(j)['conjunction_fallacy']
     rng = np.random.default_rng(2)
@@ -42,7 +42,7 @@ def test_conjunction_fallacy_possible_and_classical_bound():
 
 
 def test_interference_fits_two_stage_gamble_and_classical_cannot():
-    from qlcog.families.interference import InterferenceModel, ClassicalMixtureModel
+    from quantum_mind.families.interference import InterferenceModel, ClassicalMixtureModel
     counts = proportions_to_counts(TWO_STAGE_GAMBLE['conditions'], 1000)
     q = fit(InterferenceModel, counts, restarts=20); c = fit(ClassicalMixtureModel, counts, restarts=20)
     assert abs(q.model.predict()['unknown'][0] - 0.36) < 0.01
@@ -51,7 +51,7 @@ def test_interference_fits_two_stage_gamble_and_classical_cannot():
 
 
 def test_qlbn_reduces_to_classical_and_normalises():
-    from qlcog.families.qlbn import BayesNet, classical_marginal, quantum_like_marginal
+    from quantum_mind.families.qlbn import BayesNet, classical_marginal, quantum_like_marginal
     net = BayesNet({'O': ['w', 'l'], 'P': ['y', 'n']}, {'P': ['O']},
                    {'O': {(): {'w': .5, 'l': .5}}, 'P': {('w',): {'y': .69, 'n': .31}, ('l',): {'y': .59, 'n': .41}}})
     assert np.isclose(quantum_like_marginal(net, 'P', None, [0, np.pi / 2])['y'], classical_marginal(net, 'P')['y'])
@@ -60,7 +60,7 @@ def test_qlbn_reduces_to_classical_and_normalises():
 
 
 def test_dynamics_markov_obeys_total_probability_quantum_does_not():
-    from qlcog.families.dynamics import MarkovWalk, QuantumWalk, MarkovBelief, OpenSystemBelief, question_effect
+    from quantum_mind.families.dynamics import MarkovWalk, QuantumWalk, MarkovBelief, OpenSystemBelief, question_effect
     d = {'s': ('single', 1.5), 'j': ('joint', 0.5, 1.5)}
     mk = MarkovWalk(mu=0.7, gamma=5).predict(d); qw = QuantumWalk(mu=3, sigma=3).predict(d)
     assert np.allclose(mk['j'].reshape(3, 3).sum(0), mk['s'])
@@ -72,13 +72,13 @@ def test_dynamics_markov_obeys_total_probability_quantum_does_not():
 
 
 def test_open_system_walk_probabilities():
-    from qlcog.families.dynamics import OpenSystemWalk
+    from quantum_mind.families.dynamics import OpenSystemWalk
     p = OpenSystemWalk(mu=2, sigma=2, lam=1.0, n_states=11).predict({'s': ('single', 1.0), 'j': ('joint', 0.3, 1.0)})
     assert np.isclose(p['s'].sum(), 1) and np.isclose(p['j'].sum(), 1)
 
 
 def test_decision_models():
-    from qlcog.families.decision import QDTModel, ExpectedUtilityModel, ProspectTheoryModel
+    from quantum_mind.families.decision import QDTModel, ExpectedUtilityModel, ProspectTheoryModel
     probs = {'p': ([(30, 1.0)], [(45, 0.8), (0, 0.2)])}
     eu = ExpectedUtilityModel(alpha=0.8, beta=0.1).predict(probs)['p']
     qd = QDTModel(alpha=0.8, beta=0.1, q0=0.25).predict(probs)['p']
@@ -88,22 +88,22 @@ def test_decision_models():
 
 
 def test_contextuality():
-    from qlcog.families.contextuality import chsh, qubit_chsh_correlations, cyclic_contextuality, s_odd
+    from quantum_mind.families.contextuality import chsh, qubit_chsh_correlations, cyclic_contextuality, s_odd
     assert np.isclose(chsh(**qubit_chsh_correlations()), 2 * np.sqrt(2))
     assert np.isclose(s_odd([1, 1, 1, 1]), 2)
     assert not cyclic_contextuality([1, 1, 1, 1], [(0, 0)] * 4)['contextual']
 
 
 def test_similarity_asymmetry():
-    from qlcog.families.similarity import QuantumSimilarityModel, GeometricModel, asymmetry
+    from quantum_mind.families.similarity import QuantumSimilarityModel, GeometricModel, asymmetry
     pairs = [('K', 'C'), ('C', 'K')]
     assert abs(asymmetry(QuantumSimilarityModel(concepts=['K', 'C'], ranks={'C': 2}).predict(pairs), 'K', 'C')) > 0.01
     assert abs(asymmetry(GeometricModel(concepts=['K', 'C']).predict(pairs), 'K', 'C')) < 1e-12
 
 
 def test_robotics_application():
-    from qlcog.applications.robotics import domain_models, estimate_unprimed_rates, HumanModelEnsemble, HRI_DOMAINS
-    from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, rates
+    from quantum_mind.applications.robotics import domain_models, estimate_unprimed_rates, HumanModelEnsemble, HRI_DOMAINS
+    from quantum_mind.families.order_effects import QuantumOrderModel4D, BayesOrderModel, rates
     for d in HRI_DOMAINS:
         m = domain_models(d)
         r_ql, r_an = rates(m['QL'].predict()), rates(m['Anchoring'].predict())

@@ -19,7 +19,7 @@ import pathlib
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector
-from qlcog.viz import circuit_trajectory, bloch_vectors, bloch_tomography
+from quantum_mind.viz import circuit_trajectory, bloch_vectors, bloch_tomography
 
 # %%
 # A circuit, gate by gate
@@ -37,7 +37,7 @@ for k in range(0, traj.frames, 12):
 # Interactive HTML, GIF and a live window
 # ---------------------------------------
 try:
-    from qlcog.viz import animate_bloch, save_html
+    from quantum_mind.viz import animate_bloch, save_html
     save_html(animate_bloch(traj, title='Entangling two qubits'), out / 'bloch_circuit.html')
     print('interactive figure:', out / 'bloch_circuit.html')
 except ImportError:
@@ -46,7 +46,7 @@ if '--gif' in sys.argv or '--live' in sys.argv:
     import matplotlib
     if '--live' not in sys.argv:
         matplotlib.use('Agg')
-    from qlcog.viz import animate_trajectory, LiveBloch
+    from quantum_mind.viz import animate_trajectory, LiveBloch
     if '--gif' in sys.argv:
         animate_trajectory(traj, save=out / 'bloch_circuit.gif', fps=20); print('animation:', out / 'bloch_circuit.gif')
     if '--live' in sys.argv:

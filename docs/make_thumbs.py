@@ -1,4 +1,4 @@
-"""Draw the logo and the example-gallery thumbnails (python3 docs/make_thumbs.py).
+"""Draw the example-gallery thumbnails (python3 docs/make_thumbs.py).
 
 Each thumbnail is a small Bloch sphere in the colour of a pillar, so the gallery shows at a glance
 which kind of model an example uses. The images are committed; rerun this script after changing it.
@@ -48,23 +48,8 @@ def thumbnail(name, label, arrow, wire):
     plt.close(fig)
 
 
-def logo():
-    """Square logo used in the documentation header."""
-    fig = plt.figure(figsize=(2, 2), dpi=100)
-    fig.patch.set_alpha(0)
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.set_xlim(-1.15, 1.15)
-    ax.set_ylim(-1.15, 1.15)
-    ax.set_aspect('equal')
-    ax.axis('off')
-    sphere(ax, '#ff7b72', '#58a6ff')
-    fig.savefig(OUT / 'logo.png', transparent=True)
-    plt.close(fig)
-
-
 if __name__ == '__main__':
     (OUT / 'thumbs').mkdir(parents=True, exist_ok=True)
     for key, (label, arrow, wire) in PILLARS.items():
         thumbnail(key, label, arrow, wire)
-    logo()
-    print('thumbnails and logo written to', OUT)
+    print('thumbnails written to', OUT / 'thumbs')

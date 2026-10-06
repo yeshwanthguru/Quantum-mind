@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
-from qlcog.quantum import (Circuit, W, X, XX, VariationalClassifier, QuantumKernelClassifier, QuantumKernel, QAOA,
+from quantum_mind.quantum import (Circuit, W, X, XX, VariationalClassifier, QuantumKernelClassifier, QuantumKernel, QAOA,
                            Hamiltonian, VQE, grover, parameter_shift)
-from qlcog.quantum.ansatz import reuploading_classifier_circuit, shifted_weights
-from qlcog.problems import maxcut
+from quantum_mind.quantum.ansatz import reuploading_classifier_circuit, shifted_weights
+from quantum_mind.problems import maxcut
 
 
 def _random_circuit(rng):
@@ -55,7 +55,7 @@ def test_classifiers_learn():
 
 def test_vqc_circuit_on_aer():
     pytest.importorskip('qiskit_aer')
-    from qlcog.circuits import run
+    from quantum_mind.circuits import run
     X_, y = _moons(np.random.default_rng(1), 40)
     vqc = VariationalClassifier(layers=1, maxiter=20).fit(X_, y)
     counts = run(vqc.to_qiskit(X_[0]), 'aer', 20000)

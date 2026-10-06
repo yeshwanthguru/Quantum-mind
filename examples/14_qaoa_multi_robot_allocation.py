@@ -13,9 +13,9 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/robot.png'
 import numpy as np
-from qlcog.problems import task_allocation
-from qlcog.quantum import QAOA
-from qlcog.inspired import SQA, QIEA, simulated_annealing
+from quantum_mind.problems import task_allocation
+from quantum_mind.quantum import QAOA
+from quantum_mind.inspired import SQA, QIEA, simulated_annealing
 
 # %%
 # The allocation problem as a QUBO
@@ -40,7 +40,7 @@ for name, r in (('SQA', SQA(q).run()), ('QIEA', QIEA(q).run()), ('simulated anne
 # -----------------------
 # The optimised circuit on ideal Aer and under the FakeTorino noise model.
 try:
-    from qlcog.circuits import run
+    from quantum_mind.circuits import run
     qc = QAOA(q, p=3).to_qiskit(qa)
     for be in ('aer', 'aer:FakeTorino'):
         counts = run(qc, be, 4000)

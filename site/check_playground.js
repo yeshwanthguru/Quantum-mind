@@ -6,7 +6,7 @@ global.document = { getElementById: (id) => (id === 'playground' ? el() : el()),
 global.getComputedStyle = () => ({ getPropertyValue: () => '' });
 global.requestAnimationFrame = (f) => 0;
 eval(fs.readFileSync(process.argv[2], 'utf8'));
-const P = window.__qlcogPlayground;
+const P = window.__quantumMindPlayground;
 const seqs = JSON.parse(process.argv[3]); const out = [];
 for (const seq of seqs) {
   let s = [[1, 0], [0, 0], [0, 0], [0, 0]];

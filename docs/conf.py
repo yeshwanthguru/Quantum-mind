@@ -1,7 +1,7 @@
-"""Sphinx configuration for the qlcog documentation.
+"""Sphinx configuration for the Quantum Mind documentation.
 
 Build locally with ``python -m sphinx -b html docs docs/_build/html`` (after ``pip install -e ".[all,docs]"``).
-Set ``QLCOG_DOCS_FAST=1`` to skip running the examples and notebooks (a quick preview of the text).
+Set ``QUANTUM_MIND_DOCS_FAST=1`` to skip running the examples and notebooks (a quick preview of the text).
 """
 import os
 import pathlib
@@ -13,19 +13,19 @@ sys.path.insert(0, str(ROOT / 'src'))
 sys.path.insert(0, str(DOCS / '_ext'))
 os.environ.setdefault('MPLBACKEND', 'Agg')
 
-import qlcog      # noqa: E402
+import quantum_mind      # noqa: E402
 import generate   # noqa: E402
 
-FAST = os.environ.get('QLCOG_DOCS_FAST') == '1'
+FAST = os.environ.get('QUANTUM_MIND_DOCS_FAST') == '1'
 generate.run(execute_notebooks=not FAST, with_demos=True)
 
 # -- project ----------------------------------------------------------------------------------------
-project = 'qlcog'
+project = 'Quantum Mind'
 author = 'Yeshwanth Guru'
 copyright = '2026, Yeshwanth Guru'
-version = release = qlcog.__version__
-REPO = 'https://github.com/yeshwanthguru/quantum-cognition-robotics'
-SITE = 'https://yeshwanthguru.github.io/quantum-cognition-robotics/'
+version = release = quantum_mind.__version__
+REPO = 'https://github.com/yeshwanthguru/quantum-mind'
+SITE = 'https://yeshwanthguru.github.io/quantum-mind/'
 
 # -- extensions -------------------------------------------------------------------------------------
 extensions = [
@@ -90,15 +90,15 @@ sphinx_gallery_conf = {
     'show_signature': False,
     'abort_on_example_error': True,
     'download_all_examples': False,
-    'reference_url': {'qlcog': None},
+    'reference_url': {'quantum_mind': None},
     'promote_jupyter_magic': False,
 }
 
 # -- HTML output ------------------------------------------------------------------------------------
 html_theme = 'pydata_sphinx_theme'
-html_title = 'qlcog %s' % version
-html_logo = '_static/logo.png'
-html_favicon = '_static/logo.png'
+html_title = 'Quantum Mind %s' % version
+html_logo = '_static/logo.svg'
+html_favicon = '_static/favicon.svg'
 html_static_path = ['_static', '_generated/static']
 html_css_files = ['custom.css']
 html_baseurl = SITE + 'docs/'
@@ -106,13 +106,13 @@ html_show_sourcelink = False
 html_last_updated_fmt = '%d %B %Y'
 html_context = {
     'github_user': 'yeshwanthguru',
-    'github_repo': 'quantum-cognition-robotics',
+    'github_repo': 'quantum-mind',
     'github_version': 'main',
     'doc_path': 'docs',
     'default_mode': 'dark',
 }
 html_theme_options = {
-    'logo': {'text': 'qlcog', 'alt_text': 'qlcog documentation'},
+    'logo': {'text': 'Quantum Mind', 'alt_text': 'Quantum Mind documentation'},
     'icon_links': [
         {'name': 'GitHub', 'url': REPO, 'icon': 'fa-brands fa-github'},
         {'name': 'Playground', 'url': SITE + '#playground-section', 'icon': 'fa-solid fa-globe'},
@@ -127,7 +127,7 @@ html_theme_options = {
     'navigation_with_keys': False,
     'pygments_light_style': 'tango',
     'pygments_dark_style': 'github-dark',
-    'announcement': ('Version %s is on PyPI: <code>pip install qlcog</code>. '
+    'announcement': ('Version %s is on PyPI: <code>pip install quantum-mind</code>. '
                      '<a href="%sdocs/about/changelog.html">What changed</a>' % (version, SITE)),
     'footer_start': ['copyright'],
     'footer_end': ['sphinx-version'],

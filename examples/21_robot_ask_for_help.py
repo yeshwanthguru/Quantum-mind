@@ -19,8 +19,8 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/robot.png'
 import numpy as np
-from qlcog.applications.robotics import domain_models, HumanModelEnsemble, ask_or_act
-from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel
+from quantum_mind.applications.robotics import domain_models, HumanModelEnsemble, ask_or_act
+from quantum_mind.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel
 
 # %%
 # Answers arrive in batches

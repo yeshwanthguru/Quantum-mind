@@ -2,13 +2,13 @@
 html_theme.sidebar_secondary.remove: true
 ---
 
-# qlcog
+# Quantum Mind
 
 ```{raw} html
-<div class="qlcog-hero">
-<img class="banner" src="_static/assets/banner.svg" alt="quantum-cognition-robotics banner">
+<div class="qm-hero">
+<img class="banner" src="_static/assets/banner.svg" alt="quantum-mind banner">
 <h1>Quantum-like, quantum and quantum-inspired models, compared on the same problems.</h1>
-<p class="lead"><strong>qlcog</strong> is an open-source Python library for robots and AI agents that work with
+<p class="lead"><strong>Quantum Mind</strong> is an open-source Python library for robots and AI agents that work with
 people. It models how people judge, decide and trust with quantum probability, always next to the classical
 models it has to beat; runs quantum machine learning and algorithms as Qiskit circuits; provides
 quantum-inspired optimisers and learners; and shows every qubit moving on a 3D Bloch sphere.</p>
@@ -16,14 +16,14 @@ quantum-inspired optimisers and learners; and shows every qubit moving on a 3D B
 ```
 
 ```{raw} html
-<div class="qlcog-badges">
+<div class="qm-badges">
 <span>Version __VERSION__</span><span>Apache-2.0</span><span>Python 3.10 to 3.12</span>
 <span>Qiskit 2.x</span><span>IBM Quantum</span><span>Amazon Braket</span><span>NumPy-style API</span>
 </div>
 ```
 
 ```bash
-pip install "qlcog[all]"
+pip install "quantum-mind[all]"
 ```
 
 ::::{grid} 1 2 2 4
@@ -72,18 +72,18 @@ A Qiskit circuit, gate by gate. While the two qubits are entangled their Bloch v
 the sphere. Drag to rotate; press play or use the slider.
 
 ```{raw} html
-<iframe class="qlcog-frame" src="_static/demos/entanglement.html" loading="lazy" title="Entangling two qubits"></iframe>
+<iframe class="qm-frame" src="_static/demos/entanglement.html" loading="lazy" title="Entangling two qubits"></iframe>
 ```
 
 ```python
 from qiskit import QuantumCircuit
-from qlcog.viz import circuit_trajectory, animate_bloch, save_html
+from quantum_mind.viz import circuit_trajectory, animate_bloch, save_html
 
 qc = QuantumCircuit(2); qc.h(0); qc.cx(0, 1); qc.ry(0.6, 1)
 save_html(animate_bloch(circuit_trajectory(qc, steps=15)), 'bell.html')
 ```
 
-The [two-qubit playground](https://yeshwanthguru.github.io/quantum-cognition-robotics/#playground-section)
+The [two-qubit playground](https://yeshwanthguru.github.io/quantum-mind/#playground-section)
 runs the same simulation in the browser.
 
 ## Where to go next

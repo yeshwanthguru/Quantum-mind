@@ -12,7 +12,7 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
 import numpy as np
-from qlcog.quantum import VariationalRegressor, QuantumKernelAnomalyDetector, QuantumKernelClustering
+from quantum_mind.quantum import VariationalRegressor, QuantumKernelAnomalyDetector, QuantumKernelClustering
 
 # %%
 # Forecasting a seasonal signal

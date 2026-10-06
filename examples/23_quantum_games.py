@@ -13,7 +13,7 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/ql.png'
 import numpy as np
-from qlcog.families.game_theory import EWLGame, PRISONERS_DILEMMA, CHICKEN, C, D, Q, classical_nash_equilibria
+from quantum_mind.families.game_theory import EWLGame, PRISONERS_DILEMMA, CHICKEN, C, D, Q, classical_nash_equilibria
 
 # %%
 # The classical games

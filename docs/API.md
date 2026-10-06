@@ -1,9 +1,9 @@
 # API reference
 
 Generated from the docstrings by `docs/make_api.py`; each entry shows the signature and the first
-paragraph of the docstring. Full docstrings: `help(qlcog.<module>.<name>)`.
+paragraph of the docstring. Full docstrings: `help(quantum_mind.<module>.<name>)`.
 
-## `qlcog.core`
+## `quantum_mind.core`
 
 Core layer: linear algebra of quantum-like models, the Model base class, fitting and comparison.
 
@@ -42,7 +42,7 @@ Core layer: linear algebra of quantum-like models, the Model base class, fitting
 - `tvd(p, q)`: Total variation distance.
 - `unitary(H, t)`: Time-evolution operator :math:`e^{-iHt}`.
 
-## `qlcog.families.order_effects`
+## `quantum_mind.families.order_effects`
 
 Question-order effects (see README.md in this folder).
 
@@ -71,7 +71,7 @@ Question-order effects (see README.md in this folder).
 - **class `SaturatedOrderModel(**params)`**: Reference model with a free answer distribution per order.
   - `predict(self, design=None)`: Answer distribution for each order (softmax of the logits).
 
-## `qlcog.families.conjunction`
+## `quantum_mind.families.conjunction`
 
 Conjunction and disjunction judgements (see README.md in this folder).
 
@@ -89,7 +89,7 @@ Conjunction and disjunction judgements (see README.md in this folder).
 - `RANK_STRUCTURES` (constant)
 - `TYPES` (constant)
 
-## `qlcog.families.interference`
+## `quantum_mind.families.interference`
 
 Interference in decisions under uncertainty: disjunction effect (see README.md in this folder).
 
@@ -102,7 +102,7 @@ Interference in decisions under uncertainty: disjunction effect (see README.md i
   - `predict(self, design=None)`: ``[P(act), P(not act)]`` for each condition.
 - `total_probability_bounds(p1, p2)`: Classical range of P(act | unknown).
 
-## `qlcog.families.qlbn`
+## `quantum_mind.families.qlbn`
 
 Quantum-like Bayesian networks (see README.md in this folder).
 
@@ -119,7 +119,7 @@ Quantum-like Bayesian networks (see README.md in this folder).
   - `predict(self, design=None)`: Distribution of the query variable in each condition.
 - `quantum_like_marginal(net, query, evidence=None, phases=None)`: Quantum-like posterior of one variable (amplitudes summed over hidden configurations).
 
-## `qlcog.families.dynamics`
+## `quantum_mind.families.dynamics`
 
 Belief dynamics: Markov, quantum and open-system models (see README.md in this folder).
 
@@ -142,7 +142,7 @@ Belief dynamics: Markov, quantum and open-system models (see README.md in this f
   - `state_probs(self, t)`: Distribution over belief states at time ``t`` (Born rule).
 - `question_effect(model, events, last, intermediate)`: Effect of an intermediate question on a later answer.
 
-## `qlcog.families.decision`
+## `quantum_mind.families.decision`
 
 Risky choice: quantum decision theory and classical baselines (see README.md in this folder).
 
@@ -156,7 +156,7 @@ Risky choice: quantum decision theory and classical baselines (see README.md in 
 - **class `QDTModel(**params)`**: Quantum decision theory (Yukalov and Sornette).
   - `predict(self, design=None)`: ``[P(choose 1), P(choose 2)]`` for each problem.
 
-## `qlcog.families.contextuality`
+## `quantum_mind.families.contextuality`
 
 Contextuality analysis: CHSH and Contextuality-by-Default for cyclic systems (see README.md).
 
@@ -166,7 +166,7 @@ Contextuality analysis: CHSH and Contextuality-by-Default for cyclic systems (se
 - `qubit_chsh_correlations(a0=0.0, a1=1.5707963267948966, b0=0.7853981633974483, b1=-0.7853981633974483)`: Quantum correlations of a Bell pair.
 - `s_odd(values)`: Largest signed sum with an odd number of minus signs.
 
-## `qlcog.families.similarity`
+## `quantum_mind.families.similarity`
 
 Similarity judgements and asymmetry (see README.md in this folder).
 
@@ -181,7 +181,7 @@ Similarity judgements and asymmetry (see README.md in this folder).
   - `predict(self, design=None)`: Similarity of each ordered pair ``(A, B)``.
   - `projectors(self)`: Projector of each concept subspace.
 
-## `qlcog.families.game_theory`
+## `quantum_mind.families.game_theory`
 
 Quantum games (EWL protocol) with the classical game as baseline (see README.md in this folder).
 
@@ -207,7 +207,7 @@ Quantum games (EWL protocol) with the classical game as baseline (see README.md 
 - `STAG_HUNT` (constant)
 - `strategy(theta, phi=0.0)`: EWL two-parameter strategy.
 
-## `qlcog.families.memory`
+## `quantum_mind.families.memory`
 
 Episodic memory: overdistribution, quantum versus additive classical model (see README.md).
 
@@ -219,7 +219,7 @@ Episodic memory: overdistribution, quantum versus additive classical model (see 
   - `predict(self, design=None)`: Predicted proportion for each ``(probe, question)``.
   - `probe_probabilities(self, probe)`: Answer probabilities for one probe type, from the projections of the memory state.
 
-## `qlcog.families.concepts`
+## `quantum_mind.families.concepts`
 
 Concept combination (guppy effect): Aerts' Fock-space model versus classical rules (see README.md).
 
@@ -230,7 +230,25 @@ Concept combination (guppy effect): Aerts' Fock-space model versus classical rul
 - **class `ProductConceptModel(**params)`**: Classical baseline: independent product :math:`\mu_A \mu_B` (no parameter).
 - **class `WeightedAverageModel(**params)`**: Baseline: :math:`w\,\mu_A + (1 - w)\,\mu_B`.
 
-## `qlcog.applications.robotics`
+## `quantum_mind.families.perception`
+
+Bistable perception: quantum Zeno model versus Markov switching and gamma renewal (see README.md).
+
+- `dwell_counts(dwell_times, edges)`: Histogram of dwell times, with a final bin for times beyond the last edge.
+- `dwell_time_design(dts, max_time=20.0, n_bins=20)`: Design with equal-width dwell-time bins for several observation intervals.
+- **class `GammaRenewalModel(**params)`**: Classical baseline: gamma-distributed dwell times (the usual empirical description).
+  - `mean_dwell(self, dt=None)`: Mean dwell time :math:`k\theta` (independent of the observation interval).
+  - `predict(self, design=None)`: Dwell-time bin probabilities (gamma distribution) for each condition.
+- **class `MarkovSwitchingModel(**params)`**: Classical baseline: switches at a constant rate (exponential dwell times, no Zeno effect).
+  - `mean_dwell(self, dt=None)`: Mean dwell time ``1 / rate`` (independent of the observation interval).
+  - `predict(self, design=None)`: Dwell-time bin probabilities (exponential distribution) for each condition.
+- `mean_dwell_time(model, dt)`: Mean dwell time predicted by a bistable-perception model.
+- **class `QuantumZenoBistableModel(**params)`**: Quantum Zeno model of bistable perception.
+  - `mean_dwell(self, dt)`: Mean dwell time :math:`\Delta t / \sin^2(g \Delta t)`.
+  - `predict(self, design=None)`: Dwell-time bin probabilities for each condition (geometric in units of ``dt``).
+  - `switch_probability(self, dt)`: Probability of a switch at one observation.
+
+## `quantum_mind.applications.robotics`
 
 Human-robot interaction: order-aware human models for robots that ask questions and track trust.
 
@@ -244,6 +262,7 @@ Human-robot interaction: order-aware human models for robots that ask questions 
 - `domain_models(domain)`: Simulated populations for one domain.
 - `estimate_unprimed_rates(design, generator, n, rng=None, model=None, probe=0.1)`: Estimate the unprimed "yes" rates from people who answer both questions.
 - `fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', **options)`: Fit a model class to data by multi-start optimisation.
+- `HAZARD_COSTS` (constant)
 - `HRI_DOMAINS` (constant)
 - **class `HumanModelEnsemble(candidates=None, design=None)`**: Competing human models weighted by evidence.
   - `predict(self, condition)`: Mixture prediction and its uncertainty.
@@ -268,11 +287,12 @@ Human-robot interaction: order-aware human models for robots that ask questions 
   - `predict(self, design=None)`: Answer distribution ``[yy, yn, ny, nn]`` for each order (default ``'AB'``, ``'BA'``).
   - `projectors(self)`: Projectors of the "yes" answers.
 - `RANK_STRUCTURES` (constant)
+- `risk_aware_ask_or_act(p_success, hazard='medium', ask_cost=1.0, p_lower=None, uncertainty=None, max_disagreement_bits=0.05, max_risk=None)`: Ask-or-act rule that scales with the hazard of the action and uses a lower confidence bound.
 - `TRUST_EVENTS` (constant)
 - `TRUST_MODELS` (constant)
 - `TRUST_PROTOCOL` (constant)
 
-## `qlcog.applications.intent`
+## `quantum_mind.applications.intent`
 
 Intent resolution from ambiguous commands and context cues (robots, assistants, interfaces).
 
@@ -285,7 +305,107 @@ Intent resolution from ambiguous commands and context cues (robots, assistants, 
   - `posterior(self, cues)`: Intent probabilities :math:`|\psi|^2` after applying the cues in order.
   - `resolve(self, cues)`: Most likely intent after the cues.
 
-## `qlcog.quantum`
+## `quantum_mind.applications.calibration`
+
+Calibration of confidence signals: measure it, correct it, and bound it.
+
+- `brier_score(prob, outcome)`: Brier score (mean squared error of probabilities).
+- **class `CalibrationMonitor(bins=10, alpha=0.05, min_count=10)`**: Online calibration check of one module, with a guaranteed lower bound on its success rate.
+  - `ece(self)`: Expected calibration error of the outcomes recorded so far (bin centres as confidences).
+  - `estimate(self, conf)`: Recalibrated success estimate and lower bound for a reported confidence.
+  - `update(self, conf, success)`: Record one outcome.
+- `clopper_pearson(successes, trials, alpha=0.05)`: Exact (Clopper-Pearson) confidence interval for a success probability.
+- `expected_calibration_error(conf, outcome, bins=10)`: Expected calibration error (ECE).
+- **class `IsotonicCalibration(x_: 'np.ndarray' = None, y_: 'np.ndarray' = None) -> None`**: Monotone, non-parametric recalibration by the pool-adjacent-violators algorithm.
+  - `fit(self, conf, outcome)`: Fit the monotone map from confidence to success rate.
+  - `transform(self, conf)`: Recalibrated confidences.
+- `max_calibration_error(conf, outcome, bins=10)`: Largest calibration gap over the non-empty bins.
+- **class `PlattScaling(a: 'float' = 1.0, b: 'float' = 0.0) -> None`**: Logistic recalibration of a binary confidence: :math:`\sigma(a\,\mathrm{logit}(c) + b)`.
+  - `fit(self, conf, outcome)`: Fit the slope and intercept.
+  - `transform(self, conf)`: Recalibrated confidences.
+- `reliability_curve(conf, outcome, bins=10)`: Data of a reliability diagram.
+- **class `SplitConformalClassifier(alpha: 'float' = 0.1, qhat: 'float' = None) -> None`**: Split conformal prediction sets for any probabilistic classifier.
+  - `fit(self, prob, labels)`: Compute the conformal threshold from calibration data.
+  - `predict_sets(self, prob)`: Prediction sets.
+- **class `TemperatureScaling(T: 'float' = 1.0) -> None`**: Multi-class recalibration by one temperature: :math:`\mathrm{softmax}(\log p / T)`.
+  - `fit(self, prob, labels)`: Fit the temperature by minimising the negative log-likelihood.
+  - `transform(self, prob)`: Recalibrated class probabilities.
+
+## `quantum_mind.applications.orchestration`
+
+Orchestration: choose which module a robot relies on, from calibrated confidence and cost.
+
+- **class `ConfidenceGate(modules, lam=0.05, calibrators=None, budget=None, window=50)`**: Cost-penalised confidence gate.
+  - `calibrated(self, conf)`: Apply the per-module recalibration.
+  - `scores(self, conf)`: Gate scores :math:`\hat c_k - \lambda\,\text{cost}_k`.
+  - `select(self, conf)`: Choose a module for one situation and record the choice.
+  - `select_batch(self, conf)`: Choose modules for many situations at once (no budget, no history).
+- `meta_fit_offsets(logs, residual_var=0.25)`: Meta-learn the prior of :class:`MetaCalibratedGate` from earlier tasks (empirical Bayes).
+- **class `MetaCalibratedGate(modules, prior_mean=None, prior_n=1.0, lam=0.05, explore=0.05, seed=0)`**: Gate that learns each module's confidence offset online, from a meta-learned prior.
+  - `select(self, conf)`: Choose a module (with a small exploration probability).
+  - `update(self, k, conf_k, success)`: Learn from the outcome of a call.
+- **class `Module(name: 'str', cost: 'float' = 1.0) -> None`**: One module the gate can call.
+- **class `RoutingTask(offsets: 'np.ndarray', mix: 'np.ndarray', noise: 'float' = 0.08, p_good: 'float' = 0.85, p_bad: 'float' = 0.35, names: 'tuple' = ('Vision', 'RL', 'Imitation', 'Fault-recovery')) -> None`**: A synthetic orchestration task with four modules and four situation types.
+  - `modules(self)`: The four modules with their default costs.
+  - `step(self, rng)`: One situation.
+- `simulate_routing(gate, task, steps, rng, learn=True)`: Run a gate on a synthetic task.
+
+## `quantum_mind.applications.questioning`
+
+Adaptive questioning: which question a robot should ask next, and when to stop asking.
+
+- **class `IndependentAnswerModel(hypotheses, questions, table)`**: Order-free answers: a fixed yes-probability per hypothesis and question.
+  - `likelihood(self, h, history)`: Probability of the answer history under one hypothesis (answers independent).
+  - `p_yes(self, h, history, q)`: Probability of "yes" to a question (independent of the history).
+- **class `ProjectiveAnswerModel(states, projectors)`**: Order-dependent answers: Lüders rule on a belief state per hypothesis.
+  - `likelihood(self, h, history)`: Probability of the whole answer history under one hypothesis.
+  - `order_free(self)`: The order-blind approximation of this model.
+  - `p_yes(self, h, history, q)`: Probability of "yes" to the next question, given the history.
+- **class `QuestionPlanner(answer_model, prior=None, ask_cost=1.0, error_cost=5.0, repeat=False)`**: Value-of-information question planner.
+  - `decide(self, history)`: Ask or act.
+  - `information_gain(self, q, history)`: Expected entropy reduction (bits) of the belief from asking a question.
+  - `posterior(self, history)`: Belief over hypotheses after an answer history.
+  - `run(self, respond, max_questions=10)`: Interactive loop: ask until acting is better.
+  - `simulate(self, truth_model, true_h, rng, max_questions=10)`: Run the planner against a simulated person.
+  - `value_of_information(self, q, history)`: Expected reduction of the error cost from asking one more question.
+
+## `quantum_mind.applications.personalisation`
+
+Personalised human models: start from the population, adapt to each person.
+
+- `fit_map(model_cls, data, prior, design=None, restarts=4, rng=None, **options)`: Maximum a posteriori fit of one person's data under a population prior.
+- **class `PersonalisedHumanModel(model_cls, prior, design=None, outcomes=4)`**: Per-person human models with partial pooling.
+  - `add(self, person, condition, answers)`: Record one answer pair and refit that person.
+  - `model(self, person)`: The person's model (the population mean model for a new person).
+  - `predict(self, person, design=None)`: Predicted answer distribution for one person.
+- `population_prior(model_cls, data_by_person, design=None, restarts=4, rng=None)`: Convenience: fit every person by maximum likelihood and build the empirical-Bayes prior.
+- **class `PopulationPrior(model_cls, mean, cov)`**: Gaussian prior on a model's free (unconstrained) parameters.
+  - `neg_log_prior(self, x)`: Negative log prior density, up to a constant.
+
+## `quantum_mind.applications.handover`
+
+Trust-aware hand-over: a robot policy built on the trust qubit.
+
+- `simulate_handover_session(policy, person, events_rng, n_steps=20)`: Run a policy against a simulated person whose trust follows a model.
+- **class `TrustAwareHandover(model, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5)`**: Hand-over policy on a trust belief.
+  - `answer(self, yes)`: Update the belief after the person answers the trust question.
+  - `decide(self)`: Expected cost of each action and the best one.
+  - `observe(self, event)`: Update the belief after a hand-over outcome.
+  - `wait(self)`: Let one step pass without a hand-over (dephasing only, open-system model).
+
+## `quantum_mind.applications.fusion`
+
+Multimodal fusion for robots: from detector scores, speech and gaze to one belief over intents.
+
+- `asr_likelihood(nbest, keywords, hypotheses, floor=0.02)`: Likelihood over hypotheses from a speech recogniser's n-best list.
+- `bayes_fusion(likelihoods, prior=None)`: Posterior of independent cues: prior times the product of the likelihoods.
+- `compare_fusion(intents, cue_likelihoods, train, test, prior=None)`: Compare Bayesian, Dempster-Shafer and fitted quantum-like fusion on held-out trials.
+- `dempster_shafer_fusion(likelihoods, reliabilities=None)`: Dempster's rule for singleton masses with discounting.
+- `detector_likelihood(scores, hypotheses, temperature=1.0, floor=0.001)`: Likelihood over hypotheses from an object detector's scores.
+- `direction_likelihood(direction, targets, hypotheses, kappa=5.0, floor=0.001)`: Likelihood over hypotheses from a gaze or pointing direction (von Mises-Fisher).
+- `fit_incompatibility(resolver_cls, intents, cue_likelihoods, trials, prior=None, bounds=(0.0, 1.5707963267948966))`: Fit the incompatibility angle of each cue of a quantum-like resolver from logged choices.
+
+## `quantum_mind.quantum`
 
 Quantum models: quantum machine learning and quantum algorithms (gate-model circuits).
 
@@ -381,7 +501,7 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
 - **class `XX(i: 'int', j: 'int', a: 'float' = 3.141592653589793, scale: 'float' = 1.0) -> None`**: Product feature used by ZZ feature maps.
 - `zz_feature_map(n_features, reps=2, circ=None)`: Second-order Pauli-Z feature map (Havlíček et al., Nature 567, 209-212, 2019).
 
-## `qlcog.inspired`
+## `quantum_mind.inspired`
 
 Quantum-inspired models: classical algorithms that borrow quantum ideas. No quantum computer is used.
 
@@ -422,7 +542,47 @@ Quantum-inspired models: classical algorithms that borrow quantum ideas. No quan
 - `tokenize(text)`: Split text into lower-case word tokens.
 - `train(agent, env, episodes=300)`: Run training episodes.
 
-## `qlcog.problems`
+## `quantum_mind.inspired.exploration`
+
+Exploration strategies for tabular reinforcement learning, quantum-inspired and classical.
+
+- **class `AmplitudeExploration(n_states, n_actions, k=2.0, max_step=0.3, floor=0.02, seed=0)`**: Quantum-inspired exploration by action amplitudes (Born-rule sampling, TD-driven rotation).
+  - `choose(self, q, s, agent)`: Sample an action with probability :math:`|\psi_a|^2`.
+  - `end_episode(self)`: Nothing to decay: exploration fades as amplitudes concentrate.
+  - `update(self, s, a, td_error, q=None)`: Rotate the chosen action's amplitude by ``clip(k * advantage, ±max_step)``.
+- **class `Boltzmann(temperature=0.5, decay=0.99, min_temperature=0.01, seed=0)`**: Softmax (Boltzmann) exploration with a decaying temperature.
+  - `choose(self, q, s, agent)`: Sample from the softmax of the action values.
+  - `end_episode(self)`: Decay the temperature.
+- **class `EpsilonGreedy(epsilon=0.3, decay=0.99, min_epsilon=0.01, seed=0)`**: Random action with probability epsilon, otherwise greedy; epsilon decays per episode.
+  - `choose(self, q, s, agent)`: Choose an action from the value row ``q`` of state ``s``.
+  - `end_episode(self)`: Decay epsilon.
+  - `update(self, s, a, td_error, q=None)`: No exploration state to update.
+- `run_episodes(agent, env, episodes, state_fn=None, max_steps=1000, seed=0)`: Train an agent on a Gymnasium-style environment.
+- **class `StateIndexer(capacity)`**: Map hashable observations (tuples, rounded arrays) to table rows on first sight.
+- **class `TabularAgent(n_states, n_actions, explorer, alpha=0.2, gamma=0.95)`**: Q-learning agent with a pluggable exploration strategy.
+  - `act(self, s)`: Choose an action in state s.
+  - `greedy(self, s)`: Greedy action.
+  - `update(self, s, a, r, s2, done)`: Q-learning update, then the explorer's update.
+- **class `UCB(c=0.5, seed=0)`**: Upper-confidence-bound exploration: :math:`\arg\max_a Q(s,a) + c\sqrt{\ln N(s) / N(s,a)}`.
+  - `choose(self, q, s, agent)`: Untried actions first, then the highest upper bound.
+  - `end_episode(self)`: Nothing to decay.
+
+## `quantum_mind.envs`
+
+Reinforcement-learning environments with simulated people (Gymnasium API).
+
+- **class `ClarificationEnv(model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6)`**: Resolve an ambiguous request by asking questions, then act.
+  - `reset(self, seed=None, options=None)`: Start an episode with a new hidden intent.
+  - `step(self, action)`: Ask a question or act.
+- **class `GridWorldEnv(**kwargs)`**: The grid world of :class:`quantum_mind.inspired.rl.GridWorld` with the Gymnasium interface.
+  - `reset(self, seed=None, options=None)`: Return to the start cell.
+  - `step(self, action)`: Move one cell.
+- `register_envs()`: Register the environments with Gymnasium.
+- **class `TrustHandoverEnv(model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5)`**: Hand objects to a simulated person whose trust follows the trust qubit.
+  - `reset(self, seed=None, options=None)`: Start an episode at the model's initial trust.
+  - `step(self, action)`: Take one action.
+
+## `quantum_mind.problems`
 
 Binary optimisation problems shared by the quantum and quantum-inspired solvers.
 
@@ -438,25 +598,25 @@ Binary optimisation problems shared by the quantum and quantum-inspired solvers.
   - `to_ising(self)`: Equivalent Ising model with spins :math:`s = 1 - 2x \in \{+1, -1\}`.
 - `task_allocation(costs, penalty=None)`: Assignment of tasks to agents; every task goes to exactly one agent.
 
-## `qlcog.circuits`
+## `quantum_mind.circuits`
 
 Qiskit circuits for the model families, and a single :func:`run` for simulators and cloud hardware (see README.md in this folder). Needs the ``qiskit`` extra.
 
-- `belief_circuit(model, events, queries, form='dynamic')`: Circuit for an :class:`~qlcog.families.dynamics.OpenSystemBelief` over a sequence of events.
+- `belief_circuit(model, events, queries, form='dynamic')`: Circuit for an :class:`~quantum_mind.families.dynamics.OpenSystemBelief` over a sequence of events.
 - `chsh_circuit(a, b)`: Bell pair measured in the x-z plane.
-- `conjunction_circuit(model, form='dynamic')`: Circuit for a :class:`~qlcog.families.conjunction.QuantumConjunctionModel`.
+- `conjunction_circuit(model, form='dynamic')`: Circuit for a :class:`~quantum_mind.families.conjunction.QuantumConjunctionModel`.
 - `interference_circuit(p1, p2, c, theta, condition='unknown')`: Two-path interference circuit (normalised form of the interference model).
 - `n_qubits(d)`: Number of qubits needed for a dimension.
 - `order_effects_circuit(model, order='AB', form='dynamic')`: Circuit for a question-order model.
 - `projective_sequence_circuit(psi, projectors, order, form='dynamic')`: Circuit for a sequence of yes/no questions.
 - `qlbn_circuit(net, query, evidence=None, phases=None)`: Quantum-like Bayesian network inference as a circuit.
 - `run(qc, backend='aer', shots=10000, seed=7)`: Run a circuit and return counts.
-- `similarity_circuit(model, a, b, form='dynamic')`: Circuit for Sim(a, b) of a :class:`~qlcog.families.similarity.QuantumSimilarityModel`.
+- `similarity_circuit(model, a, b, form='dynamic')`: Circuit for Sim(a, b) of a :class:`~quantum_mind.families.similarity.QuantumSimilarityModel`.
 - `subspace_unitary(P, n)`: Unitary that maps the range of a projector onto the first basis states.
 - `to_qasm3(qc)`: Export a circuit as OpenQASM 3 in Braket's gate names.
 - `walk_circuit(model, t)`: Quantum-walk circuit at time t.
 
-## `qlcog.viz`
+## `quantum_mind.viz`
 
 Bloch-sphere visualisation: watch qubits evolve in 3D.
 
@@ -496,7 +656,7 @@ Bloch-sphere visualisation: watch qubits evolve in 3D.
   - `concurrence(self, a=0, b=1)`: Concurrence of two qubits in every frame.
   - `purity(self)`: Bloch-vector length per frame and qubit.
 
-## `qlcog.data`
+## `quantum_mind.data`
 
 Published aggregate data used in the examples and tests.
 

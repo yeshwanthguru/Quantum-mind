@@ -10,7 +10,7 @@ models are used, not which one is better (that needs a retrieval benchmark).
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/qi.png'
-from qlcog.inspired import QuantumLanguageModel, QueryLikelihoodModel
+from quantum_mind.inspired import QuantumLanguageModel, QueryLikelihoodModel
 
 # %%
 # A tiny corpus and two queries

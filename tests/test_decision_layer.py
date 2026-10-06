@@ -2,18 +2,18 @@
 import numpy as np
 import pytest
 
-from qlcog.applications.calibration import (expected_calibration_error, reliability_curve, PlattScaling,
+from quantum_mind.applications.calibration import (expected_calibration_error, reliability_curve, PlattScaling,
                                             TemperatureScaling, IsotonicCalibration, SplitConformalClassifier,
                                             clopper_pearson, CalibrationMonitor, brier_score)
-from qlcog.applications.orchestration import (Module, ConfidenceGate, MetaCalibratedGate, RoutingTask,
+from quantum_mind.applications.orchestration import (Module, ConfidenceGate, MetaCalibratedGate, RoutingTask,
                                               simulate_routing, meta_fit_offsets)
-from qlcog.applications.questioning import ProjectiveAnswerModel, IndependentAnswerModel, QuestionPlanner
-from qlcog.applications.personalisation import PopulationPrior, fit_map, PersonalisedHumanModel
-from qlcog.applications.handover import TrustAwareHandover, simulate_handover_session
-from qlcog.applications.robotics import risk_aware_ask_or_act
-from qlcog.core import fit, projector
-from qlcog.families.dynamics import OpenSystemBelief, MarkovBelief
-from qlcog.families.order_effects import BayesOrderModel
+from quantum_mind.applications.questioning import ProjectiveAnswerModel, IndependentAnswerModel, QuestionPlanner
+from quantum_mind.applications.personalisation import PopulationPrior, fit_map, PersonalisedHumanModel
+from quantum_mind.applications.handover import TrustAwareHandover, simulate_handover_session
+from quantum_mind.applications.robotics import risk_aware_ask_or_act
+from quantum_mind.core import fit, projector
+from quantum_mind.families.dynamics import OpenSystemBelief, MarkovBelief
+from quantum_mind.families.order_effects import BayesOrderModel
 
 
 def test_calibration_measures_and_recalibrators():

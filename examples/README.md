@@ -1,7 +1,7 @@
 # Examples
 
 Each script runs without installing the package (`python3 examples/<script>.py`). Most finish in
-seconds; 13 and 19 take about a minute. Only the data in `qlcog.data` are human data; every simulated data set is labelled as such.
+seconds; 13 and 19 take about a minute. Only the data in `quantum_mind.data` are human data; every simulated data set is labelled as such.
 
 | Script | Domain | Family or pillar | What it shows |
 |---|---|---|---|

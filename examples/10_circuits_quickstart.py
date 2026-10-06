@@ -9,12 +9,12 @@ import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().
 # sphinx_gallery_end_ignore
 # sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
 import numpy as np
-from qlcog.core import tvd
-from qlcog.circuits import (run, order_effects_circuit, interference_circuit, qlbn_circuit, walk_circuit, belief_circuit)
-from qlcog.families.order_effects import QuantumOrderModel
-from qlcog.families.interference import InterferenceModel
-from qlcog.families.qlbn import BayesNet, quantum_like_marginal
-from qlcog.families.dynamics import QuantumWalk, OpenSystemBelief, final_yes
+from quantum_mind.core import tvd
+from quantum_mind.circuits import (run, order_effects_circuit, interference_circuit, qlbn_circuit, walk_circuit, belief_circuit)
+from quantum_mind.families.order_effects import QuantumOrderModel
+from quantum_mind.families.interference import InterferenceModel
+from quantum_mind.families.qlbn import BayesNet, quantum_like_marginal
+from quantum_mind.families.dynamics import QuantumWalk, OpenSystemBelief, final_yes
 
 # %%
 # Build the circuits
