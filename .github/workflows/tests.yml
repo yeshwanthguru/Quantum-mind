@@ -24,7 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[all,dev]"
       - name: Lint
-        run: ruff check src tests examples docs integrations
+        run: ruff check src tests examples docs integrations site
       - name: API reference is up to date
         run: python docs/make_api.py --check
       - name: Unit tests with coverage

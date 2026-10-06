@@ -11,6 +11,8 @@
   <a href="docs/API.md"><img src="https://img.shields.io/badge/docs-API%20reference-0969da" alt="API reference"></a>
 </p>
 
+<p align="center"><b>🌐 Website with a live Bloch-sphere playground: <a href="https://yeshwanthguru.github.io/quantum-cognition-robotics/">yeshwanthguru.github.io/quantum-cognition-robotics</a></b></p>
+
 <p align="center">
   <b><a href="#pillars">Three pillars</a></b> ·
   <b><a href="#viewer">Bloch viewer</a></b> ·
@@ -295,7 +297,8 @@ src/qlcog/
 examples/           22 scripts across domains        docs/       concepts, API reference, assets
 notebooks/          2 Jupyter notebooks              tests/      51 tests
 integrations/ros2/  ROS 2 node (qlcog_ros)
-.github/            CI, release, CODEOWNERS, issue and pull-request templates
+site/               project website (built and deployed to GitHub Pages by CI)
+.github/            CI, release, website, CODEOWNERS, issue and pull-request templates
 ```
 
 <a id="examples"></a>

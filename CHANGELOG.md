@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Project website (`site/`, deployed to GitHub Pages by `.github/workflows/pages.yml`): landing page, an
+  in-browser two-qubit playground (exact state-vector simulation; checked against the package's
+  simulator in `tests/test_site.py`), interactive animations, documentation pages, executed notebooks,
+  social preview card, sitemap. plotly.js is self-hosted.
+
 ## 1.3.0 — 6 October 2026
 
 Closes the gaps listed as "not yet" in 1.2.0.

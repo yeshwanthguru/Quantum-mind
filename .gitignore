@@ -6,3 +6,4 @@ __pycache__/
 examples/output/
 .ipynb_checkpoints/
 .ruff_cache/
+_site/

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>qlcog: quantum-like, quantum and quantum-inspired models</title>
+<meta name="description" content="Open-source Python library: quantum-like models of human judgement, decision and trust with classical baselines, quantum machine learning and algorithms as Qiskit circuits, quantum-inspired optimisers, and a 3D Bloch-sphere viewer. Built for robots that work with people.">
+<meta property="og:title" content="quantum-cognition-robotics (qlcog)">
+<meta property="og:description" content="Quantum-like, quantum and quantum-inspired models in one open-source library, with a live 3D Bloch-sphere playground. Apache-2.0.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{SITE}}">
+<meta property="og:image" content="{{SITE}}assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="static/style.css">
+<script src="static/plotly.min.js" charset="utf-8"></script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#">qlcog</a>
+  <nav>
+    <a href="#playground-section">Playground</a><a href="#pillars">Models</a><a href="#animations">Animations</a>
+    <a href="#robotics">Robotics</a><a href="#results">Results</a><a href="#start">Get started</a><a href="docs/">Docs</a>
+  </nav>
+  <a class="gh" href="{{REPO}}">★ GitHub</a>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <img src="assets/banner.svg" alt="quantum-cognition-robotics banner: quantum-like, quantum, quantum-inspired, 3D Bloch viewer" width="1200" height="300">
+  <h1>Quantum-like, quantum and quantum-inspired models, compared on the same problems.</h1>
+  <p><strong>qlcog</strong> is an open-source Python library for robots and AI agents that work with people. It models
+  how people judge, decide and trust with quantum probability, always next to the classical models it must beat;
+  runs quantum machine learning and algorithms as Qiskit circuits; offers quantum-inspired optimisers; and shows
+  every qubit moving on a 3D Bloch sphere.</p>
+  <div class="cta">
+    <a class="btn primary" href="#playground-section">Try it in the browser</a>
+    <a class="btn" href="{{REPO}}">Source on GitHub</a>
+    <a class="btn" href="docs/">Documentation</a>
+  </div>
+  <pre class="install"><code>pip install "qlcog[all] @ git+{{REPO}}"</code></pre>
+  <p class="note">Version {{VERSION}} · Apache-2.0 · Python 3.10–3.12 · {{TESTS}} tests in CI · Qiskit, IBM Quantum, Amazon Braket</p>
+</div></section>
+
+<section id="playground-section"><div class="wrap">
+  <h2>Two-qubit playground</h2>
+  <p class="lead">An exact two-qubit simulation running in this page. Apply gates and watch both Bloch vectors move.
+  After a CNOT on a superposition the qubits become entangled: each vector shrinks into the ball and the concurrence rises.
+  Drag a sphere to rotate it.</p>
+  <div class="pg" id="playground">
+    <div>
+      <div class="spheres">
+        <div><div class="sphere" id="pg-q0"></div><p class="note q0">● qubit 0</p></div>
+        <div><div class="sphere" id="pg-q1"></div><p class="note q1">● qubit 1</p></div>
+      </div>
+      <div class="panel">
+        <p style="margin:0">Entanglement (concurrence): <strong id="pg-conc-v">0.000</strong></p>
+        <div class="meter"><div id="pg-conc"></div></div>
+        <div class="history" id="pg-hist"></div>
+        <div class="readout" id="pg-read"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <strong class="q0">qubit 0</strong>
+      <div class="gates">
+        <button data-gate="H" data-q="0">H</button><button data-gate="X" data-q="0">X</button><button data-gate="Y" data-q="0">Y</button><button data-gate="Z" data-q="0">Z</button><button data-gate="S" data-q="0">S</button>
+        <button data-gate="T" data-q="0">T</button><button data-gate="Rx" data-q="0">Rx¼π</button><button data-gate="Ry" data-q="0">Ry¼π</button><button data-gate="Rz" data-q="0">Rz¼π</button><button data-gate="Sdg" data-q="0">S†</button>
+      </div>
+      <strong class="q1">qubit 1</strong>
+      <div class="gates">
+        <button data-gate="H" data-q="1">H</button><button data-gate="X" data-q="1">X</button><button data-gate="Y" data-q="1">Y</button><button data-gate="Z" data-q="1">Z</button><button data-gate="S" data-q="1">S</button>
+        <button data-gate="T" data-q="1">T</button><button data-gate="Rx" data-q="1">Rx¼π</button><button data-gate="Ry" data-q="1">Ry¼π</button><button data-gate="Rz" data-q="1">Rz¼π</button><button data-gate="Sdg" data-q="1">S†</button>
+      </div>
+      <button class="wide" data-cnot="01">CNOT  q0 → q1</button>
+      <button class="wide" data-cnot="10">CNOT  q1 → q0</button>
+      <button class="wide" data-bell>Make a Bell state (H, then CNOT)</button>
+      <button class="wide" data-reset>Reset to |00⟩</button>
+      <p class="note" style="margin:12px 0 0">Tip: H on qubit 0, then CNOT q0 → q1, entangles the pair; a second CNOT undoes it.</p>
+    </div>
+  </div>
+  <p class="note">The same views in Python, for any Qiskit circuit: <code>circuit_trajectory(qc)</code>, <code>animate_bloch</code>,
+  <code>LiveBloch</code>, <code>plot_entanglement</code>. Checked against Qiskit in the test suite.</p>
+</div></section>
+
+<section id="pillars"><div class="wrap">
+  <h2>Three kinds of “quantum”, kept apart</h2>
+  <p class="lead">Each makes a different claim and needs a different test. The library has all three, shares one problem
+  format between them, and reports a classical baseline every time. <a href="docs/concepts.html">Read the concepts page.</a></p>
+  <div class="grid3">
+    <div class="card like"><h3>🧠 Quantum-like</h3><p>Models of <strong>human</strong> judgement, decision and trust in quantum probability, on ordinary computers.</p>
+      <ul><li>order effects, conjunction, interference</li><li>quantum-like Bayesian networks</li><li>quantum, Markov and open-system dynamics</li><li>quantum decision theory, contextuality, similarity</li><li>per-person fitting and model comparison</li></ul>
+      <p class="tag" style="margin-top:10px">qlcog.families · qlcog.applications</p></div>
+    <div class="card quantum"><h3>⚛️ Quantum</h3><p><strong>Gate-model</strong> machine learning and algorithms, trained on a fast simulator with exact gradients and exported to Qiskit.</p>
+      <ul><li>variational and quantum-kernel classifiers</li><li>QAOA for any QUBO</li><li>VQE for Pauli Hamiltonians</li><li>Grover search (hardware-sized circuits)</li><li>Aer, IBM Quantum, Amazon Braket</li></ul>
+      <p class="tag" style="margin-top:10px">qlcog.quantum · qlcog.circuits</p></div>
+    <div class="card inspired"><h3>✨ Quantum-inspired</h3><p><strong>Classical</strong> algorithms that borrow a quantum idea. No quantum computer needed.</p>
+      <ul><li>quantum-inspired evolutionary algorithm (Han and Kim)</li><li>quantum-behaved particle swarm</li><li>simulated quantum annealing</li><li>tensor-network classifier (DMRG sweeps)</li><li>classical simulated-annealing baseline</li></ul>
+      <p class="tag" style="margin-top:10px">qlcog.inspired · qlcog.problems</p></div>
+  </div>
+</div></section>
+
+<section id="animations"><div class="wrap">
+  <h2>Interactive animations</h2>
+  <p class="lead">Generated by the package itself (<code>animate_bloch</code>). Press play, drag the slider, rotate with the mouse.</p>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-src="demos/entanglement.html">Entangling two qubits</button>
+    <button role="tab" aria-selected="false" data-src="demos/trust.html">Trust in a robot as a qubit</button>
+    <button role="tab" aria-selected="false" data-src="demos/ghz.html">Three-qubit GHZ state</button>
+  </div>
+  <iframe class="demo-frame" id="demo" src="demos/entanglement.html" title="Interactive Bloch-sphere animation" loading="lazy"></iframe>
+  <figure class="figure" style="margin:18px 0 0">
+    <img src="assets/entanglement_timeline.png" alt="Bloch-vector lengths and concurrence along the entangling circuit" loading="lazy">
+    <figcaption>The entangling circuit as a timeline: each qubit's Bloch-vector length and the pair's concurrence (<code>plot_entanglement</code>).</figcaption>
+  </figure>
+</div></section>
+
+<section id="robotics"><div class="wrap">
+  <h2>For robots that ask people questions</h2>
+  <p class="lead">A robot's questions can change people's answers, and asking about trust can change trust. The robotics
+  layer gives a robot a predicted answer, its uncertainty, and a rule for when to ask instead of act.</p>
+  <div class="grid2">
+    <div><pre><code>from qlcog.applications.robotics import HumanModelService
+
+svc = HumanModelService()
+svc.add_answer({'order': 'AB', 'answers': [1, 0]})
+svc.query({'order': 'AB', 'ask_cost': 1.0, 'error_cost': 3.0})
+# prediction, uncertainty (bits), model weights,
+# {'action': 'ask' | 'act', 'reason': ...}</code></pre></div>
+    <div class="card"><h3>ROS 2 node</h3><p>The same service as a ROS 2 package with standard <code>std_msgs/String</code> JSON topics:
+      answers in, decisions out. <a href="{{REPO}}/tree/main/integrations/ros2">integrations/ros2</a></p>
+      <p class="note">Its callbacks are tested with stand-in ROS modules; it has not yet been run inside a ROS 2 installation.</p></div>
+  </div>
+</div></section>
+
+<section id="results"><div class="wrap">
+  <h2>Results, reported as measured</h2>
+  <p class="lead">Simulated data, small problems; they illustrate the methods and are not a benchmark. Where a classical
+  model wins, the table says so.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Task</th><th>Result</th></tr>
+    {{RESULTS}}
+  </table></div>
+  <h3 style="margin-top:28px">What is and is not claimed</h3>
+  <ul>
+    <li>No quantum advantage is claimed. On the example classification task a classical model with quadratic features is the most accurate.</li>
+    <li>No hardware results are included yet. IBM and Braket submission code is tested against local stand-ins (a fake IBM device, the Braket local simulator).</li>
+    <li>All data in the examples are simulated or published aggregates, and labelled as such.</li>
+  </ul>
+</div></section>
+
+<section id="start"><div class="wrap">
+  <h2>Get started</h2>
+  <div class="grid2">
+    <div><pre><code>pip install "qlcog[all] @ git+{{REPO}}"
+
+# quantum-like: is there an order effect?
+from qlcog.core import compare
+from qlcog.families.order_effects import (
+    QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel, qq_test)
+print(qq_test(counts))
+compare([QuantumOrderModel4D, BayesOrderModel,
+         AnchoringOrderModel], counts)</code></pre></div>
+    <div><pre><code># quantum and quantum-inspired on one problem
+from qlcog.problems import task_allocation
+from qlcog.quantum import QAOA
+from qlcog.inspired import SQA, QIEA, simulated_annealing
+
+q = task_allocation(costs)
+q.brute_force(), QAOA(q, p=3).run().energy
+SQA(q).run().value, simulated_annealing(q).value
+
+# watch a circuit on Bloch spheres
+from qlcog.viz import circuit_trajectory, animate_bloch
+animate_bloch(circuit_trajectory(qc))</code></pre></div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <a class="card" href="docs/"><h3>Documentation</h3><p>Concepts, API reference, model READMEs, changelog.</p></a>
+    <a class="card" href="notebooks/"><h3>Notebooks</h3><p>Live Bloch spheres; robot questioning and trust (rendered with outputs).</p></a>
+    <a class="card" href="docs/examples.html"><h3>{{N_EXAMPLES}} examples</h3><p>Robotics, medicine, finance, physics, scheduling, control, surveys.</p></a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <p><strong>quantum-cognition-robotics</strong> (Python package <code>qlcog</code>) · version {{VERSION}} · Apache License 2.0 ·
+  <a href="{{REPO}}">GitHub</a> · <a href="{{REPO}}/issues">Issues</a> · <a href="{{REPO}}/blob/main/CITATION.cff">Cite</a></p>
+  <p>Author: Yeshwanth Guru (<a href="mailto:yeshwanth445@gmail.com">yeshwanth445@gmail.com</a>,
+  ORCID <a href="https://orcid.org/0009-0007-6353-4033">0009-0007-6353-4033</a>), Department of Mechanical Engineering,
+  Amrita Vishwa Vidyapeetham, Chennai, India.</p>
+  <p class="note">This site is built from the repository by GitHub Actions on every push; last build {{BUILD_DATE}}.</p>
+</div></footer>
+<script src="static/playground.js"></script>
+<script>
+document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-selected', 'false'));
+  b.setAttribute('aria-selected', 'true'); document.getElementById('demo').src = b.dataset.src;
+}));
+</script>
+</body>
+</html>
