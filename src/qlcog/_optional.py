@@ -2,7 +2,7 @@
 import importlib
 
 _EXTRA = {'qiskit': 'qiskit', 'qiskit_aer': 'qiskit', 'qiskit_ibm_runtime': 'qiskit', 'braket': 'cloud',
-          'matplotlib': 'viz', 'plotly': 'viz', 'ipywidgets': 'viz', 'anywidget': 'viz'}
+          'matplotlib': 'viz', 'plotly': 'viz', 'ipywidgets': 'viz', 'anywidget': 'viz', 'seaborn': 'viz'}
 
 
 def require(module, extra=None):

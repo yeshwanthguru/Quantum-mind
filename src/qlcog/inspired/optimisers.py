@@ -2,8 +2,8 @@
 probabilities, quantum potential wells, transverse-field tunnelling). They run on ordinary hardware and
 make no use of a quantum computer.
 
-  QIEA   quantum-inspired evolutionary algorithm (binary); a simplified variant of Han and Kim,
-         IEEE TEVC 6(6), 2002 (fixed rotation step instead of their lookup table; see the class docstring)
+  QIEA   quantum-inspired evolutionary algorithm (binary)          Han and Kim, IEEE TEVC 6(6), 2002
+         (their rotation lookup table by default; a simplified fixed-step rule as an option)
   QPSO   quantum-behaved particle swarm optimisation (continuous)   Sun, Feng and Xu, CEC 2004
   SQA    simulated quantum annealing, path-integral Monte Carlo     Martonak, Santoro and Tosatti, PRB 66, 2002
 """
@@ -39,19 +39,31 @@ class QIEA:
     Observing an individual samples a bit string. A rotation gate moves every angle towards the best
     solution found so far, and migration exchanges best solutions within groups and globally.
 
-    Simplified variant: Han and Kim's rotation uses a lookup table of eight cases with signs that
-    depend on the quadrant of the Q-bit; here one fixed step `delta` moves P(x_i = 1) towards the
-    individual's best bit whenever the observed bit differs and the observation is not better, and
-    an H-epsilon bound keeps every probability away from 0 and 1. Behaviour is comparable on the
-    tested problems but not identical to the original.
+    rotation='lookup' (default): the rotation table of Han and Kim (2002, Table I), with the
+    comparison f(x) >= f(b) of their maximisation problem read as f(x) <= f(b) for minimisation. For
+    each bit the table gives the rotation angle from (x_i, b_i, x better than b); the sign moves the
+    amplitude towards the bit of the better solution. Q-bit angles stay in the first quadrant, so the
+    sign column for alpha * beta > 0 applies, and an H-epsilon bound keeps P(x_i = 1) away from 0 and 1.
+    rotation='simple': one fixed step `delta` towards b_i whenever x_i != b_i and x is not better.
 
     problem: Qubo or f(x) for x in {0, 1}^n (then give n)."""
 
-    def __init__(self, problem, n=None, pop=20, generations=300, delta=0.01 * np.pi, migrate_every=20,
-                 groups=4, seed=0):
+    # Han and Kim (2002), Table I: (x_i, b_i, x better) -> (rotation angle, sign for alpha * beta > 0)
+    LOOKUP = {(0, 0, False): (0.0, 0), (0, 0, True): (0.0, 0), (0, 1, False): (0.0, 0), (0, 1, True): (0.05 * np.pi, -1),
+              (1, 0, False): (0.01 * np.pi, -1), (1, 0, True): (0.025 * np.pi, 1), (1, 1, False): (0.005 * np.pi, 1),
+              (1, 1, True): (0.025 * np.pi, 1)}
+
+    def __init__(self, problem, n=None, pop=20, generations=300, rotation='lookup', delta=0.01 * np.pi,
+                 migrate_every=20, groups=4, seed=0):
+        if rotation not in ('lookup', 'simple'):
+            raise ValueError("rotation must be 'lookup' or 'simple'")
         self.f, n0 = _as_objective(problem); self.n = n or n0
-        self.pop, self.generations, self.delta = pop, generations, delta
+        self.pop, self.generations, self.delta, self.rotation = pop, generations, delta, rotation
         self.migrate_every, self.groups, self.seed = migrate_every, groups, seed
+        ang = np.zeros((2, 2, 2)); sgn = np.zeros((2, 2, 2))
+        for (xi, bi, better), (a, sg) in self.LOOKUP.items():
+            ang[xi, bi, int(better)] = a; sgn[xi, bi, int(better)] = sg
+        self._step = ang * sgn                                   # signed rotation per case
 
     def run(self):
         """Run the evolutionary search; returns OptimResult."""
@@ -63,11 +75,14 @@ class QIEA:
         g = int(np.argmin(fB)); best, fbest = B[g].copy(), float(fB[g]); hist = [fbest]; evals = P
         for gen in range(1, self.generations + 1):
             X = observe(); fx = np.array([self.f(x) for x in X]); evals += P
-            # rotation towards the individual's best b: move P(x_i=1) towards b_i where x_i != b_i
-            diff = X != B
-            direction = np.where(B == 1, 1.0, -1.0)
-            worse = (fx >= fB)[:, None]
-            theta += self.delta * direction * (diff & worse)
+            if self.rotation == 'lookup':                       # Han and Kim's table, per bit
+                better = np.broadcast_to((fx <= fB)[:, None], X.shape).astype(int)
+                theta += self._step[X, B, better]
+            else:                                               # simplified fixed step towards b
+                diff = X != B
+                direction = np.where(B == 1, 1.0, -1.0)
+                worse = (fx >= fB)[:, None]
+                theta += self.delta * direction * (diff & worse)
             theta = np.clip(theta, 0.02, np.pi / 2 - 0.02)      # H-epsilon gate: keep some randomness
             upd = fx < fB; B[upd] = X[upd]; fB[upd] = fx[upd]
             g = int(np.argmin(fB))

@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.3.0 — 6 October 2026
+
+Closes the gaps listed as "not yet" in 1.2.0.
+
+- **IBM Quantum.** Jobs use the client-side Qiskit Runtime Sampler (`executor_sampler.Sampler`), with a
+  fallback to `SamplerV2` on releases before 0.50; the deprecation warning is gone.
+- **QIEA.** Han and Kim's rotation lookup table (Table I, adapted to minimisation) is now the default;
+  the simplified fixed-step rule remains as `rotation='simple'` (exact optimum on 27/30 vs 26/30 random
+  8–14-variable problems).
+- **MPS classifier.** `method='sweep'`: DMRG-style two-site sweeps with SVD truncation that adapt the
+  bond dimensions and move the label index (Stoudenmire and Schwab); `bond_dimensions` property. Adam
+  training stays the default.
+- **Viewer.** `concurrence`, `reduced_density_pair`, `entanglement_summary`, `Trajectory.concurrence`,
+  `plot_entanglement` (Bloch lengths and concurrence along a circuit) and `plot_qsphere`; concurrence
+  is checked against Qiskit. `seaborn` added to `[viz]` (needed by Qiskit's Q-sphere).
+- **Individual differences.** `fit_individuals`, `compare_individuals` and `IndividualFits`; example 22
+  shows a pooled fit selecting the quantum-like model for a half-anchoring population, and per-person
+  fits recovering every person's model at about 3,000 answers each.
+- **Robotics and ROS 2.** `HumanModelService` (answers in, prediction + uncertainty + ask/act out, JSON
+  messages) and the `qlcog_ros` ROS 2 package in `integrations/ros2` (node, launch file); the node's
+  callbacks are tested with stand-in `rclpy` / `std_msgs` modules, not yet in a ROS 2 installation.
+- 7 new tests (51 in total), about 90% line coverage.
+
 ## 1.2.0 — 5 October 2026
 
 Fixes from a critical audit of 1.1.0. Backward compatible, except that QAOA results now carry

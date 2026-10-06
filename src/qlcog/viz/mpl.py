@@ -5,7 +5,7 @@ import numpy as np
 from .themes import theme as _theme, AXIS_LABELS
 from .states import Trajectory, bloch_vectors
 
-__all__ = ['BlochSphere', 'plot_bloch', 'animate_trajectory']
+__all__ = ['BlochSphere', 'plot_bloch', 'animate_trajectory', 'plot_entanglement', 'plot_qsphere']
 
 
 class BlochSphere:
@@ -142,3 +142,45 @@ def animate_trajectory(traj, theme='dark', interval=40, trail=True, save=None, f
         else:
             anim.save(save, fps=fps, dpi=dpi, savefig_kwargs={'facecolor': t['bg']})
     return anim
+
+
+def plot_entanglement(traj, pairs=None, theme='dark', size=(8, 3.2)):
+    """Timeline of a circuit trajectory: the Bloch-vector length of every qubit (1 = not entangled with
+    the others, for a pure global state) and the concurrence of qubit pairs (0 = separable,
+    1 = maximally entangled), with the gate labels on the x axis."""
+    from .._optional import require
+    require('matplotlib')
+    import matplotlib.pyplot as plt
+    t = _theme(theme); n = traj.n_qubits
+    pairs = pairs if pairs is not None else [(a, b) for a in range(n) for b in range(a + 1, n)][:6]
+    fig, ax = plt.subplots(figsize=size, facecolor=t['bg']); ax.set_facecolor(t['bg'])
+    x = np.arange(traj.frames); L = traj.purity()
+    for q in range(n):                     # decreasing widths keep coinciding lines visible
+        ax.plot(x, L[:, q], color=t['palette'][q % len(t['palette'])], lw=2 + 2.5 * (n - 1 - q) / max(n - 1, 1),
+                label='|r| ' + traj.names[q], alpha=0.9)
+    if traj.states:
+        for k, (a, b) in enumerate(pairs):
+            ax.plot(x, traj.concurrence(a, b), color=t['text'], lw=1.6, ls=['--', ':', '-.'][k % 3],
+                    label='concurrence %s-%s' % (traj.names[a], traj.names[b]))
+    starts = [k for k in range(1, traj.frames) if traj.labels[k] != traj.labels[k - 1]] + [traj.frames]
+    centres = [(a + b - 1) / 2 for a, b in zip(starts[:-1], starts[1:])]     # one label per gate
+    ax.set_xticks(centres); ax.set_xticklabels([traj.labels[int(c)] for c in centres], fontsize=8)
+    for a in starts[:-1]:
+        ax.axvline(a - 0.5, color=t['wire'], lw=0.6)
+    ax.set_ylim(-0.03, 1.05); ax.set_ylabel('value', color=t['text']); ax.tick_params(colors=t['text'])
+    for sp in ax.spines.values():
+        sp.set_color(t['wire'])
+    ax.grid(axis='y', color=t['wire'], lw=0.5)
+    ax.legend(facecolor=t['bg'], edgecolor=t['wire'], labelcolor=t['text'], fontsize=8, loc='lower left')
+    fig.tight_layout()
+    return fig
+
+
+def plot_qsphere(state, **kw):
+    """Q-sphere of a multi-qubit state (basis states placed by Hamming weight, amplitude as size and phase
+    as colour), drawn by Qiskit's plot_state_qsphere."""
+    from .._optional import require
+    require('qiskit'); require('matplotlib'); require('seaborn', 'viz')     # Qiskit's Q-sphere needs seaborn
+    from qiskit.quantum_info import Statevector
+    from qiskit.visualization import plot_state_qsphere
+    return plot_state_qsphere(state if hasattr(state, 'data') else Statevector(np.asarray(state, complex)), **kw)

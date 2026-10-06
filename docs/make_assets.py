@@ -80,4 +80,8 @@ for a, (name, mdl) in zip(ax, models):
     a.scatter(*X[y == 0].T, s=9, color=PAL[1]); a.scatter(*X[y == 1].T, s=9, color=PAL[0])
     a.set_title('%s (training accuracy %.2f)' % (name, mdl.score(X, y)), fontsize=10); dark(a)
 fig.tight_layout(); fig.savefig(OUT / 'classifiers.png', dpi=130, facecolor=BG)
+
+# 5. Entanglement along the circuit of animation 1: Bloch-vector lengths and concurrence
+from qlcog.viz import plot_entanglement                           # noqa: E402
+plot_entanglement(tr, size=(9, 2.8)).savefig(OUT / 'entanglement_timeline.png', dpi=130, facecolor=BG)
 print('assets written to', OUT)

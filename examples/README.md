@@ -26,5 +26,6 @@ seconds; 13 and 19 take about a minute. Only the data in `qlcog.data` are human 
 | `19_bloch_sphere_viewer.py` | Visualisation | viewer | Circuit trajectory on Bloch spheres, interactive HTML, GIF (`--gif`), live window (`--live`), tomography on Aer and FakeTorino |
 | `20_trust_on_the_bloch_sphere.py` | Robotics / HRI | quantum-like, viewer | The trust belief qubit over successes and failures; P(trust) from the sphere equals the model |
 | `21_robot_ask_for_help.py` | Robotics | robotics application | Ensemble uncertainty and `ask_or_act`: when model disagreement and error costs make a robot ask before acting |
+| `22_individual_differences.py` | Surveys, HRI | order effects | Pooled versus per-person model comparison on a mixed simulated population; how many answers per person are needed |
 
 Scripts 19 and 20 write HTML (and GIF) files to `examples/output/` (ignored by git).

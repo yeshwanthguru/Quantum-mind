@@ -13,5 +13,5 @@ Subpackages
   qlcog.viz           Bloch-sphere viewer: trajectories, animations, interactive HTML, live updates
   qlcog.data          published aggregate data sets
 """
-__version__ = '1.2.0'
+__version__ = '1.3.0'
 from .core import fit, compare, recovery, Model, Param   # noqa: F401

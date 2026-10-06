@@ -130,3 +130,58 @@ def ask_or_act(p_success, uncertainty=None, ask_cost=1.0, error_cost=5.0, max_di
     action = 'ask' if cost_act > ask_cost else 'act'
     reason = 'expected error cost %.2f %s asking cost %.2f' % (cost_act, '>' if action == 'ask' else '<=', ask_cost)
     return {'action': action, 'expected_cost_act': cost_act, 'reason': reason}
+
+
+class HumanModelService:
+    """Middleware-independent service a robot can run next to its planner (the ROS 2 node in
+    integrations/ros2 wraps it). It accumulates people's answers to two questions asked in either
+    order, refits a HumanModelEnsemble every `refit_every` answers, and returns a prediction with its
+    uncertainty and an ask-or-act decision. Messages are plain dicts (JSON-friendly).
+
+        svc = HumanModelService()
+        svc.add_answer({'order': 'AB', 'answers': [1, 0]})        # first answer, second answer (1 = yes)
+        svc.query({'order': 'AB', 'ask_cost': 1.0, 'error_cost': 3.0})"""
+
+    ORDERS = ('AB', 'BA')
+
+    def __init__(self, candidates=None, refit_every=20, min_answers=20, restarts=4, seed=0):
+        self.candidates = candidates or [QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel]
+        self.refit_every, self.min_answers, self.restarts = refit_every, min_answers, restarts
+        self.counts = {o: np.zeros(4, int) for o in self.ORDERS}
+        self.ensemble = None; self._since = 0; self._rng = np.random.default_rng(seed)
+
+    @property
+    def n_answers(self):
+        """Number of answer pairs received."""
+        return int(sum(c.sum() for c in self.counts.values()))
+
+    def add_answer(self, msg):
+        """msg = {'order': 'AB' | 'BA', 'answers': [first, second]} with 1 = yes, 0 = no, in the order
+        asked. Returns {'n_answers': ..., 'refitted': bool}."""
+        order = msg.get('order'); ans = msg.get('answers')
+        if order not in self.ORDERS or not isinstance(ans, (list, tuple)) or len(ans) != 2 or any(a not in (0, 1) for a in ans):
+            raise ValueError("expected {'order': 'AB' or 'BA', 'answers': [0 or 1, 0 or 1]}")
+        self.counts[order][{(1, 1): 0, (1, 0): 1, (0, 1): 2, (0, 0): 3}[tuple(int(a) for a in ans)]] += 1
+        self._since += 1; refit = False
+        if self.n_answers >= self.min_answers and (self.ensemble is None or self._since >= self.refit_every):
+            self.ensemble = HumanModelEnsemble(self.candidates).update(self.counts, restarts=self.restarts, rng=self._rng)
+            self._since = 0; refit = True
+        return {'n_answers': self.n_answers, 'refitted': refit}
+
+    def query(self, msg=None):
+        """msg = {'order': 'AB', 'ask_cost': 1.0, 'error_cost': 5.0, 'max_disagreement_bits': 0.05}.
+        Returns the predicted answer distribution [yy, yn, ny, nn], P(yes to the first question), the
+        uncertainty, the ensemble weights and the ask_or_act decision; before enough answers have
+        arrived the decision is 'ask' with reason 'not enough data'."""
+        msg = msg or {}; order = msg.get('order', 'AB')
+        if order not in self.ORDERS:
+            raise ValueError("order must be 'AB' or 'BA'")
+        if self.ensemble is None:
+            return {'n_answers': self.n_answers, 'action': 'ask', 'reason': 'not enough data (%d of %d answers)'
+                    % (self.n_answers, self.min_answers)}
+        p, unc = self.ensemble.predict(order)
+        d = ask_or_act(float(p[0] + p[1]), unc, msg.get('ask_cost', 1.0), msg.get('error_cost', 5.0),
+                       msg.get('max_disagreement_bits', 0.05))
+        return {'n_answers': self.n_answers, 'order': order, 'prediction': [float(v) for v in p],
+                'p_first_yes': float(p[0] + p[1]), 'uncertainty': {k: float(v) for k, v in unc.items()},
+                'weights': {s['model']: s['weight'] for s in self.ensemble.summary()}, **d}

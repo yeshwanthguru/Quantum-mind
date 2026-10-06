@@ -15,7 +15,10 @@ trust model, or as measured on a simulator or quantum hardware.
 | `animate_trajectory(traj, save='x.gif')` | Matplotlib animation; GIF (Pillow) or MP4 (ffmpeg); optional camera rotation | Matplotlib |
 | `bloch_figure(vectors)` | Interactive Plotly figure (rotate, zoom, hover) | Plotly |
 | `animate_bloch(traj)` + `save_html(fig, path)` | Interactive animation with play/pause and a labelled slider; standalone HTML | Plotly |
-| `LiveBloch(n).show(); .update(state); .play(traj)` | Real-time spheres: a Plotly `FigureWidget` in Jupyter, a Matplotlib window elsewhere | Plotly + ipywidgets, or Matplotlib |
+| `LiveBloch(n).show(); .update(state); .play(traj)` | Real-time spheres: a Plotly `FigureWidget` in Jupyter, a Matplotlib window elsewhere | Plotly + ipywidgets + anywidget, or Matplotlib |
+| `concurrence(rho)`, `entanglement_summary(state)`, `traj.concurrence(a, b)` | Pairwise entanglement (Wootters concurrence; checked against Qiskit) and Bloch-vector lengths | NumPy |
+| `plot_entanglement(traj)` | Timeline of Bloch lengths and concurrence along a circuit, labelled by gate | Matplotlib |
+| `plot_qsphere(state)` | Q-sphere of a multi-qubit state (Qiskit's `plot_state_qsphere`) | Qiskit, Matplotlib, seaborn |
 
 ```python
 from qiskit import QuantumCircuit

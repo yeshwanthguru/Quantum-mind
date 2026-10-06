@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from scipy.optimize import minimize
 
-__all__ = ['FitResult', 'fit', 'compare', 'recovery', 'kl', 'tvd']
+__all__ = ['FitResult', 'fit', 'compare', 'recovery', 'kl', 'tvd', 'IndividualFits', 'fit_individuals', 'compare_individuals']
 
 
 @dataclass
@@ -109,3 +109,66 @@ def kl(p, q):
 def tvd(p, q):
     """Total variation distance between two probability vectors."""
     return 0.5 * float(np.abs(np.asarray(p, float) - np.asarray(q, float)).sum())
+
+
+@dataclass
+class IndividualFits:
+    """Per-person fits of one model class: results {person: FitResult}; summed log-likelihood, total
+    parameters and group AIC/BIC (each person has their own parameters)."""
+    model_name: str
+    results: dict
+
+    @property
+    def loglik(self):
+        """Sum of the per-person log-likelihoods."""
+        return float(sum(r.loglik for r in self.results.values()))
+
+    @property
+    def k(self):
+        """Total number of fitted parameters (per person times number of people)."""
+        return int(sum(r.k for r in self.results.values()))
+
+    @property
+    def n(self):
+        """Total number of observations."""
+        return int(sum(r.n for r in self.results.values()))
+
+    @property
+    def bic(self):
+        """Group BIC: sum of the per-person BICs."""
+        return float(sum(r.bic for r in self.results.values()))
+
+    @property
+    def aic(self):
+        """Group AIC: sum of the per-person AICs."""
+        return float(sum(r.aic for r in self.results.values()))
+
+    def parameters(self):
+        """{parameter: array over people} of the fitted parameter values."""
+        names = list(next(iter(self.results.values())).model.params)
+        return {p: np.array([r.model.params[p] for r in self.results.values()]) for p in names}
+
+
+def fit_individuals(model_cls, data_by_person, design=None, restarts=4, rng=None, **fit_kwargs):
+    """Fit `model_cls` separately to each person's data {person: data}. Aggregate fitting assumes that
+    everyone follows the same parameters; per-person fits test that assumption."""
+    if not data_by_person:
+        raise ValueError('data_by_person is empty')
+    rng = np.random.default_rng(0) if rng is None else rng
+    return IndividualFits(model_cls.__name__, {p: fit(model_cls, d, design, restarts=restarts, rng=rng, **fit_kwargs)
+                                               for p, d in data_by_person.items()})
+
+
+def compare_individuals(candidates, data_by_person, design=None, restarts=4, rng=None, criterion='bic'):
+    """Fit every candidate to every person. Returns {'group': [(model, group criterion)] sorted (lower is
+    better), 'best_counts': {model: number of people it fits best}, 'fits': {model: IndividualFits}}."""
+    fits = {}
+    for c in candidates:
+        cls, kw = (c if isinstance(c, tuple) else (c, {}))
+        fits[cls.__name__] = fit_individuals(cls, data_by_person, design, restarts, rng, **kw)
+    counts = {m: 0 for m in fits}
+    for p in data_by_person:
+        best = min(fits, key=lambda m: getattr(fits[m].results[p], criterion))
+        counts[best] += 1
+    group = sorted(((m, getattr(f, criterion)) for m, f in fits.items()), key=lambda t: t[1])
+    return {'group': group, 'best_counts': counts, 'fits': fits}

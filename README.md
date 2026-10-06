@@ -126,7 +126,11 @@ traj = circuit_trajectory(qc, steps=15)
 save_html(animate_bloch(traj), 'bell.html')        # interactive: rotate, zoom, play, slider
 LiveBloch(2).show().play(traj)                     # real time in Jupyter or a Matplotlib window
 bloch_tomography(qc, 'aer:FakeTorino')             # Bloch vectors measured under IBM device noise
+traj.concurrence(0, 1)                              # entanglement of the pair along the circuit
 ```
+
+<p align="center"><img src="docs/assets/entanglement_timeline.png" alt="Bloch-vector lengths and concurrence along the circuit" width="88%"><br>
+<sub>The same circuit as a timeline: <code>plot_entanglement(traj)</code> shows each qubit's Bloch-vector length and the pair's concurrence (Wootters); <code>plot_qsphere(state)</code> draws the Q-sphere.</sub></p>
 
 Interactive versions of both animations (rotate, zoom, play, slider) are written by
 [`examples/19`](examples/19_bloch_sphere_viewer.py) and [`examples/20`](examples/20_trust_on_the_bloch_sphere.py),
@@ -186,15 +190,19 @@ print(q.brute_force()[1],                        # exact
 </details>
 
 <details>
-<summary><b>🤖 Robotics: a human model with uncertainty, for a planner or orchestrator</b></summary>
+<summary><b>🤖 Robotics: a human model with uncertainty, for a planner or a ROS 2 system</b></summary>
 
 ```python
-from qlcog.applications.robotics import HumanModelEnsemble
-from qlcog.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel
+from qlcog.applications.robotics import HumanModelService
 
-ens = HumanModelEnsemble([QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel]).update(counts)
-p, uncertainty = ens.predict('AB')     # answer distribution + entropy and model disagreement (bits)
+svc = HumanModelService()                                   # wraps HumanModelEnsemble + ask_or_act
+svc.add_answer({'order': 'AB', 'answers': [1, 0]})          # one person's two answers (1 = yes)
+svc.query({'order': 'AB', 'ask_cost': 1.0, 'error_cost': 3.0})
+# -> prediction, uncertainty (entropy, model disagreement in bits), ensemble weights, 'ask' or 'act'
 ```
+
+The same service runs as a ROS 2 node with standard `std_msgs/String` JSON topics:
+[`integrations/ros2`](integrations/ros2/README.md).
 </details>
 
 <p align="center"><img src="docs/assets/optimisers.png" alt="Optimisers on MaxCut and the QAOA output distribution" width="92%"></p>
@@ -242,10 +250,10 @@ split), a trust protocol, and `HumanModelEnsemble`.
 
 | Model | Problem | Reference |
 |---|---|---|
-| `QIEA` | binary optimisation | Han and Kim, *IEEE TEVC* 2002 |
+| `QIEA` | binary optimisation (Han and Kim's rotation table) | Han and Kim, *IEEE TEVC* 2002 |
 | `QPSO` | continuous optimisation | Sun, Feng and Xu, *CEC* 2004 |
 | `SQA` | Ising / QUBO by path-integral Monte Carlo | Martoňák, Santoro and Tosatti, *PRB* 2002 |
-| `MPSClassifier` | supervised classification with a matrix product state | Stoudenmire and Schwab, *NeurIPS* 2016 |
+| `MPSClassifier` | supervised classification with a matrix product state; DMRG-style sweeps or Adam | Stoudenmire and Schwab, *NeurIPS* 2016 |
 | `simulated_annealing` | classical baseline | Kirkpatrick et al., *Science* 1983 |
 </details>
 
@@ -277,15 +285,16 @@ flowchart TB
 src/qlcog/
 ├── core/           Lüders rule, density matrices, Lindblad · Model/Param · fit, compare, recovery
 ├── families/       🧠 order_effects · conjunction · interference · qlbn · dynamics · decision · contextuality · similarity
-├── applications/   🤖 robotics: question domains, questioning designs, trust protocol, human-model ensemble
+├── applications/   🤖 robotics: question domains, questioning designs, trust, human-model ensemble, ask_or_act, HumanModelService
 ├── quantum/        ⚛️ statevector simulator · ansatz · classifiers · QAOA · VQE · Grover
 ├── inspired/       ✨ QIEA · QPSO · SQA · simulated annealing · MPS classifier
 ├── problems/       QUBO builders shared by quantum and quantum-inspired solvers
 ├── circuits/       Qiskit circuits of the families · run() on Aer, IBM Quantum, Amazon Braket
 ├── viz/            🌐 Bloch vectors, trajectories, tomography · Matplotlib and Plotly viewers · LiveBloch
 └── data/           published aggregate data sets
-examples/           21 scripts across domains        docs/       concepts, API reference, assets
-notebooks/          2 Jupyter notebooks              tests/      44 tests
+examples/           22 scripts across domains        docs/       concepts, API reference, assets
+notebooks/          2 Jupyter notebooks              tests/      51 tests
+integrations/ros2/  ROS 2 node (qlcog_ros)
 .github/            CI, release, CODEOWNERS, issue and pull-request templates
 ```
 
@@ -316,6 +325,7 @@ notebooks/          2 Jupyter notebooks              tests/      44 tests
 | 19 | Visualisation | 🌐 | [Bloch-sphere viewer, HTML, GIF, live, tomography](examples/19_bloch_sphere_viewer.py) |
 | 20 | Robotics, HRI | 🧠🌐 | [trust on the Bloch sphere](examples/20_trust_on_the_bloch_sphere.py) |
 | 21 | Robotics | 🧠 | [when to ask for help: ensemble uncertainty and `ask_or_act`](examples/21_robot_ask_for_help.py) |
+| 22 | Surveys, HRI | 🧠 | [individual differences: pooled versus per-person model comparison](examples/22_individual_differences.py) |
 
 Notebooks: [`01_bloch_sphere_live`](notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
 tomography under device noise) and [`02_robot_questioning_and_trust`](notebooks/02_robot_questioning_and_trust.ipynb)
@@ -354,8 +364,8 @@ exactly as measured, with backend, date and job identifier.
 | IBM Quantum hardware (`ibm:<device>`) | submission code tested in CI against a fake IBM device (same transpilation, SamplerV2 call and result parsing); **not yet run on hardware** |
 | Amazon Braket QPUs (`braket:<ARN>`) | submission code tested in CI with the local simulator as the device (same OpenQASM 3 program and `device.run` call); **not yet run on hardware** |
 
-No hardware results are included in the package. Known issue: `SamplerV2` is deprecated as of
-qiskit-ibm-runtime 0.50 and will be replaced by its successor in a later release.
+No hardware results are included in the package. IBM jobs use the client-side Qiskit Runtime
+Sampler (`qiskit_ibm_runtime.executor_sampler`), falling back to `SamplerV2` on releases before 0.50.
 
 <a id="status"></a>
 
@@ -363,11 +373,11 @@ qiskit-ibm-runtime 0.50 and will be replaced by its successor in a later release
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
-| Quantum-like models | 8 families with classical baselines, fitting, BIC/AIC, recovery studies; published aggregate data | individual-level (hierarchical) fitting |
-| Robotics | simulated human populations for three question domains, questioning designs, trust protocol, `HumanModelEnsemble`, `ask_or_act` decision rule | robot middleware integration (no ROS 2 package), data from human–robot studies |
-| Quantum models | VQC, quantum kernel, QAOA, VQE, Grover on an exact simulator with adjoint gradients; Qiskit export | quantum advantage (none claimed); noise-aware training |
-| Quantum-inspired | QIEA and MPS classifier (simplified variants, documented), QPSO, SQA, simulated-annealing baseline | DMRG training of MPS; Han and Kim's full lookup table |
-| Viewer | trajectories, animations, interactive HTML, live widget, tomography | Q-sphere and multi-qubit (entanglement) views |
+| Quantum-like models | 8 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison (`fit_individuals`, `compare_individuals`); published aggregate data | hierarchical (partial-pooling) models |
+| Robotics | simulated human populations for three question domains, questioning designs, trust protocol, `HumanModelEnsemble`, `ask_or_act`, `HumanModelService`, a ROS 2 node (`integrations/ros2`) | a run of the ROS 2 node inside a ROS 2 installation (its callbacks are tested with stand-in modules); data from human–robot studies |
+| Quantum models | VQC, quantum kernel, QAOA, VQE, Grover on an exact simulator with adjoint gradients; Qiskit export; IBM submission through the current Qiskit Runtime Sampler | quantum advantage (none claimed); noise-aware training; runs on hardware |
+| Quantum-inspired | QIEA with Han and Kim's rotation table (or a simplified rule), QPSO, SQA, simulated-annealing baseline, MPS classifier with DMRG-style sweeps or Adam | – |
+| Viewer | trajectories, animations, interactive HTML, live widget, tomography, pairwise concurrence and entanglement timeline, Q-sphere | – |
 
 **Sizes.** The simulator holds 2ⁿ amplitudes per sample, at most 22 qubits. Measured on a laptop
 CPU: the variational classifier trains 8 features × 400 samples in about 80 s (151 L-BFGS steps,
@@ -392,7 +402,7 @@ pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition
 | (core) | numpy, scipy | quantum-like families, quantum simulator, quantum-inspired solvers, problems |
 | `[qiskit]` | qiskit, qiskit-aer, qiskit-ibm-runtime | circuits, Aer, IBM fake-backend noise, `circuit_trajectory` |
 | `[cloud]` | qiskit-ibm-runtime, amazon-braket-sdk | IBM Quantum and Amazon Braket hardware |
-| `[viz]` | matplotlib, plotly, ipywidgets, anywidget | Bloch-sphere viewer, animations, live widget |
+| `[viz]` | matplotlib, plotly, ipywidgets, anywidget, seaborn | Bloch-sphere viewer, animations, live widget |
 | `[all]` | all of the above | |
 | `[dev]` | pytest, pytest-cov, ruff, nbclient, build, twine | tests, coverage, linting, notebooks, packaging |
 
@@ -412,7 +422,7 @@ without installing, because they add `src/` to the path.
    every example does.
 
 ```bash
-python3 -m pytest -q --cov=qlcog     # 44 tests, about 90% line coverage (CI requires at least 80%)
+python3 -m pytest -q --cov=qlcog     # 51 tests, about 90% line coverage (CI requires at least 80%)
 ```
 
 The tests check the simulator against Qiskit gate by gate, adjoint and parameter-shift gradients
@@ -424,7 +434,9 @@ checks that the API reference is current, runs the examples and notebooks, and b
 ## ⚠️ Limitations
 
 - Fitting aggregate counts assumes a homogeneous population. Individual differences can hide or mimic
-  quantum-like structure.
+  quantum-like structure: in example 22 a pooled fit picks the quantum-like model for a population that
+  is half anchoring. Per-person comparison (`compare_individuals`) needs many answers per person
+  (there, about 3,000) to tell the models apart.
 - Several quantum-like models have been challenged by further tests, for example the Grand Reciprocity
   equations and conjunction-fallacy tests. The family READMEs list these.
 - The quantum models are small and exactly simulable. No quantum advantage is claimed: on the

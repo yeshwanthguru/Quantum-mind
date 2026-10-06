@@ -9,7 +9,7 @@ backend strings
   'braket_local'        Amazon Braket local state-vector simulator (circuit sent as OpenQASM 3;
                         deferred-measurement circuits only)
   'braket_dm:<p>'       Braket local density-matrix simulator with depolarizing noise p after every gate
-  'ibm:<backend name>'  IBM Quantum hardware through Qiskit Runtime (SamplerV2); needs a saved account
+  'ibm:<backend name>'  IBM Quantum hardware through the Qiskit Runtime Sampler; needs a saved account
   'ibm:least_busy'      the least busy operational IBM device
   'braket:<device ARN>' Amazon Braket managed simulator or QPU; needs AWS credentials; billed
 
@@ -24,13 +24,16 @@ __all__ = ['run', 'to_qasm3', 'run_on_ibm_backend', 'run_on_braket_device']
 
 
 def run_on_ibm_backend(qc, device, shots):
-    """Submission step for IBM devices: transpile to the device's instruction set, run with Qiskit
-    Runtime SamplerV2 and return counts. `device` is a real backend from QiskitRuntimeService or a
+    """Submission step for IBM devices: transpile to the device's instruction set, run with the Qiskit
+    Runtime Sampler primitive and return counts. `device` is a real backend from QiskitRuntimeService or a
     fake backend (local testing mode), so the same code is exercised in the tests."""
-    from qiskit_ibm_runtime import SamplerV2
+    try:                                   # client-side Sampler (qiskit-ibm-runtime >= 0.50)
+        from qiskit_ibm_runtime.executor_sampler import Sampler
+    except ImportError:                    # older releases: SamplerV2 (deprecated from 0.50)
+        from qiskit_ibm_runtime import SamplerV2 as Sampler
     from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
     isa = generate_preset_pass_manager(backend=device, optimization_level=3).run(qc)
-    res = SamplerV2(mode=device).run([isa], shots=shots).result()[0]
+    res = Sampler(mode=device).run([isa], shots=shots).result()[0]
     creg = qc.cregs[0].name if len(qc.cregs) == 1 else None
     data = getattr(res.data, creg) if creg else res.join_data()
     return dict(data.get_counts())

@@ -11,7 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import numpy as np
 
-__all__ = ['bloch_vector', 'state_from_bloch', 'reduced_density', 'bloch_vectors', 'Trajectory',
+__all__ = ['bloch_vector', 'state_from_bloch', 'reduced_density', 'reduced_density_pair', 'concurrence',
+           'entanglement_summary', 'bloch_vectors', 'Trajectory',
            'circuit_trajectory', 'belief_trajectory', 'rotation_trajectory', 'bloch_tomography',
            'tomography_circuits']
 
@@ -53,6 +54,38 @@ def reduced_density(state, q, n):
     return np.einsum('aibi->ab', rho)
 
 
+def reduced_density_pair(state, a, b, n):
+    """Reduced 4 x 4 density matrix of qubits a and b of an n-qubit state vector (index bit 0 = qubit a)."""
+    psi = _to_array(state)
+    if psi.ndim != 1:
+        raise ValueError('reduced_density_pair expects a state vector')
+    T = psi.reshape((2,) * n)
+    T = np.moveaxis(T, [n - 1 - b, n - 1 - a], [0, 1]).reshape(4, -1)      # row index = 2 * bit_b + bit_a
+    return T @ T.conj().T
+
+
+def concurrence(rho):
+    """Wootters concurrence of a two-qubit density matrix (0 = separable, 1 = maximally entangled)."""
+    rho = _to_array(rho)
+    if rho.ndim == 1:
+        rho = np.outer(rho, rho.conj())
+    yy = np.kron(_SY, _SY)
+    R = rho @ yy @ rho.conj() @ yy
+    lam = np.sqrt(np.clip(np.sort(np.real(np.linalg.eigvals(R)))[::-1], 0, None))
+    return float(max(0.0, lam[0] - lam[1] - lam[2] - lam[3]))
+
+
+def entanglement_summary(state, n=None):
+    """Per-qubit Bloch-vector length (1 = not entangled with the rest, for a pure global state) and the
+    matrix of pairwise concurrences."""
+    psi = _to_array(state); n = n or int(round(np.log2(psi.shape[0])))
+    C = np.zeros((n, n))
+    for a in range(n):
+        for b in range(a + 1, n):
+            C[a, b] = C[b, a] = concurrence(reduced_density_pair(psi, a, b, n))
+    return {'bloch_length': np.linalg.norm(bloch_vectors(psi, n), axis=1), 'concurrence': C}
+
+
 def bloch_vectors(state, n=None):
     """Bloch vectors of every qubit, shape (n, 3)."""
     s = _to_array(state); n = n or int(round(np.log2(s.shape[0])))
@@ -66,6 +99,7 @@ class Trajectory:
     labels: list = field(default_factory=list)
     names: list = field(default_factory=list)          # qubit names
     title: str = ''
+    states: list = field(default_factory=list, repr=False)   # full state per frame (circuit trajectories)
 
     def __post_init__(self):
         self.vectors = np.asarray(self.vectors, float)
@@ -85,6 +119,13 @@ class Trajectory:
     def n_qubits(self):
         """Number of qubits."""
         return self.vectors.shape[1]
+
+    def concurrence(self, a=0, b=1):
+        """Concurrence of qubits a and b per frame (needs the full states, i.e. a circuit trajectory)."""
+        if not self.states:
+            raise ValueError('this trajectory has no stored states')
+        n = self.n_qubits
+        return np.array([concurrence(reduced_density_pair(psi, a, b, n)) for psi in self.states])
 
     def purity(self):
         """|r| per frame and qubit (1 = pure, 0 = maximally mixed or maximally entangled)."""
@@ -117,7 +158,7 @@ def circuit_trajectory(qc, steps=12, initial=None):
     psi = np.zeros((1, 2 ** n), complex); psi[0, 0] = 1
     if initial is not None:
         psi[0] = _to_array(initial)
-    vecs = [bloch_vectors(psi[0], n)]; labels = ['start']
+    vecs = [bloch_vectors(psi[0], n)]; labels = ['start']; states = [psi[0].copy()]
 
     def instructions(circ):
         for inst in circ.data:
@@ -138,8 +179,8 @@ def circuit_trajectory(qc, steps=12, initial=None):
         Uk = _fractional(U, 1.0 / steps)
         for k in range(1, steps + 1):
             psi = apply_matrix(psi, Uk, qs, n)
-            vecs.append(bloch_vectors(psi[0], n)); labels.append(name)
-    return Trajectory(np.array(vecs), labels, title='circuit')
+            vecs.append(bloch_vectors(psi[0], n)); labels.append(name); states.append(psi[0].copy())
+    return Trajectory(np.array(vecs), labels, title='circuit', states=states)
 
 
 def rotation_trajectory(axis, angle, start=(0, 0, 1), steps=60):

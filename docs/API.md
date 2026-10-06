@@ -9,14 +9,18 @@ Core layer: linear algebra of quantum-like models, the Model base class, fitting
 
 - `angles_to_unit(angles)` — Unit vector in R^(len(angles)+1) from hyperspherical angles.
 - `compare(candidates, data, design=None, restarts=8, rng=None, criterion='bic')` — Fit several models and rank them. candidates: list of model classes or (class, fit kwargs). Returns a list of FitResult sorted by the criterion (lower is better).
+- `compare_individuals(candidates, data_by_person, design=None, restarts=4, rng=None, criterion='bic')` — Fit every candidate to every person. Returns {'group': [(model, group criterion)] sorted (lower is better), 'best_counts': {model: number of people it fits best}, 'fits': {model: IndividualFits}}.
 - `complement(P)` — I - P.
 - `density(psi)` — Density matrix |psi><psi| of a (normalised) state vector.
 - `dephase(rho, strength, basis_projectors=None)` — Partial dephasing: rho -> (1 - s) rho + s * sum_k P_k rho P_k (in the computational basis if no projectors are given).
 - `evolve_density(rho, superop, t)` — Evolve a density matrix for time t under a Lindblad superoperator (matrix exponential).
 - `fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', **options)` — Fit a model class to data by multi-start optimisation.
+- `fit_individuals(model_cls, data_by_person, design=None, restarts=4, rng=None, **fit_kwargs)` — Fit `model_cls` separately to each person's data {person: data}. Aggregate fitting assumes that everyone follows the same parameters; per-person fits test that assumption.
 - **class `FitResult(model: 'object', loss: 'float', loglik: 'float', k: 'int', n: 'int', options: 'dict' = <factory>) -> None`** — Result of `fit`: the fitted model, loss, log-likelihood, number of parameters k, observations n and options; properties aic and bic.
   - `summary(self)` — Dictionary with model name, parameters, options, log-likelihood, k, n, AIC and BIC.
 - `givens_frame(angles, d)` — Orthonormal frame (d x d orthogonal matrix) from d(d-1)/2 Givens rotation angles.
+- **class `IndividualFits(model_name: 'str', results: 'dict') -> None`** — Per-person fits of one model class: results {person: FitResult}; summed log-likelihood, total parameters and group AIC/BIC (each person has their own parameters).
+  - `parameters(self)` — {parameter: array over people} of the fitted parameter values.
 - `is_projector(P, tol=1e-09)` — True if P is Hermitian and idempotent within tol.
 - `kl(p, q)` — Kullback-Leibler divergence KL(p || q) in nats (probabilities clipped at 1e-12).
 - `lindblad_superoperator(H, jumps, rates)` — Superoperator L (acting on row-stacked vec(rho)) of d rho/dt = -i[H, rho] + sum_k g_k (L_k rho L_k^+ - 1/2 {L_k^+ L_k, rho}).
@@ -196,6 +200,9 @@ Human-robot interaction: order-aware human models for robots that ask questions 
   - `predict(self, condition)` — Mixture prediction for `condition` and its uncertainty {entropy_bits, model_disagreement_bits, total_bits}.
   - `summary(self)` — One dict per model: name, ensemble weight and BIC.
   - `update(self, data, restarts=8, rng=None)` — Fit every candidate model to `data` and set BIC weights; returns self.
+- **class `HumanModelService(candidates=None, refit_every=20, min_answers=20, restarts=4, seed=0)`** — Middleware-independent service a robot can run next to its planner (the ROS 2 node in integrations/ros2 wraps it). It accumulates people's answers to two questions asked in either order, refits a HumanModelEnsemble every `refit_every` answers, and returns a prediction with its uncertainty and an ask-or-act decision. Messages are plain dicts (JSON-friendly).
+  - `add_answer(self, msg)` — msg = {'order': 'AB' | 'BA', 'answers': [first, second]} with 1 = yes, 0 = no, in the order asked. Returns {'n_answers': ..., 'refitted': bool}.
+  - `query(self, msg=None)` — msg = {'order': 'AB', 'ask_cost': 1.0, 'error_cost': 5.0, 'max_disagreement_bits': 0.05}. Returns the predicted answer distribution [yy, yn, ny, nn], P(yes to the first question), the uncertainty, the ensemble weights and the ask_or_act decision; before enough answers have arrived the decision is 'ask' with reason 'not enough data'.
 - **class `MarkovBelief(**params)`** — Classical baseline: a yes-probability updated by each event (successes raise, failures lower); asking does not change it.
   - `answer_probs(self, events, queries)` — Probabilities of the answer sequences given at the query times, after the events.
   - `predict(self, design=None)` — Predictions for every condition of the design: {condition: probability vector (or predicted values)}.
@@ -288,13 +295,13 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
 
 Quantum-inspired models: classical algorithms that borrow quantum ideas. No quantum computer is used.
 
-- **class `MPSClassifier(bond=6, local_dim=2, epochs=60, lr=0.02, batch=32, seed=0)`** — Parameters: bond (bond dimension D), local_dim (d), epochs, lr (Adam step), batch, seed. The class (label) index sits on the last site.
+- **class `MPSClassifier(bond=6, local_dim=2, epochs=60, lr=0.02, batch=32, seed=0, method='adam', sweeps=6, steps=40, sweep_lr=0.05, cutoff=1e-10)`** — Parameters: bond (maximum bond dimension D), local_dim (d), method ('adam' or 'sweep'), epochs, lr, batch (Adam training); sweeps (back-and-forth sweeps), steps (optimisation steps per bond), sweep_lr, cutoff (relative singular-value cutoff) (sweep training); seed.
   - `fit(self, X, y)` — Train on X (samples x features) and labels y; returns self.
   - `predict(self, X)` — Most probable class for each sample.
   - `predict_proba(self, X)` — Class probabilities (softmax of the MPS scores).
   - `score(self, X, y)` — Accuracy on (X, y).
 - **class `OptimResult(x: 'np.ndarray', value: 'float', history: 'list' = <factory>, evaluations: 'int' = 0) -> None`** — Optimiser result: best solution x, its value, the best value per iteration (history) and the number of objective evaluations.
-- **class `QIEA(problem, n=None, pop=20, generations=300, delta=0.031415926535897934, migrate_every=20, groups=4, seed=0)`** — Quantum-inspired evolutionary algorithm for binary minimisation.
+- **class `QIEA(problem, n=None, pop=20, generations=300, rotation='lookup', delta=0.031415926535897934, migrate_every=20, groups=4, seed=0)`** — Quantum-inspired evolutionary algorithm for binary minimisation.
   - `run(self)` — Run the evolutionary search; returns OptimResult.
 - **class `QPSO(f, lower, upper, particles=30, iterations=300, beta0=1.0, beta1=0.5, seed=0)`** — Quantum-behaved particle swarm optimisation for continuous minimisation on a box.
   - `run(self)` — Run the swarm; returns OptimResult.
@@ -355,19 +362,25 @@ Bloch-sphere visualisation: watch qubits evolve in 3D.
   - `save(self, path, dpi=150)` — Save the figure to `path`.
   - `show(self)` — Show the figure.
 - `circuit_trajectory(qc, steps=12, initial=None)` — Smooth Bloch-sphere trajectory of every qubit of a Qiskit circuit, gate by gate.
+- `concurrence(rho)` — Wootters concurrence of a two-qubit density matrix (0 = separable, 1 = maximally entangled).
+- `entanglement_summary(state, n=None)` — Per-qubit Bloch-vector length (1 = not entangled with the rest, for a pure global state) and the matrix of pairwise concurrences.
 - **class `LiveBloch(n_qubits=1, names=None, theme='dark', backend='auto', trail=True, title=None)`** — Real-time Bloch spheres.
   - `play(self, traj, fps=30)` — Replay a Trajectory in real time.
   - `reset(self)` — Clear the trails; returns self.
   - `show(self)` — Display the spheres (widget in Jupyter, window elsewhere); returns self.
   - `update(self, state, label='')` — state: Bloch vectors (n, 3), or a state vector / density matrix / Qiskit state.
 - `plot_bloch(vectors, names=None, theme='dark', title=None, size=3.6)` — Static figure with one sphere per qubit. vectors: (qubits, 3) or a state (vector/density/Qiskit).
+- `plot_entanglement(traj, pairs=None, theme='dark', size=(8, 3.2))` — Timeline of a circuit trajectory: the Bloch-vector length of every qubit (1 = not entangled with the others, for a pure global state) and the concurrence of qubit pairs (0 = separable, 1 = maximally entangled), with the gate labels on the x axis.
+- `plot_qsphere(state, **kw)` — Q-sphere of a multi-qubit state (basis states placed by Hamming weight, amplitude as size and phase as colour), drawn by Qiskit's plot_state_qsphere.
 - `reduced_density(state, q, n)` — Reduced density matrix of qubit q of an n-qubit state vector or density matrix (Qiskit order: qubit q = bit q of the basis index).
+- `reduced_density_pair(state, a, b, n)` — Reduced 4 x 4 density matrix of qubits a and b of an n-qubit state vector (index bit 0 = qubit a).
 - `rotation_trajectory(axis, angle, start=(0, 0, 1), steps=60)` — Rotation of a Bloch vector about `axis` by `angle` (useful for demonstrations).
 - `save_html(fig, path, auto_open=False)` — Standalone HTML (Plotly JavaScript embedded from its CDN).
 - `state_from_bloch(r)` — Density matrix of a Bloch vector.
 - `THEMES` (constant)
 - `tomography_circuits(qc)` — Three copies of a (measurement-free) circuit measured in the Z, X and Y bases on every qubit.
-- **class `Trajectory(vectors: 'np.ndarray', labels: 'list' = <factory>, names: 'list' = <factory>, title: 'str' = '') -> None`** — Bloch vectors over time: vectors (frames, qubits, 3) and one label per frame.
+- **class `Trajectory(vectors: 'np.ndarray', labels: 'list' = <factory>, names: 'list' = <factory>, title: 'str' = '', states: 'list' = <factory>) -> None`** — Bloch vectors over time: vectors (frames, qubits, 3) and one label per frame.
+  - `concurrence(self, a=0, b=1)` — Concurrence of qubits a and b per frame (needs the full states, i.e. a circuit trajectory).
   - `purity(self)` — |r| per frame and qubit (1 = pure, 0 = maximally mixed or maximally entangled).
 
 ## `qlcog.data`
