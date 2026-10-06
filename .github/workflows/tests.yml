@@ -31,7 +31,7 @@ jobs:
         run: pytest -q --cov=qlcog --cov-report=term --cov-fail-under=80
       - name: Examples (smoke test)
         run: |
-          for f in examples/0*.py examples/10_*.py examples/12_*.py examples/1[4-9]_*.py examples/2*.py; do
+          for f in examples/0*.py examples/10_*.py examples/12_*.py examples/1[4-9]_*.py examples/2*.py examples/3*.py; do
             echo "::group::$f"; python -W ignore "$f" > /dev/null; echo "::endgroup::"
           done
           python -W ignore examples/13_quantum_classifiers_triage.py --quick > /dev/null

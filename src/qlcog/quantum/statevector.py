@@ -104,6 +104,8 @@ def _rot(name, th):
         M[:, 0, 0] = np.exp(-0.5j * th); M[:, 1, 1] = np.exp(0.5j * th)
     elif name == 'p':
         M[:, 0, 0] = 1; M[:, 1, 1] = np.exp(1j * th)
+    elif name == 'cp':                                         # controlled phase diag(1, 1, 1, e^{i t})
+        M = np.zeros((B, 4, 4), complex); M[:, 0, 0] = M[:, 1, 1] = M[:, 2, 2] = 1; M[:, 3, 3] = np.exp(1j * th)
     elif name == 'rzz':                                        # 4 x 4 diagonal
         M = np.zeros((B, 4, 4), complex)
         for b, z in enumerate([1, -1, -1, 1]):
@@ -123,9 +125,9 @@ _FIXED = {
     'cz': np.diag([1, 1, 1, -1]).astype(complex),
     'swap': np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]], complex),
 }
-PARAMETRIC = ('rx', 'ry', 'rz', 'p', 'rzz')
+PARAMETRIC = ('rx', 'ry', 'rz', 'p', 'rzz', 'cp')
 _GENERATOR = {'rx': _FIXED['x'], 'ry': _FIXED['y'], 'rz': _FIXED['z'], 'rzz': np.diag([1, -1, -1, 1]).astype(complex),
-              'p': np.diag([0, 1]).astype(complex)}
+              'p': np.diag([0, 1]).astype(complex), 'cp': np.diag([0, 0, 0, 1]).astype(complex)}
 
 
 def _dagger(M):
@@ -184,6 +186,10 @@ class Circuit:
     def p(self, p, q):
         """Phase gate P(p) on qubit q."""
         return self._add('p', [q], p)
+    def cp(self, p, c, t):
+        """Controlled phase diag(1, 1, 1, e^{i p}) on qubits c and t (symmetric)."""
+        return self._add('cp', [c, t], p)
+
     def rzz(self, p, a, b):
         """RZZ(p) = exp(-i p Z_a Z_b / 2) on qubits a and b."""
         return self._add('rzz', [a, b], p)
@@ -261,7 +267,7 @@ class Circuit:
                     Gpsi = apply_matrix(psi, _GENERATOR[name], list(qs), self.n)
                     x = np.einsum('bi,bi->', phi.conj(), Gpsi)
                     # rotation exp(-i t G / 2): dL/dt = Im<phi|G|psi>; phase gate P(t): dL/dt = -2 Im<phi|1><1|psi>
-                    grad[p.k] += p.scale * (-2 * x.imag if name == 'p' else x.imag)
+                    grad[p.k] += p.scale * (-2 * x.imag if name in ('p', 'cp') else x.imag)
                 psi = self._apply(op, psi, w, Xc, b, inverse=True)
                 phi = self._apply(op, phi, w, Xc, b, inverse=True)
         return total, grad

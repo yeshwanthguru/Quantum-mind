@@ -1,7 +1,26 @@
 # Changelog
 
-## Unreleased
+## 1.4.0 — 6 October 2026
 
+New model families and algorithms (examples 23–31, `tests/test_v14.py`).
+
+- **Quantum-like families.** `families.game_theory`: Eisert–Wilkens–Lewenstein quantum games
+  (entangler with D = iσ_y), best responses and Nash checks, including the Benjamin–Hayden result that
+  (Q, Q) stops being an equilibrium once all SU(2) strategies are allowed. `families.memory`: quantum
+  episodic overdistribution model (Brainerd) against an additive baseline. `families.concepts`: Aerts'
+  Fock-space model of concept combination against product, minimum and weighted-average baselines.
+- **Applications.** `applications.intent`: Bayesian and quantum-like intent resolvers for robot
+  commands; the quantum-like one has order effects controlled by an incompatibility angle and
+  reduces to Bayes when the angle is zero.
+- **Quantum.** Quantum Fourier transform and period finding; maximum-likelihood amplitude estimation
+  with a Qiskit export; continuous-time quantum walks and walk centrality; `VariationalRegressor`;
+  quantum-kernel anomaly detection and spectral clustering (with RBF baselines); controlled-phase gate
+  `cp` in the simulator, with adjoint gradients.
+- **Quantum-inspired.** Quantum reinforcement learning (Dong et al. 2008, with a bounded TD-error
+  rotation) against Q-learning on a grid world; quantum language model (Sordoni et al. 2013) against
+  query likelihood with Dirichlet smoothing.
+- Results are reported as measured, including where the classical baseline wins (forecasting, anomaly
+  detection, clustering).
 - Project website (`site/`, deployed to GitHub Pages by `.github/workflows/pages.yml`): landing page, an
   in-browser two-qubit playground (exact state-vector simulation; checked against the package's
   simulator in `tests/test_site.py`), interactive animations, documentation pages, executed notebooks,

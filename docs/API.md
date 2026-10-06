@@ -181,6 +181,55 @@ Similarity judgements and asymmetry (see README.md in this folder).
   - `predict(self, design=None)` — Predictions for every condition of the design: {condition: probability vector (or predicted values)}.
   - `projectors(self)` — Projector of each concept subspace.
 
+## `qlcog.families.game_theory`
+
+Quantum games (EWL protocol) with the classical game as baseline (see README.md in this folder).
+
+- `C` (constant)
+- `CHICKEN` (constant)
+- `classical_nash_equilibria(payoffs=array([[[3., 3.],
+        [0., 5.]],
+
+       [[5., 0.],
+        [1., 1.]]]), tol=1e-12)` — All Nash equilibria of the classical 2 x 2 game: pure ones and the mixed one if it exists. Returns a list of (p_A(C), p_B(C), payoff_A, payoff_B).
+- `D` (constant)
+- **class `EWLGame(payoffs=array([[[3., 3.],
+        [0., 5.]],
+
+       [[5., 0.],
+        [1., 1.]]]), gamma=1.5707963267948966)`** — Two-player quantum game. payoffs: array (2, 2, 2) as PRISONERS_DILEMMA; gamma: entanglement in [0, pi/2] (0 = classical game).
+  - `best_response(self, U_other, player='A', grid=61, phases=True, three_parameter=False)` — Best payoff and strategy against `U_other` over a grid of strategies: (theta, phi) of the EWL set, or the full SU(2) set U(theta, phi, alpha) with three_parameter=True.
+  - `is_nash(self, UA, UB, **kw)` — True if neither player gains (beyond 1e-9) by deviating within the grid of strategies.
+  - `outcome_probabilities(self, UA, UB)` — P(CC), P(CD), P(DC), P(DD) after the protocol (first letter: player A).
+  - `payoff(self, UA, UB)` — Expected payoffs (A, B).
+- `PRISONERS_DILEMMA` (constant)
+- `Q` (constant)
+- `STAG_HUNT` (constant)
+- `strategy(theta, phi=0.0)` — EWL two-parameter strategy U(theta, phi); theta in [0, pi], phi in [0, pi/2].
+
+## `qlcog.families.memory`
+
+Episodic memory: overdistribution, quantum versus additive classical model (see README.md).
+
+- **class `AdditiveMemoryModel(**params)`** — Classical baseline: V and G exclusive, so P(V or G) = P(V) + P(G).
+  - `predict(self, design=None)` — Predicted proportion for each (probe, question).
+  - `probe_probabilities(self, probe)` — P(V), P(G), P(V or G) for one probe type (softmax over verbatim, gist, neither).
+- `overdistribution(values, probe)` — P(V) + P(G) - P(V or G) for one probe type from {(probe, question): value} (data or predictions).
+- **class `QuantumEpisodicModel(**params)`** — Options: probes (tuple of probe-type names, default target/related/unrelated).
+  - `predict(self, design=None)` — Predicted proportion for each (probe, question).
+  - `probe_probabilities(self, probe)` — P(V), P(G), P(V or G) for one probe type, from the projections of the memory state.
+
+## `qlcog.families.concepts`
+
+Concept combination (guppy effect): Aerts' Fock-space model versus classical rules (see README.md).
+
+- **class `FockSpaceConceptModel(**params)`** — Base class. Subclasses define PARAMS (list of Param), LOSS ('multinomial' or 'sse') and predict(design).
+- `interference_bound(mA, mB)` — Largest |Re<A|M|B>| compatible with orthogonal concept states and memberships mA, mB.
+- **class `MinConceptModel(**params)`** — Base class. Subclasses define PARAMS (list of Param), LOSS ('multinomial' or 'sse') and predict(design).
+- `overextension(design, values)` — For each item: membership in "A and B" minus the smaller single membership (> 0 = overextension).
+- **class `ProductConceptModel(**params)`** — Base class. Subclasses define PARAMS (list of Param), LOSS ('multinomial' or 'sse') and predict(design).
+- **class `WeightedAverageModel(**params)`** — Base class. Subclasses define PARAMS (list of Param), LOSS ('multinomial' or 'sse') and predict(design).
+
 ## `qlcog.applications.robotics`
 
 Human-robot interaction: order-aware human models for robots that ask questions and track trust.
@@ -223,14 +272,34 @@ Human-robot interaction: order-aware human models for robots that ask questions 
 - `TRUST_MODELS` (constant)
 - `TRUST_PROTOCOL` (constant)
 
+## `qlcog.applications.intent`
+
+Intent resolution from ambiguous commands and context cues (robots, assistants, interfaces).
+
+- **class `BayesIntentResolver(intents, prior=None)`** — Classical baseline: posterior proportional to prior times the product of cue likelihoods.
+  - `add_cue(self, name, likelihood, theta=0.0)` — Register a cue with its likelihood over intents (theta is ignored: classical cues commute).
+  - `order_effect(self, a, b)` — Total variation between the posteriors for cue orders (a, b) and (b, a); always 0 here.
+  - `posterior(self, cues)` — Intent probabilities after the cues (order-free).
+- **class `QuantumIntentResolver(intents, prior=None)`** — Quantum-like resolver; nests BayesIntentResolver (all theta = 0).
+  - `add_cue(self, name, likelihood, theta=0.0)` — Register a cue: likelihood over intents and incompatibility angle theta (radians).
+  - `posterior(self, cues)` — Intent probabilities |psi|^2 after applying the cues in the given order.
+  - `resolve(self, cues)` — (most likely intent, its probability, entropy of the posterior in bits).
+
 ## `qlcog.quantum`
 
 Quantum models: quantum machine learning and quantum algorithms (gate-model circuits).
 
+- `adjacency(edges, n=None, directed=False, weights=None)` — Adjacency matrix from an edge list.
+- **class `AEResult(estimate: 'float', exact: 'float', oracle_calls: 'int', powers: 'list', hits: 'list', shots: 'int') -> None`** — AEResult(estimate: 'float', exact: 'float', oracle_calls: 'int', powers: 'list', hits: 'list', shots: 'int')
+- **class `AmplitudeEstimation(probabilities, payoff)`** — probabilities: p over 2^n points (n <= 11); payoff: f in [0, 1] at the same points.
+  - `good_probability(self, m)` — Exact probability of measuring the ancilla in |1> after Q^m A (simulated with the circuit).
+  - `run(self, powers=(0, 1, 2, 4, 8, 16), shots=100, rng=None)` — Sample `shots` measurements at each power and return the maximum-likelihood estimate.
+  - `to_qiskit(self, m=0, measure=True)` — Qiskit circuit for Q^m A on n + 1 qubits (dense UnitaryGate; ancilla = last qubit).
 - `angle_encoding(n_features, n_qubits=None, scale=1.0, circ=None)` — RY(scale * x_j) on qubit j (features cycle over qubits if there are more features).
 - `apply_matrix(state, M, qubits, n)` — Apply a 2^k x 2^k matrix (same for the batch, or shape (B, 2^k, 2^k)) to `qubits` (first qubit = least significant bit of M's index).
 - **class `Circuit(n)`** — Parameterised circuit. Build with gate methods, simulate with `state(w, X)`.
   - `compose(self, other)` — Append the gates of another circuit; returns self.
+  - `cp(self, p, c, t)` — Controlled phase diag(1, 1, 1, e^{i p}) on qubits c and t (symmetric).
   - `cx(self, c, t)` — CNOT with control c and target t.
   - `cz(self, a, b)` — Controlled Z on qubits a and b.
   - `diagonal(self, phases, label='D')` — Diagonal unitary diag(exp(i phases)) on all qubits (e.g. a cost or oracle layer).
@@ -251,7 +320,10 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
   - `x(self, q)` — Pauli X on qubit q.
   - `y(self, q)` — Pauli Y on qubit q.
   - `z(self, q)` — Pauli Z on qubit q.
+- `ctqw_probabilities(A, t, start=None)` — Occupation probabilities of each node at time t (start: a node index, or None for the equal superposition). Uses the symmetric part of A as the Hamiltonian.
+- `degree_centrality(A)` — Normalised (undirected) degree.
 - `expectation_z(psi, q, n)` — <Z_q> for each state in the batch.
+- `find_period(n, r, offset=0, shots=None, rng=None)` — Apply the QFT to periodic_state(n, r) and read the peaks. Returns (probabilities, estimated period from the smallest non-zero peak, N / peak). With shots, peaks are taken from samples.
 - `grover(n, marked, iterations=None)` — Grover search over n qubits. marked: list of basis indices, or a predicate on the bit tuple (x_0, ..., x_{n-1}). Simulated with diagonal phase layers; `to_qiskit()` exports a gate-level circuit (X and multi-controlled Z), or the diagonal form with style='diagonal'.
 - **class `GroverResult(probabilities: 'np.ndarray', iterations: 'int', marked: 'list', success: 'float', circuit: 'Circuit' = None, n: 'int' = 0) -> None`** — Grover result: output distribution, number of iterations, marked states, success probability and the circuit.
   - `to_qiskit(self, measure=True, style='gates')` — Qiskit circuit of the search.
@@ -259,22 +331,35 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
   - `expectation(self, psi)` — <psi|H|psi> for each state of a batch (B, 2^n) -> (B,).
   - `ground_energy(self)` — Exact ground-state energy (dense diagonalisation).
 - `hardware_efficient(n_qubits, layers=2, start=0, circ=None, entangle='ring', rotations=('ry', 'rz'), entangler='cz')` — Layers of single-qubit rotations (one weight each) and two-qubit entanglers ('cz' or 'cx') on a 'ring' or 'linear' chain. Weights are numbered from `start`; returns (circuit, next free weight index).
+- `monte_carlo_estimate(probabilities, payoff, samples, rng=None)` — Classical baseline: sample `samples` points from p and average a Bernoulli(f) draw (the same information per call as one run of A).
+- `pagerank(A, damping=0.85, tol=1e-12, max_iter=1000)` — Classical PageRank (power iteration; links i -> j from A[i, j]; dangling nodes spread evenly).
 - `parameter_shift(f, w, shift=1.5707963267948966)` — Exact gradient of f(w) (any array output) for circuits in which every weight sets one rotation gate exp(-i w G / 2) with G^2 = I:  df/dw_k = [f(w + s e_k) - f(w - s e_k)] / 2 with s = pi/2. Returns an array of shape (len(w),) + shape of f(w).
 - `pauli_matrix(label)` — Matrix of a Pauli string in Qiskit order (the leftmost letter acts on the highest qubit).
+- `periodic_state(n, r, offset=0)` — Uniform superposition over the basis states offset, offset + r, offset + 2r, ... (n qubits).
 - **class `QAOA(qubo, p=2, restarts=6, maxiter=300, seed=0)`** — Quantum Approximate Optimisation Algorithm (Farhi, Goldstone and Gutmann, 2014) for a `qlcog.problems.Qubo`. The cost layer is built from RZ and RZZ gates of the equivalent Ising model, so the simulated and exported circuits are identical.
   - `expectation(self, w)` — Expected QUBO energy of the QAOA state for angles w = (gamma_1, beta_1, ...).
   - `run(self)` — Schedule search: (1) grid search at depth 1, then layer-by-layer interpolation of the optimal angles to the next depth (INTERP, Zhou et al., PRX 10, 021067, 2020); (2) random restarts at full depth. The best schedule over both is kept.
   - `to_qiskit(self, result, measure=True)` — Qiskit circuit with the optimised angles of `result` bound.
 - **class `QAOAResult(x: 'np.ndarray', energy: 'float', expectation: 'float', probabilities: 'np.ndarray', gammas: 'np.ndarray', betas: 'np.ndarray', circuit: 'Circuit' = None, optimum: 'float' = None, p_optimal: 'float' = 0.0, weights: 'np.ndarray' = None) -> None`** — QAOA result: best bit string among the most probable outcomes, its energy, the expectation, the output distribution, the angles, the exact optimum and P(optimal).
+- `qft_circuit(n, inverse=False, swaps=True)` — Circuit for the QFT (or its inverse) on n qubits, Qiskit qubit order (qubit 0 = least significant bit).
+- `qft_matrix(n)` — The QFT as a matrix: F[k, j] = exp(2 pi i j k / N) / sqrt(N).
+- `quantum_walk_centrality(A, start=None, tol=1e-09)` — Infinite-time average of the occupation probabilities: sum over distinct eigenvalues of |P_lambda psi(0)|^2 node by node (degenerate eigenspaces grouped within tol).
 - **class `QuantumKernel(reps=2, scale=1.0)`** — Fidelity kernel k(x, x') = |<phi(x)|phi(x')>|^2 with the ZZ feature map (Havlicek et al. 2019). Use it with any kernel method, e.g. scikit-learn's SVC(kernel='precomputed').
   - `fit(self, X)` — Fit the feature scaling and build the feature map for X; returns self.
   - `states(self, X)` — Feature-map states of the rows of X, shape (samples, 2^features).
   - `to_qiskit(self, x1, x2)` — Compute-uncompute circuit: P(all zeros) = k(x1, x2).
+- **class `QuantumKernelAnomalyDetector(kernel='quantum', reps=1, scale=0.5, gamma=0.5, quantile=0.95)`** — Anomaly score = squared distance, in the kernel's feature space, from a point's feature vector to the mean feature vector of the (normal) training data: k(x, x) - 2 mean_i k(x, x_i) + const. The threshold is the `quantile` of the training scores. kernel='quantum' (ZZ feature map) or 'rbf' (classical baseline with the same rule).
+  - `fit(self, X)` — Learn the normal data; returns self.
+  - `predict(self, X)` — 1 for anomalies (score above the threshold), 0 otherwise.
+  - `score_samples(self, X)` — Anomaly score of each sample (higher = more anomalous).
 - **class `QuantumKernelClassifier(reps=2, scale=1.0, ridge=0.01)`** — Kernel ridge classifier (one-versus-rest, targets +-1) on the quantum kernel.
   - `decision_function(self, X)` — Scores per class (one-versus-rest).
   - `fit(self, X, y)` — Solve the kernel ridge system for X and y; returns self.
   - `predict(self, X)` — Class with the highest score for each sample.
   - `score(self, X, y)` — Accuracy on (X, y).
+- **class `QuantumKernelClustering(n_clusters=2, kernel='quantum', reps=1, scale=0.5, gamma=0.5, restarts=10, seed=0)`** — Spectral clustering on a kernel: normalised affinity, its leading eigenvectors, then k-means (several restarts). kernel='quantum' or 'rbf' (classical baseline).
+  - `fit_predict(self, X)` — Cluster labels for X.
+- `rbf_kernel(X1, X2=None, gamma=1.0)` — Classical Gaussian (RBF) kernel exp(-gamma ||x - x'||^2), the baseline for the quantum kernel.
 - `reuploading_classifier_circuit(n_features, n_qubits, layers, reupload=True)` — Data re-uploading classifier (Perez-Salinas et al., Quantum 4, 226, 2020): encoding and trainable layers alternate, so the model is a trainable Fourier series of the inputs.
 - **class `VariationalClassifier(layers=3, n_qubits=None, reupload=True, l2=0.001, maxiter=200, seed=0)`** — Variational quantum classifier with data re-uploading.
   - `fit(self, X, y)` — Train on X (samples x features) and labels y; returns self.
@@ -282,6 +367,11 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
   - `predict_proba(self, X)` — Class probabilities (Born rule, restricted to the class labels).
   - `score(self, X, y)` — Accuracy on (X, y).
   - `to_qiskit(self, x, measure=True)` — Circuit for one input sample, weights bound.
+- **class `VariationalRegressor(layers=3, n_qubits=None, reupload=True, l2=0.001, maxiter=200, seed=0)`** — Variational (data re-uploading) regressor: prediction = scale * <Z_0> + offset, with scale and offset set from the training targets; mean squared error minimised with exact adjoint gradients. Used for small forecasting tasks (inputs = a window of past values). Same size limits as VariationalClassifier.
+  - `fit(self, X, y)` — Train on X (samples x features) and real targets y; returns self.
+  - `predict(self, X)` — Predicted values.
+  - `score(self, X, y)` — Coefficient of determination R^2.
+  - `to_qiskit(self, x, measure=True)` — Circuit for one input (weights bound); <Z_0> of qubit 0 gives the prediction.
 - **class `VQE(hamiltonian, layers=2, restarts=4, maxiter=400, seed=0, rotations=('ry', 'rz'), entangle='linear', entangler='cx')`** — Variational Quantum Eigensolver (Peruzzo et al., Nature Communications 5, 4213, 2014) with a hardware-efficient ansatz and parameter-shift gradients. rotations=('ry',) gives a real ansatz, enough for Hamiltonians with real ground states (e.g. transverse-field Ising models).
   - `energy(self, w)` — Energy expectation of the ansatz state for weights w.
   - `run(self)` — Optimise from several random starts; returns {energy, exact, weights, state}.
@@ -295,6 +385,10 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
 
 Quantum-inspired models: classical algorithms that borrow quantum ideas. No quantum computer is used.
 
+- **class `GridWorld(size=6, walls=frozenset({(2, 3), (1, 1), (3, 1), (4, 4)}), step_reward=0.0, max_steps=200)`** — Deterministic grid: start (0, 0), goal at the opposite corner (reward 1, episode ends), walls as a set of cells; actions 0 up, 1 down, 2 left, 3 right; every other step gives `step_reward`.
+  - `reset(self)` — Return to the start cell; returns the start state (0).
+  - `shortest_path(self)` — Length of the shortest path from start to goal (breadth-first search).
+  - `step(self, a)` — Returns (next state, reward, done).
 - **class `MPSClassifier(bond=6, local_dim=2, epochs=60, lr=0.02, batch=32, seed=0, method='adam', sweeps=6, steps=40, sweep_lr=0.05, cutoff=1e-10)`** — Parameters: bond (maximum bond dimension D), local_dim (d), method ('adam' or 'sweep'), epochs, lr, batch (Adam training); sweeps (back-and-forth sweeps), steps (optimisation steps per bond), sweep_lr, cutoff (relative singular-value cutoff) (sweep training); seed.
   - `fit(self, X, y)` — Train on X (samples x features) and labels y; returns self.
   - `predict(self, X)` — Most probable class for each sample.
@@ -303,11 +397,30 @@ Quantum-inspired models: classical algorithms that borrow quantum ideas. No quan
 - **class `OptimResult(x: 'np.ndarray', value: 'float', history: 'list' = <factory>, evaluations: 'int' = 0) -> None`** — Optimiser result: best solution x, its value, the best value per iteration (history) and the number of objective evaluations.
 - **class `QIEA(problem, n=None, pop=20, generations=300, rotation='lookup', delta=0.031415926535897934, migrate_every=20, groups=4, seed=0)`** — Quantum-inspired evolutionary algorithm for binary minimisation.
   - `run(self)` — Run the evolutionary search; returns OptimResult.
+- **class `QLearning(n_states, n_actions, alpha=0.1, gamma=0.95, epsilon=0.2, decay=0.995, seed=0)`** — Classical baseline: tabular Q-learning with epsilon-greedy exploration (decaying).
+  - `act(self, s)` — Epsilon-greedy action (ties broken at random).
+  - `greedy(self, s)` — Greedy action.
+  - `update(self, s, a, r, s2, done)` — Q-learning update; epsilon decays after each terminal step.
 - **class `QPSO(f, lower, upper, particles=30, iterations=300, beta0=1.0, beta1=0.5, seed=0)`** — Quantum-behaved particle swarm optimisation for continuous minimisation on a box.
   - `run(self)` — Run the swarm; returns OptimResult.
+- **class `QuantumInspiredQLearning(n_states, n_actions, alpha=0.2, gamma=0.95, k=2.0, max_step=0.3, floor=0.02, seed=0)`** — QRL agent. Parameters: alpha (value learning rate), gamma (discount), k (rotation per unit of TD error), max_step (largest rotation per update, radians), floor (smallest amplitude kept for every action), seed.
+  - `act(self, s)` — Sample an action from the Born-rule probabilities of state s.
+  - `greedy(self, s)` — Most probable action in state s.
+  - `update(self, s, a, r, s2, done)` — Temporal-difference value update, then rotate the chosen action's amplitude by k times the TD error (bounded by max_step): better-than-expected actions grow, worse ones shrink.
+- **class `QuantumLanguageModel(window=3, smoothing=0.2, uniform=0.01, iters=60)`** — fit(documents) then rank(query). Parameters: window (dependency window in tokens), smoothing (weight of the collection density matrix), uniform (weight of the maximally mixed state I/V, which keeps every document matrix full rank so that its logarithm is finite).
+  - `fit(self, documents)` — documents: list of strings; returns self.
+  - `query_density(self, query)` — Density matrix of a query (terms outside the vocabulary are ignored).
+  - `rank(self, query)` — Document indices, best first.
+  - `scores(self, query)` — Negative von Neumann divergence -S(rho_q || rho_d) for each document (higher = better).
+- **class `QueryLikelihoodModel(mu=50.0)`** — Classical baseline: unigram query likelihood with Dirichlet smoothing (mu).
+  - `fit(self, documents)` — documents: list of strings; returns self.
+  - `rank(self, query)` — Document indices, best first.
+  - `scores(self, query)` — Log-likelihood of the query under each smoothed document model.
 - `simulated_annealing(qubo, sweeps=400, T0=2.0, T1=0.01, seed=0)` — Classical simulated annealing baseline (single-spin Metropolis on the same Ising model).
 - **class `SQA(qubo, replicas=16, sweeps=400, T=0.05, gamma0=3.0, gamma1=0.001, seed=0)`** — Simulated quantum annealing (path-integral Monte Carlo) for a Qubo or Ising model.
   - `run(self)` — Run the annealing schedule; returns OptimResult with the best bit string found in any replica.
+- `tokenize(text)` — Lower-case word tokens.
+- `train(agent, env, episodes=300)` — Run episodes; returns the number of steps per episode.
 
 ## `qlcog.problems`
 

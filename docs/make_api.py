@@ -10,7 +10,9 @@ sys.path.insert(0, str(ROOT / 'src'))
 
 MODULES = ['qlcog.core', 'qlcog.families.order_effects', 'qlcog.families.conjunction', 'qlcog.families.interference',
            'qlcog.families.qlbn', 'qlcog.families.dynamics', 'qlcog.families.decision', 'qlcog.families.contextuality',
-           'qlcog.families.similarity', 'qlcog.applications.robotics', 'qlcog.quantum', 'qlcog.inspired', 'qlcog.problems',
+           'qlcog.families.similarity', 'qlcog.families.game_theory', 'qlcog.families.memory',
+           'qlcog.families.concepts', 'qlcog.applications.robotics', 'qlcog.applications.intent',
+           'qlcog.quantum', 'qlcog.inspired', 'qlcog.problems',
            'qlcog.circuits', 'qlcog.viz', 'qlcog.data']
 
 

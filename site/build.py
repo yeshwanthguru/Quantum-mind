@@ -38,7 +38,8 @@ PAGES = {
     'CONTRIBUTING.md': ('docs/contributing.html', 'Contributing'),
     'SECURITY.md': ('docs/security.html', 'Security policy'),
 }
-FAMILIES = ['order_effects', 'conjunction', 'interference', 'qlbn', 'dynamics', 'decision', 'contextuality', 'similarity']
+FAMILIES = ['order_effects', 'conjunction', 'interference', 'qlbn', 'dynamics', 'decision', 'contextuality', 'similarity',
+            'game_theory', 'memory', 'concepts']
 for fam in FAMILIES:
     PAGES['src/qlcog/families/%s/README.md' % fam] = ('docs/families/%s.html' % fam, 'Family: ' + fam.replace('_', ' '))
 
@@ -53,6 +54,14 @@ RESULTS = [
     ('Grover, 9 of 32 schedules valid', 'P(valid) 0.99 after one iteration (random 0.28)'),
     ('Individual differences (example 22)', 'a pooled fit selects the quantum-like model for a population that is half anchoring; '
      'per-person fits recover all 12 people at about 3,000 answers each'),
+    ('Amplitude estimation of an expected payoff (6,800 oracle calls)', 'RMSE 0.0014 against 0.0049 for Monte Carlo '
+     'with the same number of samples (ideal simulator)'),
+    ('Robot navigation, 6 × 6 grid (shortest path 10)', 'quantum-inspired QRL 10.0 steps per episode after training, '
+     'Q-learning 10.6; QRL is slower in the first episodes'),
+    ('Anomaly detection (simulated)', '<strong>RBF kernel AUC 1.000</strong> · quantum kernel AUC 0.905 (angle encoding is '
+     'periodic, so far-out points wrap around)'),
+    ('Concept combination, "pet and fish" (simulated)', 'Fock-space model SSE 0.001 · weighted average 0.054 · '
+     'product 0.388'),
     ('Trust as a qubit', "P(trust) read from the Bloch vector equals the model's prediction (0.7247)"),
 ]
 

@@ -216,7 +216,7 @@ The same service runs as a ROS 2 node with standard `std_msgs/String` JSON topic
 ## 📚 Model catalogue
 
 <details>
-<summary><b>🧠 Quantum-like families</b>: 8 families, each with classical baselines and a README</summary>
+<summary><b>🧠 Quantum-like families</b>: 11 families, each with classical baselines and a README</summary>
 
 | Family | Phenomenon | Quantum-like model(s) | Classical baselines | Circuit | README |
 |---|---|---|---|---|---|
@@ -228,10 +228,14 @@ The same service runs as a ROS 2 node with standard `std_msgs/String` JSON topic
 | `decision` | Risky choice | `QDTModel` (quantum decision theory) | expected utility, prospect theory | – | [link](src/qlcog/families/decision/README.md) |
 | `contextuality` | Is there one joint distribution? | CHSH, Contextuality-by-Default criterion | classical bounds | ✓ | [link](src/qlcog/families/contextuality/README.md) |
 | `similarity` | Asymmetric similarity | `QuantumSimilarityModel` | biased geometric (Nosofsky), geometric | ✓ | [link](src/qlcog/families/similarity/README.md) |
+| `game_theory` | Strategic choice with shared quantum resources | `EWLGame` (Eisert–Wilkens–Lewenstein), best responses, Nash checks | classical Nash equilibria | – | [link](src/qlcog/families/game_theory/README.md) |
+| `memory` | Episodic overdistribution in recall | `QuantumEpisodicModel` (Brainerd) | additive (verbatim + gist) | – | [link](src/qlcog/families/memory/README.md) |
+| `concepts` | Overextension in concept combination ("pet fish") | `FockSpaceConceptModel` (Aerts) | product, minimum (fuzzy), weighted average | – | [link](src/qlcog/families/concepts/README.md) |
 
 Robotics application ([README](src/qlcog/applications/README.md)): question domains (object
 clarification, trust and hand-over, preference elicitation), questioning designs (fixed, probe,
-split), a trust protocol, and `HumanModelEnsemble`.
+split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like intent resolvers
+(`applications.intent`) for ambiguous commands.
 </details>
 
 <details>
@@ -244,11 +248,16 @@ split), a trust protocol, and `HumanModelEnsemble`.
 | `QAOA` | any `Qubo`: allocation, scheduling, MaxCut, portfolios | Farhi et al., 2014 |
 | `VQE`, `Hamiltonian` | ground states of Pauli Hamiltonians or QUBOs | Peruzzo et al., *Nat. Commun.* 2014 |
 | `grover` | search with an oracle from a list or a predicate | Grover, 1996 |
+| `VariationalRegressor` | regression and forecasting (⟨Z⟩ readout, adjoint gradients) | Mitarai et al., *PRA* 2018 |
+| `QuantumKernelAnomalyDetector`, `QuantumKernelClustering` | one-class anomaly scores and spectral clustering, quantum or RBF kernel | Liu and Rebentrost, *PRA* 2018 |
+| `qft_circuit`, `find_period` | quantum Fourier transform and period finding | Coppersmith, 1994; Shor, 1994 |
+| `AmplitudeEstimation` | expected values (risk, pricing) with maximum-likelihood amplitude estimation | Suzuki et al., *QIP* 2020 |
+| `ctqw_probabilities`, `quantum_walk_centrality` | continuous-time quantum walks on graphs; node centrality | Farhi and Gutmann, *PRA* 1998 |
 | `qlcog.circuits` | circuits of the quantum-like families; `run()` on any backend | [circuits README](src/qlcog/circuits/README.md) |
 </details>
 
 <details>
-<summary><b>✨ Quantum-inspired models</b>: optimisers and tensor networks (<a href="src/qlcog/inspired/README.md">README</a>)</summary>
+<summary><b>✨ Quantum-inspired models</b>: optimisers, tensor networks, learning and ranking (<a href="src/qlcog/inspired/README.md">README</a>)</summary>
 
 | Model | Problem | Reference |
 |---|---|---|
@@ -256,6 +265,8 @@ split), a trust protocol, and `HumanModelEnsemble`.
 | `QPSO` | continuous optimisation | Sun, Feng and Xu, *CEC* 2004 |
 | `SQA` | Ising / QUBO by path-integral Monte Carlo | Martoňák, Santoro and Tosatti, *PRB* 2002 |
 | `MPSClassifier` | supervised classification with a matrix product state; DMRG-style sweeps or Adam | Stoudenmire and Schwab, *NeurIPS* 2016 |
+| `QuantumInspiredQLearning` | reinforcement learning with action amplitudes (baseline: `QLearning`) | Dong et al., *IEEE TSMC-B* 2008 |
+| `QuantumLanguageModel` | document ranking with density matrices (baseline: `QueryLikelihoodModel`) | Sordoni, Nie and Bengio, *SIGIR* 2013 |
 | `simulated_annealing` | classical baseline | Kirkpatrick et al., *Science* 1983 |
 </details>
 
@@ -294,8 +305,8 @@ src/qlcog/
 ├── circuits/       Qiskit circuits of the families · run() on Aer, IBM Quantum, Amazon Braket
 ├── viz/            🌐 Bloch vectors, trajectories, tomography · Matplotlib and Plotly viewers · LiveBloch
 └── data/           published aggregate data sets
-examples/           22 scripts across domains        docs/       concepts, API reference, assets
-notebooks/          2 Jupyter notebooks              tests/      51 tests
+examples/           31 scripts across domains        docs/       concepts, API reference, assets
+notebooks/          2 Jupyter notebooks              tests/      63 tests
 integrations/ros2/  ROS 2 node (qlcog_ros)
 site/               project website (built and deployed to GitHub Pages by CI)
 .github/            CI, release, website, CODEOWNERS, issue and pull-request templates
@@ -329,13 +340,23 @@ site/               project website (built and deployed to GitHub Pages by CI)
 | 20 | Robotics, HRI | 🧠🌐 | [trust on the Bloch sphere](examples/20_trust_on_the_bloch_sphere.py) |
 | 21 | Robotics | 🧠 | [when to ask for help: ensemble uncertainty and `ask_or_act`](examples/21_robot_ask_for_help.py) |
 | 22 | Surveys, HRI | 🧠 | [individual differences: pooled versus per-person model comparison](examples/22_individual_differences.py) |
+| 23 | Economics, multi-agent | 🧠 | [quantum games: EWL Prisoner's Dilemma and Chicken](examples/23_quantum_games.py) |
+| 24 | Memory, language | 🧠 | [episodic overdistribution and concept combination (simulated)](examples/24_memory_and_concepts.py) |
+| 25 | Robotics, HRI | 🧠 | [resolving an ambiguous command: Bayesian vs quantum-like intent](examples/25_intent_resolution_robot.py) |
+| 26 | Finance, risk | ⚛️ | [amplitude estimation vs Monte Carlo](examples/26_risk_amplitude_estimation.py) |
+| 27 | Signal processing | ⚛️ | [quantum Fourier transform and period finding](examples/27_qft_period_finding.py) |
+| 28 | Networks | ⚛️ | [quantum-walk centrality vs PageRank and degree](examples/28_network_centrality_quantum_walk.py) |
+| 29 | Forecasting, monitoring (simulated) | ⚛️ | [variational regressor, anomaly detection, clustering vs classical](examples/29_forecasting_and_anomalies.py) |
+| 30 | Robotics | ✨ | [navigation: quantum-inspired RL vs Q-learning](examples/30_robot_navigation_qrl.py) |
+| 31 | Information retrieval | ✨ | [document ranking: quantum language model vs query likelihood](examples/31_document_ranking_qlm.py) |
 
 Notebooks: [`01_bloch_sphere_live`](notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
 tomography under device noise) and [`02_robot_questioning_and_trust`](notebooks/02_robot_questioning_and_trust.ipynb)
 (order effects, ensemble, ask-or-act, trust on the sphere). Both run in CI.
 
 Results printed by the examples (simulated data, this version). They illustrate the methods on small
-problems; they are not a benchmark, and on the classification task a well-specified classical model wins:
+problems; they are not a benchmark, and on classification, forecasting, anomaly detection and clustering a
+well-specified classical model wins (bold):
 
 | Task | Result |
 |---|---|
@@ -345,6 +366,12 @@ problems; they are not a benchmark, and on the classification task a well-specif
 | VQE, 4-spin Ising chain | error below 1e-8 against exact diagonalisation |
 | Grover, 9 of 32 schedules valid | P(valid) 0.99 after one iteration (random 0.28) |
 | Trust qubit | P(trust) from the Bloch vector equals the model's prediction (0.7247) |
+| Expected payoff, 6,800 oracle calls | amplitude estimation RMSE 0.0014, Monte Carlo 0.0049 (ideal simulator, no noise) |
+| Forecasting, held-out R² | **linear autoregression 0.984** · variational quantum regressor 0.962 |
+| Anomaly detection, AUC | **RBF kernel 1.000** · quantum kernel 0.905 (angle encoding is periodic, so far-out points wrap around) |
+| Clustering, accuracy | **RBF kernel 1.000** · quantum kernel 0.931 |
+| Grid navigation (shortest path 10) | QRL 10.0 steps per episode after training, Q-learning 10.6; QRL slower in the first 20 episodes |
+| Concept combination ("pet and fish") | Fock-space SSE 0.001 · weighted average 0.054 · minimum 0.328 · product 0.388 |
 
 <a id="hardware"></a>
 
@@ -376,10 +403,10 @@ Sampler (`qiskit_ibm_runtime.executor_sampler`), falling back to `SamplerV2` on 
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
-| Quantum-like models | 8 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison (`fit_individuals`, `compare_individuals`); published aggregate data | hierarchical (partial-pooling) models |
-| Robotics | simulated human populations for three question domains, questioning designs, trust protocol, `HumanModelEnsemble`, `ask_or_act`, `HumanModelService`, a ROS 2 node (`integrations/ros2`) | a run of the ROS 2 node inside a ROS 2 installation (its callbacks are tested with stand-in modules); data from human–robot studies |
-| Quantum models | VQC, quantum kernel, QAOA, VQE, Grover on an exact simulator with adjoint gradients; Qiskit export; IBM submission through the current Qiskit Runtime Sampler | quantum advantage (none claimed); noise-aware training; runs on hardware |
-| Quantum-inspired | QIEA with Han and Kim's rotation table (or a simplified rule), QPSO, SQA, simulated-annealing baseline, MPS classifier with DMRG-style sweeps or Adam | – |
+| Quantum-like models | 11 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison (`fit_individuals`, `compare_individuals`); published aggregate data | hierarchical (partial-pooling) models |
+| Robotics | simulated human populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, `HumanModelService`, a ROS 2 node (`integrations/ros2`) | a run of the ROS 2 node inside a ROS 2 installation (its callbacks are tested with stand-in modules); data from human–robot studies |
+| Quantum models | VQC, regressor, quantum kernel (classification, anomalies, clustering), QAOA, VQE, Grover, QFT, amplitude estimation, quantum walks on an exact simulator with adjoint gradients; Qiskit export; IBM submission through the current Qiskit Runtime Sampler | quantum advantage (none claimed); noise-aware training; runs on hardware |
+| Quantum-inspired | QIEA with Han and Kim's rotation table (or a simplified rule), QPSO, SQA, simulated-annealing baseline, MPS classifier with DMRG-style sweeps or Adam, quantum reinforcement learning, quantum language model | – |
 | Viewer | trajectories, animations, interactive HTML, live widget, tomography, pairwise concurrence and entanglement timeline, Q-sphere | – |
 
 **Sizes.** The simulator holds 2ⁿ amplitudes per sample, at most 22 qubits. Measured on a laptop
@@ -425,7 +452,7 @@ without installing, because they add `src/` to the path.
    every example does.
 
 ```bash
-python3 -m pytest -q --cov=qlcog     # 51 tests, about 90% line coverage (CI requires at least 80%)
+python3 -m pytest -q --cov=qlcog     # 63 tests, about 90% line coverage (CI requires at least 80%)
 ```
 
 The tests check the simulator against Qiskit gate by gate, adjoint and parameter-shift gradients

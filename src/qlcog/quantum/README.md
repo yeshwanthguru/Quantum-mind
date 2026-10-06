@@ -11,6 +11,11 @@ Amazon Braket through `qlcog.circuits.run`.
 | `QuantumKernel`, `QuantumKernelClassifier` | Fidelity kernel of the ZZ feature map; kernel ridge classifier; kernel matrix for any kernel method | Small-data classification; kernel for scikit-learn `SVC(kernel='precomputed')` | Havlíček et al., *Nature* 567, 209 (2019) |
 | `QAOA` | Quantum Approximate Optimisation Algorithm for any `qlcog.problems.Qubo`; schedule search by depth-1 grid, layer-wise interpolation (INTERP) and random restarts | Task allocation, scheduling, MaxCut, portfolios | Farhi, Goldstone and Gutmann, arXiv:1411.4028 (2014) |
 | `VQE`, `Hamiltonian` | Variational Quantum Eigensolver for weighted Pauli strings (or a QUBO as an Ising Hamiltonian) | Ground states of spin models and small molecules | Peruzzo et al., *Nat. Commun.* 5, 4213 (2014) |
+| `VariationalRegressor` | Re-uploading regressor (prediction = scaled ⟨Z₀⟩), exact adjoint gradients | Small forecasting tasks from a window of past values | Pérez-Salinas et al. (2020); Mitarai et al., *PRA* 98, 032309 (2018) |
+| `QuantumKernelAnomalyDetector`, `QuantumKernelClustering` | Distance to the mean feature vector; spectral clustering; `kernel='rbf'` gives the classical baseline with the same rule | Fraud and fault detection, grouping | Schuld and Killoran, *PRL* 122, 040504 (2019) |
+| `qft_circuit`, `find_period` | Quantum Fourier transform (H, controlled phase, swap); period finding | Signal processing, the core of Shor's algorithm | Nielsen and Chuang, ch. 5 |
+| `AmplitudeEstimation`, `monte_carlo_estimate` | Maximum-likelihood amplitude estimation of E[f] (no phase-estimation register), Monte Carlo baseline with equal calls | Risk and pricing | Suzuki et al., *QIP* 19, 75 (2020); Woerner and Egger, *npj QI* 5, 15 (2019) |
+| `ctqw_probabilities`, `quantum_walk_centrality`, `pagerank` | Continuous-time quantum walk on a graph; centrality from its long-time average; PageRank and degree baselines | Network analysis | Farhi and Gutmann (1998); Izaac et al., *PRA* 95, 032318 (2017) |
 | `grover` | Grover search with a phase oracle from a list of solutions or a predicate; exports a gate-level circuit (X and multi-controlled Z) or a diagonal-gate circuit | Constraint satisfaction, unstructured search | Grover, *STOC* (1996) |
 
 Building blocks: `Circuit` (gates `h x y z s sdg rx ry rz p cx cz swap rzz`, `unitary`, `diagonal`;
@@ -42,6 +47,12 @@ g = grover(5, lambda x: sum(x) == 2)                                   # g.succe
 parameter-shift gradients against finite differences; the exported QAOA and Grover circuits against
 the simulated distributions; and a trained classifier circuit against an Aer run
 (`tests/test_quantum.py`, `tests/test_robustness.py`).
+
+**Measured in the examples (simulated data).** Amplitude estimation: RMSE 0.0014 against 0.0049 for
+Monte Carlo with the same 6,800 calls (50 runs). Forecasting R²: 0.962 against 0.984 for linear
+autoregression. Anomaly AUC: 0.905 with the quantum kernel, 1.000 with the RBF kernel; with angle
+encoding, inputs outside the training range wrap around (the encoding is periodic), so out-of-range
+anomalies can look normal. Clustering accuracy 0.931 against 1.000.
 
 **Honest expectations.** These are small, exactly simulable models (up to about 12–16 qubits on a
 laptop). There is no proven quantum advantage for them on classical data, and at low depth QAOA puts

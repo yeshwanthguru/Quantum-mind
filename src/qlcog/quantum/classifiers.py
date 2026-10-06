@@ -7,7 +7,8 @@ import numpy as np
 from scipy.optimize import minimize
 from .ansatz import reuploading_classifier_circuit, zz_feature_map
 
-__all__ = ['VariationalClassifier', 'QuantumKernel', 'QuantumKernelClassifier']
+__all__ = ['VariationalClassifier', 'VariationalRegressor', 'QuantumKernel', 'QuantumKernelClassifier',
+           'QuantumKernelAnomalyDetector', 'QuantumKernelClustering', 'rbf_kernel']
 
 
 def _check_X(X):
@@ -179,3 +180,134 @@ class QuantumKernelClassifier:
     def score(self, X, y):
         """Accuracy on (X, y)."""
         return float(np.mean(self.predict(X) == np.asarray(y)))
+
+
+class VariationalRegressor:
+    """Variational (data re-uploading) regressor: prediction = scale * <Z_0> + offset, with scale and
+    offset set from the training targets; mean squared error minimised with exact adjoint gradients.
+    Used for small forecasting tasks (inputs = a window of past values). Same size limits as
+    VariationalClassifier."""
+
+    def __init__(self, layers=3, n_qubits=None, reupload=True, l2=1e-3, maxiter=200, seed=0):
+        self.layers, self.n_qubits, self.reupload = layers, n_qubits, reupload
+        self.l2, self.maxiter, self.seed = l2, maxiter, seed
+
+    def _z(self, P):
+        sign = 1 - 2 * (np.arange(P.shape[1]) & 1)            # <Z_0>
+        return P @ sign, sign
+
+    def fit(self, X, y):
+        """Train on X (samples x features) and real targets y; returns self."""
+        X = _check_X(X); y = np.asarray(y, float)
+        if len(y) != len(X):
+            raise ValueError('X has %d samples but y has %d' % (len(X), len(y)))
+        self.offset = float((y.max() + y.min()) / 2); self.scale = float(max((y.max() - y.min()) / 2, 1e-12)) * 1.1
+        t = (y - self.offset) / self.scale                    # targets in (-1, 1)
+        nq = self.n_qubits or X.shape[1]
+        self.scaler = _Scaler().fit(X); Xs = self.scaler.transform(X)
+        self.circuit = reuploading_classifier_circuit(X.shape[1], nq, self.layers, self.reupload)
+        B = len(Xs); rng = np.random.default_rng(self.seed); self.history_ = []
+
+        def mse(psi, rows):
+            P = np.abs(psi) ** 2; z, sign = self._z(P); r = z - t[rows]
+            return float(np.sum(r ** 2) / B), (2 * r / B)[:, None] * sign[None, :] * psi
+
+        def loss_grad(w):
+            L, g = self.circuit.value_and_grad(w, Xs, mse)
+            L += self.l2 * w @ w; g = g + 2 * self.l2 * w; self.history_.append(L)
+            return L, g
+        r = minimize(loss_grad, rng.normal(0, 0.3, self.circuit.n_weights), jac=True, method='L-BFGS-B',
+                     options={'maxiter': self.maxiter})
+        self.weights_ = r.x; self.loss_ = float(r.fun)
+        return self
+
+    def predict(self, X):
+        """Predicted values."""
+        z, _ = self._z(self.circuit.probabilities(self.weights_, self.scaler.transform(X)))
+        return self.offset + self.scale * z
+
+    def score(self, X, y):
+        """Coefficient of determination R^2."""
+        y = np.asarray(y, float); e = self.predict(X) - y
+        return float(1 - np.sum(e ** 2) / np.sum((y - y.mean()) ** 2))
+
+    def to_qiskit(self, x, measure=True):
+        """Circuit for one input (weights bound); <Z_0> of qubit 0 gives the prediction."""
+        return self.circuit.to_qiskit(self.weights_, self.scaler.transform(np.atleast_2d(x))[0], measure)
+
+
+def rbf_kernel(X1, X2=None, gamma=1.0):
+    """Classical Gaussian (RBF) kernel exp(-gamma ||x - x'||^2), the baseline for the quantum kernel."""
+    X1 = np.asarray(X1, float); X2 = X1 if X2 is None else np.asarray(X2, float)
+    d = (X1 ** 2).sum(1)[:, None] + (X2 ** 2).sum(1)[None, :] - 2 * X1 @ X2.T
+    return np.exp(-gamma * np.maximum(d, 0))
+
+
+class _KernelMixin:
+    def _kernel_fit(self, X):
+        X = _check_X(X)
+        if self.kernel == 'quantum':
+            self.qk = QuantumKernel(self.reps, self.scale).fit(X)
+            self.K = lambda A, B=None: self.qk(A, B)          # noqa: E731
+        elif self.kernel == 'rbf':
+            mu, sd = X.mean(0), X.std(0) + 1e-12
+            self.K = lambda A, B=None: rbf_kernel((A - mu) / sd, None if B is None else (B - mu) / sd, self.gamma)   # noqa: E731
+        else:
+            raise ValueError("kernel must be 'quantum' or 'rbf'")
+        return X
+
+
+class QuantumKernelAnomalyDetector(_KernelMixin):
+    """Anomaly score = squared distance, in the kernel's feature space, from a point's feature vector
+    to the mean feature vector of the (normal) training data: k(x, x) - 2 mean_i k(x, x_i) + const.
+    The threshold is the `quantile` of the training scores. kernel='quantum' (ZZ feature map) or 'rbf'
+    (classical baseline with the same rule)."""
+
+    def __init__(self, kernel='quantum', reps=1, scale=0.5, gamma=0.5, quantile=0.95):
+        self.kernel, self.reps, self.scale, self.gamma, self.quantile = kernel, reps, scale, gamma, quantile
+
+    def fit(self, X):
+        """Learn the normal data; returns self."""
+        self.X_ = self._kernel_fit(X)
+        self.mean_k_ = float(self.K(self.X_).mean())
+        self.threshold_ = float(np.quantile(self.score_samples(self.X_), self.quantile))
+        return self
+
+    def score_samples(self, X):
+        """Anomaly score of each sample (higher = more anomalous)."""
+        X = _check_X(X); diag = np.array([self.K(x[None])[0, 0] for x in X])
+        return diag - 2 * self.K(X, self.X_).mean(1) + self.mean_k_
+
+    def predict(self, X):
+        """1 for anomalies (score above the threshold), 0 otherwise."""
+        return (self.score_samples(X) > self.threshold_).astype(int)
+
+
+class QuantumKernelClustering(_KernelMixin):
+    """Spectral clustering on a kernel: normalised affinity, its leading eigenvectors, then k-means
+    (several restarts). kernel='quantum' or 'rbf' (classical baseline)."""
+
+    def __init__(self, n_clusters=2, kernel='quantum', reps=1, scale=0.5, gamma=0.5, restarts=10, seed=0):
+        self.k, self.kernel, self.reps, self.scale, self.gamma = n_clusters, kernel, reps, scale, gamma
+        self.restarts, self.seed = restarts, seed
+
+    def fit_predict(self, X):
+        """Cluster labels for X."""
+        X = self._kernel_fit(X); Kx = self.K(X); np.fill_diagonal(Kx, 0)
+        d = Kx.sum(1); Dm = 1 / np.sqrt(np.maximum(d, 1e-12))
+        w, V = np.linalg.eigh(Dm[:, None] * Kx * Dm[None, :])
+        E = V[:, -self.k:]; E = E / np.maximum(np.linalg.norm(E, axis=1, keepdims=True), 1e-12)
+        rng = np.random.default_rng(self.seed); best = (np.inf, None)
+        for _ in range(self.restarts):
+            C = E[rng.choice(len(E), self.k, replace=False)]
+            for _ in range(100):
+                lab = np.argmin(((E[:, None, :] - C[None]) ** 2).sum(-1), 1)
+                newC = np.array([E[lab == j].mean(0) if np.any(lab == j) else C[j] for j in range(self.k)])
+                if np.allclose(newC, C):
+                    break
+                C = newC
+            inertia = float(((E - C[lab]) ** 2).sum())
+            if inertia < best[0]:
+                best = (inertia, lab)
+        self.labels_ = best[1]
+        return self.labels_

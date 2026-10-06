@@ -10,6 +10,12 @@ quantum SDK and make no use of a quantum computer.
 | `SQA` | Transverse-field Ising model mapped to coupled classical replicas (Suzuki–Trotter); tunnelling through thin barriers | Ising / QUBO problems | Martoňák, Santoro and Tosatti, *PRB* 66, 094203 (2002) |
 | `MPSClassifier` | Weight tensor in an exponentially large tensor-product space, stored as a matrix product state | Supervised classification | Stoudenmire and Schwab, *NeurIPS* (2016): `method='sweep'` trains with their DMRG-style two-site sweeps and SVD truncation (cross-entropy instead of their squared loss); `method='adam'` (default, faster) updates all cores at fixed bond dimension |
 | `simulated_annealing` | (classical baseline) | Ising / QUBO | Kirkpatrick et al., *Science* 220 (1983) |
+| `QuantumInspiredQLearning` (+ `GridWorld`, `QLearning` baseline, `train`) | Action amplitudes sampled by the Born rule; the chosen action's amplitude rotated by a bounded angle proportional to the TD error | Sequential decisions, robot navigation | After Dong, Chen, Li and Tarn, *IEEE TSMC-B* 38, 1207 (2008), with a bounded rotation instead of integer Grover iterations (documented in the class) |
+| `QuantumLanguageModel` (+ `QueryLikelihoodModel` baseline) | Documents and queries as density matrices over the vocabulary, with projectors for co-occurring terms; ranking by von Neumann divergence | Document ranking, retrieval for assistants | Sordoni, Nie and Bengio, *SIGIR* (2013) |
+
+Measured (example 30, 10 seeds): QRL reaches the 10-step shortest path (10.0 steps per episode over the
+last 50 episodes) against 10.6 for ε-greedy Q-learning, but learns more slowly at the start without a
+step penalty (69 against 53 steps over the first 20 episodes).
 
 ```python
 from qlcog.problems import maxcut, knapsack, portfolio
