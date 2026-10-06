@@ -443,6 +443,7 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
 - `ctqw_probabilities(A, t, start=None)`: Occupation probabilities of a continuous-time quantum walk.
 - `degree_centrality(A)`: Normalised degree centrality.
 - `expectation_z(psi, q, n)`: Expectation of Pauli Z on one qubit.
+- `extract_patches(images, size=2, stride=2)`: Cut images into square patches.
 - `find_period(n, r, offset=0, shots=None, rng=None)`: Recover a period with the QFT.
 - `grover(n, marked, iterations=None)`: Grover search.
 - **class `GroverResult(probabilities: 'np.ndarray', iterations: 'int', marked: 'list', success: 'float', circuit: 'Circuit' = None, n: 'int' = 0) -> None`**: Result of :func:`grover`.
@@ -479,7 +480,13 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
   - `score(self, X, y)`: Accuracy on ``(X, y)``.
 - **class `QuantumKernelClustering(n_clusters=2, kernel='quantum', reps=1, scale=0.5, gamma=0.5, restarts=10, seed=0)`**: Spectral clustering on a kernel.
   - `fit_predict(self, X)`: Cluster the samples.
+- **class `QuanvolutionFilter(size=2, stride=2, layers=1, seed=0)`**: Fixed random quantum circuit applied to every image patch.
+  - `to_qiskit(self, patch, measure=True)`: Qiskit circuit for one patch.
+  - `transform(self, images)`: Apply the filter.
+- **class `RandomConvFilter(size=2, stride=2, channels=None, seed=0)`**: Classical baseline: random linear filters on the same patches, followed by :math:`\tanh`.
+  - `transform(self, images)`: Apply the filters.
 - `rbf_kernel(X1, X2=None, gamma=1.0)`: Classical Gaussian (RBF) kernel, the baseline for the quantum kernel.
+- `reinforce(policy, env, episodes, features, gamma=0.99, batch=5, seed=0)`: Train a policy with REINFORCE on an environment with the Gymnasium interface.
 - `reuploading_classifier_circuit(n_features, n_qubits, layers, reupload=True)`: Data re-uploading classifier circuit (Pérez-Salinas et al., Quantum 4, 226, 2020).
 - **class `VariationalClassifier(layers=3, n_qubits=None, reupload=True, l2=0.001, maxiter=200, seed=0)`**: Variational quantum classifier with data re-uploading.
   - `fit(self, X, y)`: Train the classifier.
@@ -487,6 +494,11 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
   - `predict_proba(self, X)`: Class probabilities.
   - `score(self, X, y)`: Accuracy.
   - `to_qiskit(self, x, measure=True)`: Circuit for one input sample, with the trained weights bound.
+- **class `VariationalPolicy(n_features, n_actions, layers=2, n_qubits=None, scale=1.0, lr=0.1, seed=0)`**: Softmax-free quantum policy: Born-rule action probabilities of a re-uploading circuit.
+  - `act(self, state)`: Sample an action.
+  - `probabilities(self, states)`: Action probabilities.
+  - `to_qiskit(self, state, measure=True)`: Qiskit circuit of the policy for one state.
+  - `update(self, states, actions, advantages)`: One policy-gradient step on a batch of (state, action, advantage).
 - **class `VariationalRegressor(layers=3, n_qubits=None, reupload=True, l2=0.001, maxiter=200, seed=0)`**: Variational (data re-uploading) regressor.
   - `fit(self, X, y)`: Train the regressor.
   - `predict(self, X)`: Predicted values.
@@ -505,6 +517,20 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
 
 Quantum-inspired models: classical algorithms that borrow quantum ideas. No quantum computer is used.
 
+- **class `AmplitudeExploration(n_states, n_actions, k=2.0, max_step=0.3, floor=0.02, seed=0)`**: Quantum-inspired exploration by action amplitudes (Born-rule sampling, TD-driven rotation).
+  - `choose(self, q, s, agent)`: Sample an action with probability :math:`|\psi_a|^2`.
+  - `end_episode(self)`: Nothing to decay: exploration fades as amplitudes concentrate.
+  - `update(self, s, a, td_error, q=None)`: Rotate the chosen action's amplitude by ``clip(k * advantage, ±max_step)``.
+- `apply_mlp(layers, X, activation=<ufunc 'tanh'>)`: Forward pass of a (possibly compressed) multilayer perceptron.
+- **class `Boltzmann(temperature=0.5, decay=0.99, min_temperature=0.01, seed=0)`**: Softmax (Boltzmann) exploration with a decaying temperature.
+  - `choose(self, q, s, agent)`: Sample from the softmax of the action values.
+  - `end_episode(self)`: Decay the temperature.
+- `compress_layers(layers, max_rank=8, d=3, min_size=256)`: Compress the weight matrices of a multilayer perceptron.
+- **class `EpsilonGreedy(epsilon=0.3, decay=0.99, min_epsilon=0.01, seed=0)`**: Random action with probability epsilon, otherwise greedy; epsilon decays per episode.
+  - `choose(self, q, s, agent)`: Choose an action from the value row ``q`` of state ``s``.
+  - `end_episode(self)`: Decay epsilon.
+  - `update(self, s, a, td_error, q=None)`: No exploration state to update.
+- `factorise(n, d)`: Split an integer into ``d`` factors that are as equal as possible.
 - **class `GridWorld(size=6, walls=frozenset({(2, 3), (1, 1), (3, 1), (4, 4)}), step_reward=0.0, max_steps=200)`**: Deterministic grid world.
   - `reset(self)`: Return to the start cell.
   - `shortest_path(self)`: Length of the shortest path from start to goal (breadth-first search).
@@ -536,11 +562,24 @@ Quantum-inspired models: classical algorithms that borrow quantum ideas. No quan
   - `fit(self, documents)`: Count terms in every document and in the collection.
   - `rank(self, query)`: Rank the documents.
   - `scores(self, query)`: Log-likelihood of the query under each smoothed document model.
+- `run_episodes(agent, env, episodes, state_fn=None, max_steps=1000, seed=0)`: Train an agent on a Gymnasium-style environment.
 - `simulated_annealing(qubo, sweeps=400, T0=2.0, T1=0.01, seed=0)`: Classical simulated annealing baseline (single-spin Metropolis on the same Ising model).
 - **class `SQA(qubo, replicas=16, sweeps=400, T=0.05, gamma0=3.0, gamma1=0.001, seed=0)`**: Simulated quantum annealing (path-integral Monte Carlo) for a QUBO.
   - `run(self)`: Run the annealing schedule.
+- **class `StateIndexer(capacity)`**: Map hashable observations (tuples, rounded arrays) to table rows on first sight.
+- **class `TabularAgent(n_states, n_actions, explorer, alpha=0.2, gamma=0.95)`**: Q-learning agent with a pluggable exploration strategy.
+  - `act(self, s)`: Choose an action in state s.
+  - `greedy(self, s)`: Greedy action.
+  - `update(self, s, a, r, s2, done)`: Q-learning update, then the explorer's update.
 - `tokenize(text)`: Split text into lower-case word tokens.
 - `train(agent, env, episodes=300)`: Run training episodes.
+- **class `TTMatrix(cores)`**: A matrix in tensor-train (MPO) format.
+  - `matvec(self, X)`: Multiply a batch of vectors without forming the dense matrix.
+  - `relative_error(self, W)`: Frobenius relative error against a dense matrix.
+  - `to_dense(self)`: Reconstruct the dense matrix.
+- **class `UCB(c=0.5, seed=0)`**: Upper-confidence-bound exploration: :math:`\arg\max_a Q(s,a) + c\sqrt{\ln N(s) / N(s,a)}`.
+  - `choose(self, q, s, agent)`: Untried actions first, then the highest upper bound.
+  - `end_episode(self)`: Nothing to decay.
 
 ## `quantum_mind.inspired.exploration`
 
@@ -566,6 +605,18 @@ Exploration strategies for tabular reinforcement learning, quantum-inspired and 
 - **class `UCB(c=0.5, seed=0)`**: Upper-confidence-bound exploration: :math:`\arg\max_a Q(s,a) + c\sqrt{\ln N(s) / N(s,a)}`.
   - `choose(self, q, s, agent)`: Untried actions first, then the highest upper bound.
   - `end_episode(self)`: Nothing to decay.
+
+## `quantum_mind.inspired.tensor_layers`
+
+Tensor-train (matrix product operator) compression of neural-network layers.
+
+- `apply_mlp(layers, X, activation=<ufunc 'tanh'>)`: Forward pass of a (possibly compressed) multilayer perceptron.
+- `compress_layers(layers, max_rank=8, d=3, min_size=256)`: Compress the weight matrices of a multilayer perceptron.
+- `factorise(n, d)`: Split an integer into ``d`` factors that are as equal as possible.
+- **class `TTMatrix(cores)`**: A matrix in tensor-train (MPO) format.
+  - `matvec(self, X)`: Multiply a batch of vectors without forming the dense matrix.
+  - `relative_error(self, W)`: Frobenius relative error against a dense matrix.
+  - `to_dense(self)`: Reconstruct the dense matrix.
 
 ## `quantum_mind.envs`
 

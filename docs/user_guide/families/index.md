@@ -17,6 +17,7 @@ references.
 | [game theory](game_theory.md) | Strategic choice with shared quantum resources | `EWLGame` | classical Nash equilibria |
 | [memory](memory.md) | Episodic overdistribution | `QuantumEpisodicModel` | additive (verbatim plus gist) |
 | [concepts](concepts.md) | Overextension in concept combination | `FockSpaceConceptModel` | product, minimum, weighted average |
+| [perception](perception.md) | Bistable perception (dwell times of ambiguous figures) | `QuantumZenoBistableModel` | Markov switching, gamma renewal |
 
 ```{toctree}
 :hidden:
@@ -32,4 +33,5 @@ similarity
 game_theory
 memory
 concepts
+perception
 ```

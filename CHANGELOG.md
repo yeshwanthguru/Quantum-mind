@@ -1,6 +1,8 @@
 # Changelog
 
-## 2.0.0 (unreleased)
+## 2.0.0 (6 October 2026)
+
+First release on PyPI.
 
 **New name: Quantum Mind.** The package is now installed with `pip install quantum-mind` and imported
 as `import quantum_mind` (previously `qlcog`); the repository is `quantum-mind`. Replace `qlcog` by
@@ -14,12 +16,17 @@ as `import quantum_mind` (previously `qlcog`); the repository is `quantum-mind`.
 - **Perception**: bistable-perception family (`families.perception`: quantum Zeno, Markov, gamma
   renewal) and multimodal fusion (`applications.fusion`: detector, speech and gaze adapters; Bayesian,
   Dempster-Shafer and quantum-like fusion).
-- **Learning**: Gymnasium environments with simulated people (`envs`) and exploration strategies for
-  tabular reinforcement learning (`inspired.exploration`).
+- **Learning**: Gymnasium environments with simulated people (`envs`), exploration strategies for
+  tabular reinforcement learning (`inspired.exploration`), a variational quantum policy trained with
+  REINFORCE (`quantum.policy`), tensor-train compression of network layers (`inspired.tensor_layers`)
+  and a quanvolutional image filter with a classical baseline (`quantum.quanvolution`; on 8 x 8 digits
+  it is less accurate than both the random classical filter and the raw pixels).
+- New optional extras: `rl` (Gymnasium) and `robotics` (Gymnasium and py_trees).
+- New logo and website/documentation branding.
 
 ## 1.5.0 (6 October 2026)
 
-First release on PyPI: `pip install qlcog`.
+Prepared for PyPI as `qlcog`; never uploaded. Superseded by 2.0.0 under the new name.
 
 - **Documentation site (Sphinx).** User guide, an example gallery with the output of every example,
   the executed notebooks and an API reference generated from the docstrings, with the

@@ -33,6 +33,7 @@ MODULES = [
     'quantum_mind.quantum',
     'quantum_mind.inspired',
     'quantum_mind.inspired.exploration',
+    'quantum_mind.inspired.tensor_layers',
     'quantum_mind.envs',
     'quantum_mind.problems',
     'quantum_mind.circuits',
