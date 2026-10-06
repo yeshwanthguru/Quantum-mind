@@ -5,4 +5,4 @@ circuit and the references. :data:`FAMILIES` lists them.
 """
 #: Names of the family subpackages.
 FAMILIES = ['order_effects', 'conjunction', 'interference', 'qlbn', 'dynamics', 'decision', 'contextuality', 'similarity',
-            'game_theory', 'memory', 'concepts']
+            'game_theory', 'memory', 'concepts', 'perception']
