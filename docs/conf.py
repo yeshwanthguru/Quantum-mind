@@ -127,8 +127,7 @@ html_theme_options = {
     'navigation_with_keys': False,
     'pygments_light_style': 'tango',
     'pygments_dark_style': 'github-dark',
-    'announcement': ('Version %s adds quantum games, memory and concept models, amplitude estimation, '
-                     'quantum walks and quantum-inspired reinforcement learning. '
+    'announcement': ('Version %s is on PyPI: <code>pip install qlcog</code>. '
                      '<a href="%sdocs/about/changelog.html">What changed</a>' % (version, SITE)),
     'footer_start': ['copyright'],
     'footer_end': ['sphinx-version'],

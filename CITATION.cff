@@ -1,4 +1,4 @@
-cff-version: 1.4.0
+cff-version: 1.5.0
 message: "If you use this software, please cite it as below, together with the original papers of the models used."
 title: "qlcog: quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a Bloch-sphere viewer"
 version: 1.3.0

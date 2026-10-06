@@ -21,5 +21,5 @@ Subpackage                Contents
 The most used functions are re-exported at the top level: :func:`fit`, :func:`compare`,
 :func:`recovery`, :class:`Model` and :class:`Param`.
 """
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 from .core import fit, compare, recovery, Model, Param   # noqa: F401

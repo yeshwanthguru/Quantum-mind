@@ -38,7 +38,7 @@
     <a class="btn" href="{{REPO}}">Source on GitHub</a>
     <a class="btn" href="docs/">Documentation</a>
   </div>
-  <pre class="install"><code>pip install "qlcog[all] @ git+{{REPO}}"</code></pre>
+  <pre class="install"><code>pip install "qlcog[all]"</code></pre>
   <p class="note">Version {{VERSION}} · Apache-2.0 · Python 3.10–3.12 · {{TESTS}} tests in CI · Qiskit, IBM Quantum, Amazon Braket</p>
 </div></section>
 
@@ -151,7 +151,7 @@ svc.query({'order': 'AB', 'ask_cost': 1.0, 'error_cost': 3.0})
 <section id="start"><div class="wrap">
   <h2>Get started</h2>
   <div class="grid2">
-    <div><pre><code>pip install "qlcog[all] @ git+{{REPO}}"
+    <div><pre><code>pip install "qlcog[all]"
 
 # quantum-like: is there an order effect?
 from qlcog.core import compare

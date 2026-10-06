@@ -1,14 +1,15 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "qlcog"
-version = "1.4.0"
+version = "1.5.0"
 description = "Quantum-like, quantum and quantum-inspired models with classical baselines, Qiskit circuits and a 3D Bloch-sphere viewer"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 authors = [
   {name = "Yeshwanth Guru", email = "yeshwanth445@gmail.com"},
 ]
@@ -20,7 +21,10 @@ keywords = ["quantum cognition", "quantum-like models", "quantum machine learnin
             "tensor networks", "Bloch sphere", "visualization", "cognitive modelling"]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
   "Topic :: Scientific/Engineering :: Physics",
   "Topic :: Scientific/Engineering :: Human Machine Interfaces",
@@ -32,10 +36,11 @@ classifiers = [
 dependencies = ["numpy>=1.24", "scipy>=1.10"]
 
 [project.urls]
-Homepage = "https://github.com/yeshwanthguru/quantum-cognition-robotics"
+Homepage = "https://yeshwanthguru.github.io/quantum-cognition-robotics/"
+Source = "https://github.com/yeshwanthguru/quantum-cognition-robotics"
 Issues = "https://github.com/yeshwanthguru/quantum-cognition-robotics/issues"
 Documentation = "https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/"
-Changelog = "https://github.com/yeshwanthguru/quantum-cognition-robotics/blob/main/CHANGELOG.md"
+Changelog = "https://yeshwanthguru.github.io/quantum-cognition-robotics/docs/about/changelog.html"
 
 [project.optional-dependencies]
 qiskit = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40"]

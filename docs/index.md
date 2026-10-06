@@ -23,7 +23,7 @@ quantum-inspired optimisers and learners; and shows every qubit moving on a 3D B
 ```
 
 ```bash
-pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"
+pip install "qlcog[all]"
 ```
 
 ::::{grid} 1 2 2 4

@@ -11,5 +11,4 @@ def require(module, extra=None):
         return importlib.import_module(module)
     except ImportError as e:
         extra = extra or _EXTRA.get(module.split('.')[0], 'all')
-        raise ImportError('%s is needed for this feature: pip install "qlcog[%s] @ '
-                          'git+https://github.com/yeshwanthguru/quantum-cognition-robotics"' % (module, extra)) from e
+        raise ImportError('%s is needed for this feature: pip install "qlcog[%s]"' % (module, extra)) from e

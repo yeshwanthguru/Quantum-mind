@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.5.0 (6 October 2026)
+
+First release on PyPI: `pip install qlcog`.
 
 - **Documentation site (Sphinx).** User guide, an example gallery with the output of every example,
   the executed notebooks and an API reference generated from the docstrings, with the
@@ -11,6 +13,9 @@
 - **Examples** are split into explained steps (`# %%` blocks) and locate the package through
   `sys.argv[0]`, so they run both as scripts and in the gallery.
 - README and website: emoji removed, wording made plainer, stale counts updated.
+- **Packaging.** SPDX licence metadata (PEP 639), Python-version classifiers, project URLs for the
+  website and documentation; README links are absolute so they work on PyPI; install instructions use
+  `pip install qlcog`. The release workflow checks that the tag matches the package version.
 
 ## 1.4.0 (6 October 2026)
 

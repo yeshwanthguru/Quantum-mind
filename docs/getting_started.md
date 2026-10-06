@@ -3,8 +3,9 @@
 ## Install
 
 ```bash
-pip install "qlcog @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"          # core: numpy, scipy
-pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"     # everything
+pip install qlcog              # core: numpy, scipy
+pip install "qlcog[all]"       # everything (Qiskit, cloud back ends, viewer)
+pip install "qlcog[all] @ git+https://github.com/yeshwanthguru/quantum-cognition-robotics"   # latest development version
 ```
 
 | Extra | Adds | For |
