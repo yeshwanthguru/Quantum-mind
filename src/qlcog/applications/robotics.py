@@ -260,6 +260,60 @@ def ask_or_act(p_success, uncertainty=None, ask_cost=1.0, error_cost=5.0, max_di
     return {'action': action, 'expected_cost_act': cost_act, 'reason': reason}
 
 
+#: Default cost of a wrong action by hazard level (in units of the cost of asking once).
+HAZARD_COSTS = {'low': 2.0, 'medium': 10.0, 'high': 100.0, 'critical': 1000.0}
+
+
+def risk_aware_ask_or_act(p_success, hazard='medium', ask_cost=1.0, p_lower=None, uncertainty=None,
+                          max_disagreement_bits=0.05, max_risk=None):
+    """Ask-or-act rule that scales with the hazard of the action and uses a lower confidence bound.
+
+    Handing over a cup and handing over a knife need different thresholds. The cost of a wrong action is
+    taken from the hazard level, and when a lower bound on the success probability is available (for
+    example from :class:`~qlcog.applications.calibration.CalibrationMonitor` or a conformal predictor)
+    the decision uses it instead of the point estimate, so an unreliable confidence makes the robot ask.
+
+    Parameters
+    ----------
+    p_success : float
+        Estimated probability that acting now is right.
+    hazard : str or float, optional
+        A key of :data:`HAZARD_COSTS` (``'low'``, ``'medium'``, ``'high'``, ``'critical'``) or a numeric
+        cost of a wrong action.
+    ask_cost : float, optional
+        Cost of asking.
+    p_lower : float, optional
+        Lower confidence bound on the success probability; used in place of ``p_success`` when given.
+    uncertainty : dict, optional
+        Output of :meth:`HumanModelEnsemble.predict`; disagreement between human models forces asking.
+    max_disagreement_bits : float, optional
+        Disagreement threshold.
+    max_risk : float, optional
+        Hard limit on the failure probability: above it the robot asks whatever the costs.
+
+    Returns
+    -------
+    dict
+        The fields of :func:`ask_or_act`, plus ``hazard_cost`` and ``p_used``.
+
+    Examples
+    --------
+    >>> from qlcog.applications.robotics import risk_aware_ask_or_act
+    >>> risk_aware_ask_or_act(0.95, 'low')['action']          # cup: act
+    'act'
+    >>> risk_aware_ask_or_act(0.95, 'high')['action']         # knife: ask
+    'ask'
+    """
+    cost = HAZARD_COSTS[hazard] if isinstance(hazard, str) else float(hazard)
+    p = float(p_success if p_lower is None else min(p_success, p_lower))
+    d = ask_or_act(p, uncertainty, ask_cost, cost, max_disagreement_bits)
+    if max_risk is not None and 1 - p > max_risk and d['action'] == 'act':
+        d = {'action': 'ask', 'expected_cost_act': d['expected_cost_act'],
+             'reason': 'failure risk %.3f above the limit %.3f' % (1 - p, max_risk)}
+    d.update(hazard_cost=cost, p_used=p)
+    return d
+
+
 class HumanModelService:
     """Middleware-independent human-model service a robot can run next to its planner.
 
