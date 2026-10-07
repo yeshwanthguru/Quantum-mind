@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.1 (7 October 2026)
 
 Documentation:
 
@@ -36,6 +36,9 @@ Documentation:
 
 Fixes:
 
+- Website and documentation links use the repository's exact name, `Quantum-mind`: GitHub Pages
+  addresses are case-sensitive, so the lowercase links in 2.0.0 (including those on the PyPI page)
+  returned 404.
 - `SplitConformalClassifier` used one order statistic above the conformal quantile
   ceil((n+1)(1-alpha)), giving slightly larger sets than needed; it now uses the exact rank.
 - The package docstring's model table was malformed; it now lists all twelve families.
@@ -53,12 +56,6 @@ Website:
   instead of twice.
 - PyPI download counts (per month and in total) are shown on the website, the documentation home and
   the README.
-
-## 2.0.1 (6 October 2026)
-
-- Website and documentation links use the repository's exact name, `Quantum-mind`: GitHub Pages
-  addresses are case-sensitive, so the lowercase links in 2.0.0 (including those on the PyPI page)
-  returned 404.
 
 ## 2.0.0 (6 October 2026)
 
