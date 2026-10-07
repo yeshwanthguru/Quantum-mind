@@ -14,6 +14,9 @@ Documentation:
   policy, quanvolution against a random filter, TT compression without retraining).
 - **Model atlas**: a block diagram for every model (64 diagrams), with its baselines, API, tutorial and
   a reference.
+- **Mathematics**: the equations of every model as the code computes them (core, quantum-like
+  families, decision layer, perception and fusion, learning, quantum, quantum-inspired), with the
+  implementing class or function named next to each equation; linked from every atlas page.
 - `quantum_mind.viz.use_mpl_style()` applies the documentation's colour theme to Matplotlib figures.
 - CI executes the tutorials.
 

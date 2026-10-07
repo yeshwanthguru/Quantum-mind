@@ -589,6 +589,10 @@ PAGES['infrastructure'] = ('Problems, circuits and the viewer',
 
 ORDER = ['core', 'quantum_like', 'robotics', 'perception', 'learning', 'quantum', 'inspired', 'infrastructure']
 
+#: Mathematics page for each atlas page.
+MATH = {'core': 'core', 'quantum_like': 'quantum_like', 'robotics': 'robotics', 'perception': 'perception',
+        'learning': 'learning', 'quantum': 'quantum', 'inspired': 'inspired', 'infrastructure': 'inspired'}
+
 
 def _role(path):
     """Cross-reference role for an API path (class or function)."""
@@ -607,7 +611,7 @@ def write():
     total = 0
     for key in ORDER:
         title, intro, models = PAGES[key]
-        lines = ['# ' + title, '', intro, '',
+        lines = ['# ' + title, '', intro, 'The equations are on the {doc}`mathematics page <../math/%s>`.' % MATH[key], '',
                  'Legend: blue inputs, violet internal steps, green outputs, coral people, dashed grey '
                  'classical baselines.', '']
         for m in models:

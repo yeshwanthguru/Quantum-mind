@@ -123,7 +123,7 @@ html_theme_options = {
         {'name': 'Playground', 'url': SITE + '#playground-section', 'icon': 'fa-solid fa-globe'},
     ],
     'navbar_align': 'left',
-    'header_links_before_dropdown': 7,
+    'header_links_before_dropdown': 8,
     'navbar_end': ['theme-switcher', 'navbar-icon-links'],
     'secondary_sidebar_items': ['page-toc', 'edit-this-page'],
     'use_edit_page_button': True,

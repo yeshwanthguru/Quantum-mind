@@ -224,6 +224,13 @@ Fifteen step-by-step tutorials, from the introduction to every model, with real 
 A block diagram for every model: inputs, internals, outputs, baselines and references.
 :::
 
+:::{grid-item-card} {fas}`square-root-variable` Mathematics
+:link: math/index
+:link-type: doc
+
+The equations of every model, as the code computes them, from the Born rule to QAOA.
+:::
+
 :::{grid-item-card} {fas}`book` User guide
 :link: user_guide/index
 :link-type: doc
@@ -269,6 +276,7 @@ learn/index
 tutorials/index
 user_guide/index
 atlas/index
+math/index
 auto_examples/index
 notebooks/index
 api/index
