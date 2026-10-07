@@ -15,7 +15,7 @@ MODEL_MODULES = (['quantum_mind.families.%s' % f for f in ('order_effects', 'con
                                                            'dynamics', 'decision', 'contextuality', 'similarity',
                                                            'game_theory', 'memory', 'concepts', 'perception')]
                  + ['quantum_mind.applications.%s' % a for a in ('robotics', 'intent', 'calibration', 'orchestration',
-                                                                 'questioning', 'personalisation', 'handover', 'fusion')]
+                                                                 'questioning', 'personalisation', 'handover', 'fusion', 'allocation')]
                  + ['quantum_mind.envs', 'quantum_mind.quantum', 'quantum_mind.inspired', 'quantum_mind.problems'])
 
 #: Public classes that are results, settings or helpers rather than models.
@@ -73,3 +73,21 @@ def test_foundations_examples_run():
         for block in re.findall(r"```python\n(.*?)```", page.read_text(), re.S):
             with contextlib.redirect_stdout(io.StringIO()):
                 exec(compile(block, str(page), 'exec'), ns)
+
+
+def test_every_atlas_entry_has_an_origin_label():
+    titles = [m['title'] for _, _, models in atlas.PAGES.values() for m in models]
+    assert sorted(titles) == sorted(atlas.ORIGIN), 'ORIGIN in docs/_ext/atlas.py must list every atlas entry once'
+    for title in titles:
+        kind, adds = atlas.ORIGIN[title]
+        assert kind in atlas.LABELS
+        assert (kind == 'extended') == bool(adds), title      # only extended entries list additions
+
+
+def test_every_atlas_entry_has_a_category():
+    titles = [m['title'] for _, _, models in atlas.PAGES.values() for m in models]
+    assert sorted(titles) == sorted(atlas.CATEGORY), 'CATEGORY in docs/_ext/atlas.py must list every atlas entry once'
+    assert set(atlas.CATEGORY.values()) <= set(atlas.CATEGORIES)
+    pages = {key: [m['title'] for m in models] for key, (_, _, models) in atlas.PAGES.items()}
+    assert all(atlas.CATEGORY[t] == 'quantum' for t in pages['quantum'])
+    assert all(atlas.CATEGORY[t] == 'quantum-inspired' for t in pages['inspired'])

@@ -13,7 +13,10 @@ personalise its human model from the first few interactions without over-fitting
 * :class:`PopulationPrior`: mean and covariance of the free parameters, estimated from per-person fits
   (empirical Bayes) or set by hand.
 * :func:`fit_map`: MAP fit of one model class to one person's data.
-* :class:`PersonalisedHumanModel`: keeps each person's answer counts and their personalised model.
+* :class:`PersonalisedHumanModel`: keeps each person's answer counts and their personalised model,
+  either as a MAP point estimate or, with ``method='online'``, as a full posterior updated after every
+  answer (:class:`~quantum_mind.core.online.OnlinePersonModel` started from the population prior), so
+  the robot also knows how sure it is about this person.
 
 Examples
 --------
@@ -31,6 +34,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.optimize import minimize
 from ..core.fit import FitResult, fit, _n_obs
+from ..core.online import OnlinePersonModel
 
 __all__ = ['PopulationPrior', 'fit_map', 'PersonalisedHumanModel']
 
@@ -80,6 +84,27 @@ class PopulationPrior:
         X = np.array([f.model.to_vector() for f in fits])
         cov = np.cov(X.T) if len(X) > 1 else np.zeros((X.shape[1], X.shape[1]))
         return cls(model_cls, X.mean(0), np.atleast_2d(cov) + shrink * np.eye(X.shape[1]))
+
+    def online(self, n_particles=500, design=None, rng=None, **options):
+        """A per-person posterior that starts from this prior.
+
+        Parameters
+        ----------
+        n_particles : int, optional
+            Number of parameter samples.
+        design : iterable, optional
+            Design passed to ``predict``.
+        rng : numpy.random.Generator, optional
+            Random number generator.
+        **options
+            Structural options of the model.
+
+        Returns
+        -------
+        OnlinePersonModel
+        """
+        return OnlinePersonModel(self.model_cls, prior=self.mean, prior_cov=self.cov, n_particles=n_particles,
+                                 design=design, rng=rng, **options)
 
     def neg_log_prior(self, x):
         """Negative log prior density, up to a constant.
@@ -151,6 +176,11 @@ class PersonalisedHumanModel:
         Conditions.
     outcomes : int, optional
         Number of outcome cells per condition (4 for two yes/no questions).
+    method : {'map', 'online'}, optional
+        ``'map'`` refits a MAP estimate after every answer; ``'online'`` keeps a particle posterior
+        per person (faster per answer, and gives :meth:`credible_interval`).
+    n_particles : int, optional
+        Particles per person for ``method='online'``.
 
     Examples
     --------
@@ -161,10 +191,14 @@ class PersonalisedHumanModel:
 
     CELLS = {(1, 1): 0, (1, 0): 1, (0, 1): 2, (0, 0): 3}
 
-    def __init__(self, model_cls, prior, design=None, outcomes=4):
+    def __init__(self, model_cls, prior, design=None, outcomes=4, method='map', n_particles=300):
+        if method not in ('map', 'online'):
+            raise ValueError("method must be 'map' or 'online'")
         self.model_cls, self.prior, self.design, self.outcomes = model_cls, prior, design, outcomes
+        self.method, self.n_particles = method, n_particles
         self.counts = {}
         self.models = {}
+        self.posteriors = {}
 
     def add(self, person, condition, answers):
         """Record one answer pair and refit that person.
@@ -186,6 +220,13 @@ class PersonalisedHumanModel:
         c = self.counts.setdefault(person, {})
         cell = self.CELLS[tuple(int(a) for a in answers)] if np.ndim(answers) else int(answers)
         c.setdefault(condition, np.zeros(self.outcomes, int))[cell] += 1
+        if self.method == 'online':
+            post = self.posteriors.get(person)
+            if post is None:
+                post = self.posteriors[person] = self.prior.online(self.n_particles, self.design,
+                                                                    np.random.default_rng(len(self.posteriors)))
+            post.update(condition, cell)
+            return post
         self.models[person] = fit_map(self.model_cls, c, self.prior, self.design, restarts=2).model
         return self.models[person]
 
@@ -216,7 +257,32 @@ class PersonalisedHumanModel:
         -------
         dict
         """
+        if person in self.posteriors:
+            return self.posteriors[person].predict()
         return self.model(person).predict(design if design is not None else self.design)
+
+    def credible_interval(self, person, name, level=0.9):
+        """Posterior interval of one of a person's parameters (``method='online'`` only).
+
+        Parameters
+        ----------
+        person : hashable
+        name : str
+            Parameter name.
+        level : float, optional
+
+        Returns
+        -------
+        tuple of float
+
+        Raises
+        ------
+        ValueError
+            If the model keeps MAP estimates, or the person has not answered yet.
+        """
+        if person not in self.posteriors:
+            raise ValueError('no posterior for %r (use method=\'online\' and add answers first)' % (person,))
+        return self.posteriors[person].credible_interval(name, level)
 
 
 def population_prior(model_cls, data_by_person, design=None, restarts=4, rng=None):

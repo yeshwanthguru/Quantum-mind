@@ -8,19 +8,25 @@ paragraph of the docstring. Full docstrings: `help(quantum_mind.<module>.<name>)
 Core layer: linear algebra of quantum-like models, the Model base class, fitting and comparison.
 
 - `angles_to_unit(angles)`: Unit vector from hyperspherical angles.
+- `bootstrap(result, data, design=None, n_boot=200, restarts=2, rng=None)`: Parametric bootstrap of a fitted model.
+- **class `BootstrapResult(fit: 'FitResult', samples: 'dict', predictions: 'dict') -> None`**: Refits of a model to data simulated from its own fit, returned by :func:`bootstrap`.
+  - `ci(self, level=0.95)`: Percentile intervals of the parameters.
+  - `predictive_interval(self, level=0.95)`: Percentile intervals of the predicted probabilities (or values) per condition.
+  - `se(self)`: Bootstrap standard errors of the parameters.
 - `compare(candidates, data, design=None, restarts=8, rng=None, criterion='bic')`: Fit several model classes to the same data and rank them.
 - `compare_individuals(candidates, data_by_person, design=None, restarts=4, rng=None, criterion='bic')`: Fit every candidate to every person and compare them.
 - `complement(P)`: Projector onto the orthogonal complement, :math:`I - P`.
 - `density(psi)`: Density matrix of a pure state.
 - `dephase(rho, strength, basis_projectors=None)`: Partial dephasing channel.
 - `evolve_density(rho, superop, t)`: Evolve a density matrix under a Lindblad generator.
-- `fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', **options)`: Fit a model class to data by multi-start optimisation.
+- `fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', x0=None, **options)`: Fit a model class to data by multi-start optimisation.
 - `fit_individuals(model_cls, data_by_person, design=None, restarts=4, rng=None, **fit_kwargs)`: Fit a model class separately to each person's data.
 - **class `FitResult(model: 'object', loss: 'float', loglik: 'float', k: 'int', n: 'int', options: 'dict' = <factory>) -> None`**: Result of :func:`fit`.
   - `summary(self)`: Summary of the fit.
 - `givens_frame(angles, d)`: Orthonormal frame built from Givens rotations.
 - **class `IndividualFits(model_name: 'str', results: 'dict') -> None`**: Per-person fits of one model class, returned by :func:`fit_individuals`.
   - `parameters(self)`: Fitted parameter values across people.
+- `information_gain(models, condition, design=None, weights=None)`: Expected information about the model identity from one observation in a condition.
 - `is_projector(P, tol=1e-09)`: Test whether a matrix is an orthogonal projector.
 - `kl(p, q)`: Kullback-Leibler divergence.
 - `lindblad_superoperator(H, jumps, rates)`: Lindblad generator as a matrix acting on the row-stacked density matrix.
@@ -31,12 +37,20 @@ Core layer: linear algebra of quantum-like models, the Model base class, fitting
   - `sample(self, design, n, rng=None)`: Simulate outcome counts from the model.
   - `sse(self, data, design)`: Sum of squared errors between predicted and observed values.
   - `to_vector(self)`: Unconstrained vector of the fitted parameters.
+- `model_posterior(models, data, design=None, prior=None)`: Posterior probabilities of the models after observing outcome counts.
 - `normalize(v)`: Scale a vector to unit length.
+- **class `OnlinePersonModel(model_cls, prior=None, prior_scale=1.0, n_particles=500, design=None, resample_below=0.5, move_steps=3, rng=None, prior_cov=None, **options)`**: Posterior over one person's parameters, updated one observed outcome at a time.
+  - `credible_interval(self, name, level=0.9)`: Weighted quantile interval of one parameter.
+  - `observe(self, data)`: Condition on a batch of outcome counts.
+  - `posterior_mean(self)`: Posterior mean of the parameters on their natural scale.
+  - `predict(self, design=None)`: Posterior predictive distribution for every condition.
+  - `update(self, condition, outcome, count=1)`: Condition on an observed outcome.
 - **class `Param(name: 'str', kind: 'str' = 'real', default: 'float' = 0.0, lo: 'float' = 0.0, hi: 'float' = 1.0) -> None`**: Declaration of one model parameter.
   - `from_free(self, x)`: Inverse of :meth:`to_free`.
   - `random_free(self, rng)`: Random unconstrained starting value for multi-start fitting.
   - `to_free(self, v)`: Map a parameter value to the unconstrained real line used by the optimiser.
 - `projector(basis)`: Orthogonal projector onto the span of a set of vectors.
+- `rank_conditions(models, conditions, design=None, weights=None)`: Rank candidate conditions by :func:`information_gain`.
 - `recovery(generators, candidates, design, n, reps=20, rng=None, criterion='bic', restarts=8)`: Model-recovery study.
 - `sequence_probabilities(psi, projectors, order)`: Probabilities of every yes/no answer sequence to a sequence of questions.
 - `tvd(p, q)`: Total variation distance.
@@ -261,7 +275,7 @@ Human-robot interaction: order-aware human models for robots that ask questions 
 - `compare(candidates, data, design=None, restarts=8, rng=None, criterion='bic')`: Fit several model classes to the same data and rank them.
 - `domain_models(domain)`: Simulated populations for one domain.
 - `estimate_unprimed_rates(design, generator, n, rng=None, model=None, probe=0.1)`: Estimate the unprimed "yes" rates from people who answer both questions.
-- `fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', **options)`: Fit a model class to data by multi-start optimisation.
+- `fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', x0=None, **options)`: Fit a model class to data by multi-start optimisation.
 - `HAZARD_COSTS` (constant)
 - `HRI_DOMAINS` (constant)
 - **class `HumanModelEnsemble(candidates=None, design=None)`**: Competing human models weighted by evidence.
@@ -309,6 +323,11 @@ Intent resolution from ambiguous commands and context cues (robots, assistants, 
 
 Calibration of confidence signals: measure it, correct it, and bound it.
 
+- **class `AdaptiveConformalSets(alpha=0.1, gamma=0.01, calibration_scores=None)`**: Prediction sets for a person's next answer that keep their coverage while the person changes.
+  - `bound(self)`: float: the guaranteed bound on ``|miscoverage - alpha|`` after the answers so far.
+  - `predict_set(self, prob)`: Answers in the prediction set.
+  - `should_ask(self, prob)`: bool: True when more than one answer is in the set.
+  - `update(self, prob, answer)`: Record the observed answer and correct the working level.
 - `brier_score(prob, outcome)`: Brier score (mean squared error of probabilities).
 - **class `CalibrationMonitor(bins=10, alpha=0.05, min_count=10)`**: Online calibration check of one module, with a guaranteed lower bound on its success rate.
   - `ece(self)`: Expected calibration error of the outcomes recorded so far (bin centres as confidences).
@@ -374,13 +393,15 @@ Adaptive questioning: which question a robot should ask next, and when to stop a
 Personalised human models: start from the population, adapt to each person.
 
 - `fit_map(model_cls, data, prior, design=None, restarts=4, rng=None, **options)`: Maximum a posteriori fit of one person's data under a population prior.
-- **class `PersonalisedHumanModel(model_cls, prior, design=None, outcomes=4)`**: Per-person human models with partial pooling.
+- **class `PersonalisedHumanModel(model_cls, prior, design=None, outcomes=4, method='map', n_particles=300)`**: Per-person human models with partial pooling.
   - `add(self, person, condition, answers)`: Record one answer pair and refit that person.
+  - `credible_interval(self, person, name, level=0.9)`: Posterior interval of one of a person's parameters (``method='online'`` only).
   - `model(self, person)`: The person's model (the population mean model for a new person).
   - `predict(self, person, design=None)`: Predicted answer distribution for one person.
 - `population_prior(model_cls, data_by_person, design=None, restarts=4, rng=None)`: Convenience: fit every person by maximum likelihood and build the empirical-Bayes prior.
 - **class `PopulationPrior(model_cls, mean, cov)`**: Gaussian prior on a model's free (unconstrained) parameters.
   - `neg_log_prior(self, x)`: Negative log prior density, up to a constant.
+  - `online(self, n_particles=500, design=None, rng=None, **options)`: A per-person posterior that starts from this prior.
 
 ## `quantum_mind.applications.handover`
 
@@ -622,14 +643,15 @@ Tensor-train (matrix product operator) compression of neural-network layers.
 
 Reinforcement-learning environments with simulated people (Gymnasium API).
 
-- **class `ClarificationEnv(model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6)`**: Resolve an ambiguous request by asking questions, then act.
+- **class `ClarificationEnv(model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6, people=None)`**: Resolve an ambiguous request by asking questions, then act.
   - `reset(self, seed=None, options=None)`: Start an episode with a new hidden intent.
   - `step(self, action)`: Ask a question or act.
 - **class `GridWorldEnv(**kwargs)`**: The grid world of :class:`quantum_mind.inspired.rl.GridWorld` with the Gymnasium interface.
   - `reset(self, seed=None, options=None)`: Return to the start cell.
   - `step(self, action)`: Move one cell.
 - `register_envs()`: Register the environments with Gymnasium.
-- **class `TrustHandoverEnv(model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5)`**: Hand objects to a simulated person whose trust follows the trust qubit.
+- `sample_people(source, n, rng=None)`: Draw simulated people whose parameters reflect what is known, and not known, about real people.
+- **class `TrustHandoverEnv(model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5, people=None)`**: Hand objects to a simulated person whose trust follows the trust qubit.
   - `reset(self, seed=None, options=None)`: Start an episode at the model's initial trust.
   - `step(self, action)`: Take one action.
 

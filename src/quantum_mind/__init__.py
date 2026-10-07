@@ -22,4 +22,4 @@ The most used functions are re-exported at the top level: :func:`fit`, :func:`co
 :func:`recovery`, :class:`Model` and :class:`Param`.
 """
 __version__ = '2.0.1'
-from .core import fit, compare, recovery, Model, Param   # noqa: F401
+from .core import fit, compare, recovery, Model, Param, bootstrap, OnlinePersonModel   # noqa: F401

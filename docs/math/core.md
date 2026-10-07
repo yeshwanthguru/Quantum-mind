@@ -120,3 +120,61 @@ $\sum_i \mathrm{BIC}_i$ (each person has their own parameters), compared with th
 $\mathrm{KL}(p\Vert q) = \sum_i p_i\log(p_i/q_i)$ and $\mathrm{TVD}(p, q) = \tfrac12\sum_i\lvert p_i - q_i\rvert$.
 
 Reference: Burnham & Anderson (2002); Busemeyer & Bruza (2024), chapters 2-3.
+
+## Extensions for every model
+
+These three tools work with every multinomial model in the library (the bootstrap also with
+least-squares models). They are what Quantum Mind adds to the published models: the papers report
+point estimates fitted once to a group, while a robot needs uncertainty, per-person adaptation and a
+way to choose its next question.
+
+**Parametric bootstrap** ({func}`~quantum_mind.core.uncertainty.bootstrap`). From the fit
+$\hat\theta$, simulate $b = 1, \dots, B$ data sets with the observed totals $n_c$,
+
+$$
+\tilde y^{(b)}_c \sim \mathrm{Multinomial}\bigl(n_c,\; p_c(\hat\theta)\bigr)
+\quad\text{or}\quad
+\tilde y^{(b)}_c = \hat y_c + \varepsilon,\ \varepsilon \sim \mathcal N\bigl(0, \mathrm{SSE}/n\bigr),
+$$
+
+refit each to get $\hat\theta^{(b)}$, and report the percentile interval
+$\bigl[q_{\alpha/2}, q_{1-\alpha/2}\bigr]$ of $\{\hat\theta^{(b)}\}$ for each parameter and of
+$\{p_c(\hat\theta^{(b)})\}$ for each predicted probability.
+
+**Online per-person model** ({class}`~quantum_mind.core.online.OnlinePersonModel`). Particles
+$x_i \sim \mathcal N(x_0, \Sigma_0)$ on the unconstrained scale ($\Sigma_0 = s^2 I$ or a population covariance), $i = 1, \dots, N$, with $x_0$ the
+population estimate. After outcome $k$ in condition $c$,
+
+$$
+\log w_i \leftarrow \log w_i + \log p_{c,k}(x_i), \qquad
+\mathrm{ESS} = \Bigl(\sum_i \bar w_i^2\Bigr)^{-1},
+$$
+
+with $\bar w$ the normalised weights. When $\mathrm{ESS} < \tfrac12 N$, the particles are resampled
+systematically and each is moved by Metropolis-Hastings steps with a Gaussian random-walk proposal
+$x' = x_i + \mathcal N\bigl(0, \tfrac{2.38^2}{k} V\bigr)$ ($V$ the particle covariance, $k$ the number of
+parameters), accepted with probability $\min\{1, \pi(x')/\pi(x_i)\}$ where
+$\log\pi(x) = -\tfrac12 (x - x_0)^T \Sigma_0^{-1} (x - x_0) + \sum_c\sum_k y_{c,k}\log p_{c,k}(x)$ is the
+log posterior given every answer so far. These moves leave the posterior unchanged and restore the
+diversity that resampling removes (resample-move). Predictions are posterior predictive,
+$\hat p_c = \sum_i \bar w_i\, p_c(x_i)$.
+
+**Choosing the most informative condition** ({func}`~quantum_mind.core.design.information_gain`).
+For models $m$ with probabilities $w_m$, one observation in condition $c$ carries
+
+$$
+I(c) = H\Bigl(\sum_m w_m\, p_m(c)\Bigr) - \sum_m w_m\, H\bigl(p_m(c)\bigr)
+\quad\text{bits},
+\qquad 0 \le I(c) \le \log_2 M,
+$$
+
+the mutual information between the model identity and the outcome (the weighted Jensen-Shannon
+divergence; with BIC weights it equals the ensemble disagreement of
+{class}`~quantum_mind.applications.robotics.HumanModelEnsemble`). After observing counts $y$, the
+model probabilities become $w_m \propto w_m \prod_c \prod_k p_{m,c,k}^{\,y_{c,k}}$
+({func}`~quantum_mind.core.design.model_posterior`).
+
+References: Efron, B., & Tibshirani, R. J. (1993). *An Introduction to the Bootstrap*. Chapman & Hall.
+Chopin, N. (2002). A sequential
+particle filter method for static models. *Biometrika*, 89(3), 539-551. Myung, J. I., & Pitt, M. A.
+(2009). Optimal experimental design for model discrimination. *Psychological Review*, 116(3), 499-518.

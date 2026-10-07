@@ -80,7 +80,7 @@ def _n_obs(model_cls, data):
     return int(sum(np.sum(v) for v in data.values()))
 
 
-def fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', **options):
+def fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, method='Nelder-Mead', x0=None, **options):
     """Fit a model class to data by multi-start optimisation.
 
     Parameters
@@ -100,6 +100,10 @@ def fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, met
         the best one kept.
     method : str, optional
         :func:`scipy.optimize.minimize` method.
+    x0 : array_like, optional
+        Unconstrained starting point for the first restart of every structure (the other restarts
+        start at random). :func:`~quantum_mind.core.uncertainty.bootstrap` uses it to start each refit
+        at the original estimate.
     **options
         Fixed options passed to the model constructor.
 
@@ -118,12 +122,14 @@ def fit(model_cls, data, design=None, restarts=8, rng=None, structures=None, met
             m = model_cls.from_vector(x, **opts)
             return m.sse(data, design) if model_cls.LOSS == 'sse' else -m.loglik(data, design)
 
-        for _ in range(restarts):
-            x0 = np.array([p.random_free(rng) for p in free])
-            if len(x0) == 0:                     # nothing to fit: evaluate once
-                r_fun, r_x = objective(x0), x0
+        for i in range(restarts):
+            start = np.array([p.random_free(rng) for p in free])
+            if i == 0 and x0 is not None:        # caller's starting point (random draw kept for reproducibility)
+                start = np.asarray(x0, float)
+            if len(start) == 0:                  # nothing to fit: evaluate once
+                r_fun, r_x = objective(start), start
             else:
-                r = minimize(objective, x0, method=method, options=dict(maxiter=6000, xatol=1e-8, fatol=1e-10))
+                r = minimize(objective, start, method=method, options=dict(maxiter=6000, xatol=1e-8, fatol=1e-10))
                 r_fun, r_x = r.fun, r.x
             if best is None or r_fun < best[0]:
                 best = (r_fun, r_x, opts)

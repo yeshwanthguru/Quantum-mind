@@ -37,7 +37,7 @@ from scipy.stats import beta
 
 __all__ = ['reliability_curve', 'expected_calibration_error', 'max_calibration_error', 'brier_score',
            'PlattScaling', 'TemperatureScaling', 'IsotonicCalibration', 'SplitConformalClassifier',
-           'clopper_pearson', 'CalibrationMonitor']
+           'clopper_pearson', 'CalibrationMonitor', 'AdaptiveConformalSets']
 
 
 def _binary_inputs(conf, outcome):
@@ -475,3 +475,115 @@ class CalibrationMonitor:
             return 0.0
         centres = (np.arange(self.bins) + 0.5) / self.bins
         return float(np.sum(self.n[ok] * np.abs(self.k[ok] / self.n[ok] - centres[ok])) / self.n.sum())
+
+
+class AdaptiveConformalSets:
+    """Prediction sets for a person's next answer that keep their coverage while the person changes.
+
+    Split conformal prediction (:class:`SplitConformalClassifier`) assumes the calibration answers and
+    the new answer are exchangeable. Within one interaction they are not: trust, attention and the
+    person's view of the task drift. Adaptive conformal inference (Gibbs and Candès, 2021) keeps a
+    running miscoverage level :math:`\\alpha_t` and corrects it after every answer,
+
+    .. math:: \\alpha_{t+1} = \\alpha_t + \\gamma\\,(\\alpha - \\mathrm{err}_t),
+
+    where :math:`\\mathrm{err}_t = 1` if the answer fell outside the set. Whatever the sequence of
+    answers, the long-run miscoverage satisfies
+
+    .. math:: \\Bigl|\\frac1T \\sum_{t=1}^T \\mathrm{err}_t - \\alpha\\Bigr| \\le
+              \\frac{\\max(\\alpha_1, 1 - \\alpha_1) + \\gamma}{\\gamma T}.
+
+    The probabilities can come from any model of the person, for example the posterior predictive of
+    :class:`~quantum_mind.core.online.OnlinePersonModel`. A robot acts when the set holds one answer
+    and asks when it holds several.
+
+    Parameters
+    ----------
+    alpha : float, optional
+        Target miscoverage (0.1 for 90% coverage).
+    gamma : float, optional
+        Step size of the correction.
+    calibration_scores : array_like, optional
+        Scores :math:`1 - p_{\\text{true}}` from earlier people, used before this person has answered.
+
+    Attributes
+    ----------
+    alpha_t : float
+        Current working miscoverage level.
+    errors : list of int
+        1 for every answer outside its set.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> aci = AdaptiveConformalSets(alpha=0.2, gamma=0.05, calibration_scores=[0.1, 0.3, 0.5, 0.7])
+    >>> s = aci.predict_set([0.7, 0.2, 0.1])
+    >>> bool(s[0])                   # the most likely answer is in the set
+    True
+    >>> aci.update([0.7, 0.2, 0.1], 1)
+    """
+
+    def __init__(self, alpha=0.1, gamma=0.01, calibration_scores=None):
+        if not 0 < alpha < 1 or gamma <= 0:
+            raise ValueError('alpha must be in (0, 1) and gamma positive')
+        self.alpha, self.gamma = alpha, gamma
+        self.alpha_t = alpha
+        self.scores = [float(s) for s in (calibration_scores if calibration_scores is not None else [])]
+        self.errors = []
+
+    @property
+    def threshold(self):
+        """float: current threshold on the score (inf: every answer, -inf: none)."""
+        if self.alpha_t <= 0 or not self.scores:
+            return np.inf
+        if self.alpha_t >= 1:
+            return -np.inf
+        n = len(self.scores)
+        k = int(np.ceil((n + 1) * (1 - self.alpha_t)))
+        return float(np.sort(self.scores)[k - 1]) if k <= n else np.inf
+
+    def predict_set(self, prob):
+        """Answers in the prediction set.
+
+        Parameters
+        ----------
+        prob : array_like
+            Predicted probability of each answer.
+
+        Returns
+        -------
+        numpy.ndarray
+            Boolean mask over answers.
+        """
+        return 1 - np.asarray(prob, float) <= self.threshold
+
+    def should_ask(self, prob):
+        """bool: True when more than one answer is in the set."""
+        return int(np.sum(self.predict_set(prob))) > 1
+
+    def update(self, prob, answer):
+        """Record the observed answer and correct the working level.
+
+        Parameters
+        ----------
+        prob : array_like
+            The probabilities used for this answer's prediction set.
+        answer : int
+            Index of the observed answer.
+        """
+        p = np.asarray(prob, float)
+        err = int(not self.predict_set(p)[int(answer)])
+        self.errors.append(err)
+        self.alpha_t += self.gamma * (self.alpha - err)
+        self.scores.append(float(1 - p[int(answer)]))
+
+    @property
+    def miscoverage(self):
+        """float: fraction of answers that fell outside their sets so far."""
+        return float(np.mean(self.errors)) if self.errors else 0.0
+
+    def bound(self):
+        """float: the guaranteed bound on ``|miscoverage - alpha|`` after the answers so far."""
+        T = max(len(self.errors), 1)
+        return (max(self.alpha, 1 - self.alpha) + self.gamma) / (self.gamma * T)
+

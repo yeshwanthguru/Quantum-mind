@@ -65,6 +65,18 @@ $$
 satisfies $\Pr\{y \in C(x)\} \ge 1 - \alpha$ for exchangeable data, whatever the classifier. A set with
 more than one label is a reason to ask.
 
+**Adaptive sets for one person's answers.** Within an interaction the answers are not exchangeable,
+because the person changes. Adaptive conformal inference keeps a working level $\alpha_t$: the set at
+time $t$ uses the $\lceil (n_t+1)(1-\alpha_t)\rceil$-th smallest of the $n_t$ scores seen so far (every
+answer if $\alpha_t \le 0$ or no score yet, none if $\alpha_t \ge 1$), and after the answer
+
+$$
+\alpha_{t+1} = \alpha_t + \gamma\,(\alpha - \mathrm{err}_t), \qquad \mathrm{err}_t = \mathbb 1\{y_t \notin C_t\}.
+$$
+
+For any sequence of answers, $\bigl|\tfrac1T\sum_{t=1}^T \mathrm{err}_t - \alpha\bigr| \le
+\dfrac{\max(\alpha_1, 1-\alpha_1) + \gamma}{\gamma T}$ (Gibbs and Candès, 2021). (`AdaptiveConformalSets`)
+
 ## Exact bounds and online monitoring
 
 For $k$ successes in $n$ trials, the Clopper-Pearson interval at level $1 - \alpha$ is
@@ -140,6 +152,11 @@ With few answers $\hat x_i \approx \mu$; with many, it approaches the person's m
 The prior is estimated from per-person fits, $\hat\mu = \bar x$, $\hat\Sigma = \operatorname{Cov}(x_i)$ plus a
 small ridge. (`PopulationPrior`, `fit_map`)
 
+With `method='online'` the person's parameters keep a full posterior: particles
+$x^{(j)} \sim \mathcal N(\hat\mu, \hat\Sigma)$ reweighted by every answer, as in
+{class}`~quantum_mind.core.online.OnlinePersonModel` (equations on the {doc}`core page <core>`), which also
+gives credible intervals for the person's parameters.
+
 ## Trust-aware hand-over
 
 With trust belief $p_t = P(\text{trust})$ (from the open-system or Markov belief), failure cost $C_f$,
@@ -161,3 +178,23 @@ open-system belief). (`TrustAwareHandover`)
 
 References: Howard (1966); Guo et al. (2017); Platt (1999); Zadrozny & Elkan (2002); Angelopoulos & Bates
 (2023); Clopper & Pearson (1934); Efron & Morris (1975); Gelman & Hill (2007).
+
+## Trust-aware task allocation
+
+People $a$ and tasks $t$ with effort $C_{a,t}$, trust $\tau_a$ in the robot (from a trust model, or the lower
+end of a credible interval for a cautious plan), reliance $r_t\in[0,1]$ of each task on the robot and cost
+$F$ of a failed robot-assisted step. The expected cost is $\tilde C_{a,t} = C_{a,t} + F\,r_t\,(1-\tau_a)$, and
+the allocation minimises
+
+$$
+E(x) = \sum_{a,t}\tilde C_{a,t}\,x_{a,t} + \lambda\sum_a\Bigl(\sum_t x_{a,t}\Bigr)^2
+     + A\sum_t\Bigl(\sum_a x_{a,t} - 1\Bigr)^2, \qquad x_{a,t}\in\{0,1\},
+$$
+
+a QUBO (using $x^2 = x$, the workload square adds $\lambda$ to each diagonal entry and $2\lambda$ to each pair
+of one person's tasks). For every valid assignment the penalty vanishes and $E$ is the expected cost plus
+$\lambda$ times the sum of squared loads. (`trust_aware_allocation`, `expected_costs`)
+
+References: Gibbs, I., & Candès, E. (2021). Adaptive conformal inference under distribution shift.
+*Advances in Neural Information Processing Systems*, 34. Lucas, A. (2014). Ising formulations of many NP
+problems. *Frontiers in Physics*, 2, 5.

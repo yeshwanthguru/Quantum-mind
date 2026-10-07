@@ -15,6 +15,7 @@ docs/api/
 docs/notebooks/*.ipynb
 docs/user_guide/*.md
 !docs/user_guide/index.md
+!docs/user_guide/extensions.md
 docs/user_guide/families/*.md
 !docs/user_guide/families/index.md
 docs/about/*.md
