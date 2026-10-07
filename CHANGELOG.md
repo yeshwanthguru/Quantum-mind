@@ -15,6 +15,11 @@
   quantum-inspired, classical or mixed), with counts on the atlas index and in the README; of the 37
   robotics entries, 10 are quantum-like, 4 quantum computing, 4 quantum-inspired, 15 classical and 4
   mixed.
+- Citing: a "References by model" page in the atlas (model, category, origin, original paper), and the
+  "references" workflow now checks the atlas references as well as the Foundations pages (91 unique
+  references after merging duplicates and resolving short citations), judges each Crossref match by
+  first author and year, and builds `references.bib` from confirmed matches, marking the rest as
+  unverified.
 - Citations added: Roeder et al. (2023) for the trust model and Rosenthal, Dey and Veloso (2009) as
   related work for the question planner.
 - Robotics extensions of published methods:

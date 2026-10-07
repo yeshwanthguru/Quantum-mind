@@ -1,6 +1,8 @@
 name: references
-# Looks every documentation reference up in Crossref and uploads a report (references_report.md).
-# Run it by hand from the Actions tab; it changes nothing in the repository.
+# Looks every reference in the Foundations pages and the model atlas up in Crossref, and builds a
+# BibTeX file from the confirmed matches. Run it by hand from the Actions tab; it changes nothing in
+# the repository. Download the "references" artifact, review references_report.md, then commit
+# references.bib if it is right.
 on:
   workflow_dispatch:
 jobs:
@@ -11,9 +13,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: Look the references up in Crossref
-        run: python docs/_ext/check_refs.py
+      - name: Look the references up in Crossref and build references.bib
+        run: python docs/_ext/check_refs.py --bib
       - uses: actions/upload-artifact@v4
         with:
-          name: references-report
-          path: references_report.md
+          name: references
+          path: |
+            references_report.md
+            references.bib

@@ -91,3 +91,14 @@ def test_every_atlas_entry_has_a_category():
     pages = {key: [m['title'] for m in models] for key, (_, _, models) in atlas.PAGES.items()}
     assert all(atlas.CATEGORY[t] == 'quantum' for t in pages['quantum'])
     assert all(atlas.CATEGORY[t] == 'quantum-inspired' for t in pages['inspired'])
+
+
+def test_reference_collection_resolves_every_short_citation():
+    import check_refs
+    refs, unresolved = check_refs.collect()
+    assert not unresolved, 'short citations without a full reference: %s' % unresolved
+    assert all(e['key'] for e in refs)
+    assert len({e['key'] for e in refs}) == len(refs)                  # duplicates merged
+    cited = {s for e in refs for s in e['sources'] if s.startswith('atlas: ')}
+    with_ref = {'atlas: ' + m['title'] for _, _, models in atlas.PAGES.values() for m in models if m['ref']}
+    assert cited == with_ref                                            # every atlas reference is covered

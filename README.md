@@ -545,7 +545,9 @@ Every other data set in the examples is simulated and labelled as such.
 ## Citing and licence
 
 To cite Quantum Mind, use `CITATION.cff` (GitHub's "Cite this repository" button), together with the
-original papers of the models used, which are listed in each README. The package is released under the
+original paper of every model you use, listed on the
+[references by model](https://yeshwanthguru.github.io/Quantum-mind/docs/atlas/references.html) page. The
+"references" workflow (Actions tab) checks every reference against Crossref and builds a BibTeX file. The package is released under the
 [Apache License 2.0](https://github.com/yeshwanthguru/Quantum-mind/blob/main/LICENSE) (see also [NOTICE](https://github.com/yeshwanthguru/Quantum-mind/blob/main/NOTICE)). The licence permits commercial and research
 use and includes an explicit patent grant. For contributing, see [CONTRIBUTING.md](https://github.com/yeshwanthguru/Quantum-mind/blob/main/CONTRIBUTING.md);
 for release history, see [CHANGELOG.md](https://github.com/yeshwanthguru/Quantum-mind/blob/main/CHANGELOG.md).
