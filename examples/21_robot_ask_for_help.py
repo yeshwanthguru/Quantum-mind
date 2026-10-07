@@ -17,7 +17,7 @@ would sit in a service or behaviour-tree node (not included in the package).
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/robot.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_21.png'
 import numpy as np
 from quantum_mind.applications.robotics import domain_models, HumanModelEnsemble, ask_or_act
 from quantum_mind.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel

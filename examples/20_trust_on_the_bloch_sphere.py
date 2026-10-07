@@ -9,7 +9,7 @@ the printout compares P(trust) read from the Bloch vector with the model's predi
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/viz.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_20.png'
 import pathlib
 from quantum_mind.families.dynamics import OpenSystemBelief, final_yes
 from quantum_mind.applications.robotics import TRUST_EVENTS

@@ -28,3 +28,29 @@ def theme(name):
     if isinstance(name, dict):
         return name
     return THEMES[name]
+
+
+def use_mpl_style(name='dark'):
+    """Apply a theme to every Matplotlib figure that follows (used by the tutorials).
+
+    Parameters
+    ----------
+    name : str or dict, optional
+        ``'dark'`` or ``'light'``, or a custom dict with the keys of ``THEMES['dark']``.
+
+    Returns
+    -------
+    dict
+        The theme that was applied.
+    """
+    import matplotlib as mpl
+    from cycler import cycler
+    t = theme(name)
+    mpl.rcParams.update({
+        'figure.facecolor': t['bg'], 'axes.facecolor': t['bg'], 'savefig.facecolor': t['bg'],
+        'axes.edgecolor': t['wire'], 'axes.labelcolor': t['text'], 'text.color': t['text'],
+        'xtick.color': t['axis'], 'ytick.color': t['axis'], 'grid.color': t['wire'], 'axes.grid': True,
+        'grid.alpha': 0.6, 'axes.prop_cycle': cycler(color=t['palette']), 'axes.spines.top': False,
+        'axes.spines.right': False, 'axes.titleweight': 'bold', 'figure.dpi': 110, 'font.size': 10,
+        'legend.frameon': False, 'image.cmap': 'magma'})
+    return t

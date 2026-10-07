@@ -28,7 +28,7 @@ section#quantum-mind > h1:first-child { display: none; }
 }
 .qm-hero .lead { font-size: 1.15rem; max-width: 52rem; color: var(--pst-color-text-muted); }
 .qm-hero img.banner { border-radius: 14px; margin: 0.5rem 0 1.2rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); }
-.qm-badges { margin: 0.4rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.qm-badges { margin: 0.4rem 0 0.6rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .qm-badges span {
   border: 1px solid var(--pst-color-border); border-radius: 999px; padding: 0.15rem 0.7rem; font-size: 0.85rem;
   color: var(--pst-color-text-muted);
@@ -57,3 +57,22 @@ section#quantum-mind > h1:first-child { display: none; }
 html[data-theme="dark"] .sphx-glr-script-out .highlight pre,
 html[data-theme="dark"] div.sphx-glr-script-out pre { background: #0b0f15 !important; color: #c9d1d9 !important; }
 html[data-theme="dark"] .sphx-glr-download a { background: #161b22 !important; border-color: #30363d !important; }
+
+/* Mermaid block diagrams: keep the diagrams' own colours in dark mode (the theme inverts SVGs by
+   default) and cap very tall diagrams */
+html[data-theme="dark"] pre.mermaid > svg { filter: none !important; }
+pre.mermaid > svg { max-height: 720px; }
+pre.mermaid { background: transparent; border: 1px solid var(--pst-color-border); border-radius: 12px; padding: 0.8rem; }
+
+/* phones: wide block diagrams scroll sideways instead of shrinking until the text is unreadable */
+pre.mermaid { overflow-x: auto; }
+@media (max-width: 720px) {
+  pre.mermaid > svg { min-width: 640px; max-width: none !important; }
+  .bd-article table { display: block; overflow-x: auto; }
+}
+
+/* executed figures in the tutorials: framed so the dark plots also sit well on the light theme */
+div.cell_output img { border-radius: 10px; border: 1px solid var(--pst-color-border); }
+html[data-theme="light"] div.cell_output img { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }
+.qm-downloads { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.2rem; }
+.qm-downloads img { display: block; }

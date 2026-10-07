@@ -14,7 +14,7 @@ Outputs are written to examples/output/.
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/viz.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_19.png'
 import pathlib
 import numpy as np
 from qiskit import QuantumCircuit

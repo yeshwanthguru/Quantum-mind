@@ -6,7 +6,7 @@ fitting and comparison workflow, and one Bloch-sphere viewer.
 ```{mermaid}
 flowchart TB
     core["quantum_mind.core<br/>Model · Param · fit · compare · recovery"]
-    fam["quantum_mind.families<br/>11 quantum-like families"]
+    fam["quantum_mind.families<br/>12 quantum-like families"]
     app["quantum_mind.applications<br/>robotics"]
     prob["quantum_mind.problems<br/>QUBO builders"]
     qm["quantum_mind.quantum<br/>classifiers · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
@@ -80,8 +80,8 @@ Trajectories, animations, interactive HTML, live updates and tomography.
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
-| Quantum-like models | 11 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison; published aggregate data | hierarchical (partial-pooling) models |
-| Robotics | simulated populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, `HumanModelService`, a ROS 2 node | a run of the ROS 2 node inside a ROS 2 installation; data from human-robot studies |
+| Quantum-like models | 12 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
+| Robotics | simulated populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, risk-aware decisions, calibration and conformal sets, orchestration gates, a question planner, trust-aware hand-over, multimodal fusion, Gymnasium environments, `HumanModelService`, a ROS 2 node | a run of the ROS 2 node inside a ROS 2 installation; data from human-robot studies |
 | Quantum models | classifiers, regressor, kernels, QAOA, VQE, Grover, QFT, amplitude estimation, quantum walks on an exact simulator with adjoint gradients; Qiskit export; IBM submission through the Qiskit Runtime Sampler | quantum advantage (none claimed); noise-aware training; runs on hardware |
 | Quantum-inspired | QIEA, QPSO, SQA, simulated-annealing baseline, MPS classifier, quantum reinforcement learning, quantum language model | |
 | Viewer | trajectories, animations, interactive HTML, live widget, tomography, concurrence timeline, Q-sphere | |

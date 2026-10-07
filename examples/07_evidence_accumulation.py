@@ -10,7 +10,7 @@ Data are simulated from a quantum walk and both models are fitted.
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/ql.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_07.png'
 import numpy as np
 from quantum_mind.core import compare
 from quantum_mind.families.dynamics import MarkovWalk, QuantumWalk

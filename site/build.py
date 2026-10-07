@@ -43,6 +43,21 @@ RESULTS = [
     ('Concept combination, "pet and fish" (simulated)', 'Fock-space model SSE 0.001 · weighted average 0.054 · '
      'product 0.388'),
     ('Trust as a qubit', "P(trust) read from the Bloch vector equals the model's prediction (0.7247)"),
+    ('Trust-aware hand-over, 40 simulated sessions of 20 hand-overs (example 36)', 'mean session cost: order-aware 42.1 · '
+     'Markov-based 60.9 · always hand over 96.2 (the simulated people follow the open-system model, which favours the '
+     'order-aware policy by construction)'),
+    ('Detector calibration, 5 classes (simulated, example 32)', 'ECE raw 0.192 · Platt 0.020 · temperature 0.017 · '
+     '<strong>isotonic 0.009</strong>; conformal sets reach 0.911 coverage at a 0.90 target'),
+    ('Multimodal fusion, held-out log loss (simulated, example 33)', 'quantum-like 0.759 · Bayes 0.793 · '
+     'Dempster-Shafer 0.818 (the simulated people follow the quantum-like rule)'),
+    ('Bistable perception, dwell times at two check intervals (simulated, example 34)', 'BIC: quantum Zeno 2796.6 · '
+     'gamma renewal 3031.8 · Markov switching 3073.8'),
+    ('CartPole with REINFORCE, 250 episodes (tutorial 11)', '<strong>linear softmax policy learns faster</strong> than the '
+     'variational quantum policy'),
+    ('Quanvolution on 8 × 8 digits (tutorial 13)', '<strong>raw pixels and a random classical filter are more '
+     'accurate</strong> than the quanvolutional features'),
+    ('Tensor-train compression of a trained layer (tutorial 12)', 'large memory savings, but accuracy drops sharply '
+     'without retraining, and the dense product is faster on a CPU'),
 ]
 
 
@@ -93,6 +108,22 @@ def build_docs(out, fast=False):
     shutil.rmtree(out.parent / 'jupyter_execute', ignore_errors=True)       # MyST-NB's scratch folder
 
 
+def share_plotly(docs):
+    """Point every documentation page and animation at the site's single copy of plotly.js (saves 4.8 MB)."""
+    copy = docs / '_static' / 'demos' / 'plotly.min.js'
+    if not copy.exists():
+        return
+    for f in docs.rglob('*.html'):
+        text = f.read_text()
+        if 'plotly.min.js' not in text:
+            continue
+        shared = '../' * (len(f.relative_to(OUT).parts) - 1) + 'static/plotly.min.js'
+        new = re.sub(r'src="(?:[./]*_static/demos/)?plotly\.min\.js"', f'src="{shared}"', text)
+        if new != text:
+            f.write_text(new)
+    copy.unlink()
+
+
 def main():
     """Build the landing page, the animations and the documentation into _site/."""
     ver = version()
@@ -115,6 +146,7 @@ def main():
     build_demos(OUT / 'demos')
     if '--skip-docs' not in sys.argv:
         build_docs(OUT / 'docs', fast='--fast' in sys.argv)
+        share_plotly(OUT / 'docs')
 
     (OUT / '.nojekyll').write_text('')
     (OUT / 'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: %ssitemap.xml\n' % URL)

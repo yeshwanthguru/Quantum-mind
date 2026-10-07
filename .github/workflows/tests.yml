@@ -24,7 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[all,dev]"
       - name: Lint
-        run: ruff check src tests examples docs integrations site
+        run: ruff check src tests examples docs integrations site tutorials
       - name: API reference is up to date
         run: python docs/make_api.py --check
       - name: Unit tests with coverage
@@ -38,6 +38,18 @@ jobs:
           done
           python -W ignore examples/13_quantum_classifiers_triage.py --quick > /dev/null
           python -W ignore examples/11_cloud_run.py --dry-run > /dev/null
+      - name: Tutorials (converted to notebooks and executed)
+        if: matrix.python-version == '3.12'
+        run: |
+          python - <<'PY'
+          import sys, nbclient
+          sys.path.insert(0, 'tutorials')
+          from _convert import to_notebook, sources
+          for src in sources():
+              nbclient.NotebookClient(to_notebook(src), timeout=1800, kernel_name='python3',
+                                      resources={'metadata': {'path': '.'}}).execute()
+              print('executed', src.name)
+          PY
       - name: Notebooks
         run: |
           python - <<'PY'

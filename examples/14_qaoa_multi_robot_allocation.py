@@ -11,7 +11,7 @@ QAOA circuit is then sampled on Aer, and on Aer with the IBM FakeTorino noise mo
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/robot.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_14.png'
 import numpy as np
 from quantum_mind.problems import task_allocation
 from quantum_mind.quantum import QAOA

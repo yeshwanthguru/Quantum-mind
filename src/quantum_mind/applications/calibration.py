@@ -349,8 +349,8 @@ class SplitConformalClassifier:
         y = np.asarray(labels, int)
         n = len(y)
         scores = 1 - p[np.arange(n), y]
-        level = min(1.0, np.ceil((n + 1) * (1 - self.alpha)) / n)
-        self.qhat = float(np.quantile(scores, level, method='higher'))
+        k = int(np.ceil((n + 1) * (1 - self.alpha)))          # rank of the conformal quantile
+        self.qhat = float(np.sort(scores)[k - 1]) if k <= n else 1.0   # too few points: every label
         return self
 
     def predict_sets(self, prob):

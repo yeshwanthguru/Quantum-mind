@@ -7,7 +7,7 @@ Aer simulator, on Aer with the FakeTorino (IBM Heron) noise model, and on the Br
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_10.png'
 import numpy as np
 from quantum_mind.core import tvd
 from quantum_mind.circuits import (run, order_effects_circuit, interference_circuit, qlbn_circuit, walk_circuit, belief_circuit)

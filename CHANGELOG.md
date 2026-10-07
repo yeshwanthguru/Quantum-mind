@@ -1,5 +1,59 @@
 # Changelog
 
+## Unreleased
+
+Documentation:
+
+- **Foundations**: ten pages that introduce robotics, AI, machine learning, deep learning,
+  reinforcement learning, perception and computer vision, embodied AI, quantum computing,
+  quantum-like cognition and quantum-inspired algorithms from the basics, each with a diagram, a
+  runnable example and references. The documentation home has a tab per topic.
+- **Tutorials**: eighteen step-by-step tutorials (`tutorials/*.md`, converted to notebooks and executed
+  when the documentation is built), from an introduction to every model group, each with figures and
+  a classical baseline. They report where the classical method wins (quantum policy against a linear
+  policy, quanvolution against a random filter, TT compression without retraining).
+- **Model atlas**: a block diagram for every model (64 diagrams), with its baselines, API, tutorial and
+  a reference.
+- **Mathematics**: the equations of every model as the code computes them (core, quantum-like
+  families, decision layer, perception and fusion, learning, quantum, quantum-inspired), with the
+  implementing class or function named next to each equation; linked from every atlas page.
+- `quantum_mind.viz.use_mpl_style()` applies the documentation's colour theme to Matplotlib figures.
+- CI executes the tutorials.
+- **Help**: a glossary, a "which model do I need?" decision tree, an FAQ and a validation page that
+  states what has and has not been validated with real people, with a pilot-study protocol.
+- New tutorials: an end-to-end robot (calibration, fusion, question planning and trust-aware
+  hand-over against a naive robot), the judgement families, and the ROS 2 service.
+- Tutorials check their stated results with `assert` statements every time the documentation is
+  built; numbers that varied between runs were replaced by qualitative statements.
+- Tests keep the documentation in step with the code: the mathematics against the implementations,
+  atlas coverage of every public model, tutorial listing and claim checks, the family and example
+  counts on the home page, the Foundations examples, and the website's results table.
+- Accessibility: every diagram has a title and description for screen readers, and tutorial figures
+  have alt text. Diagrams and tables scroll on narrow screens.
+- Per-example gallery thumbnails; page descriptions and social-card tags for link previews.
+- `docs/_ext/check_refs.py` and a manually triggered workflow check the Foundations references
+  against Crossref and report title, year and DOI for review.
+
+Fixes:
+
+- `SplitConformalClassifier` used one order statistic above the conformal quantile
+  ceil((n+1)(1-alpha)), giving slightly larger sets than needed; it now uses the exact rank.
+- The package docstring's model table was malformed; it now lists all twelve families.
+- README and documentation counts (twelve families, 36 examples) are consistent.
+
+Examples:
+
+- 32 calibration and conformal sets, 33 multimodal fusion, 34 bistable perception with the Zeno
+  model, 35 reinforcement learning with simulated people (CartPole), 36 trust-aware hand-over.
+
+Website:
+
+- Robot-first landing page with a "New in 2.0" section, results for the 2.0 modules (including the
+  cases where a classical method wins), badges and audience cards; the Plotly bundle is served once
+  instead of twice.
+- PyPI download counts (per month and in total) are shown on the website, the documentation home and
+  the README.
+
 ## 2.0.1 (6 October 2026)
 
 - Website and documentation links use the repository's exact name, `Quantum-mind`: GitHub Pages

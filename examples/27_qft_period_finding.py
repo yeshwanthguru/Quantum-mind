@@ -9,7 +9,7 @@ period 4, 8 and 16 on 6 qubits (with and without measurement sampling).
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_27.png'
 import numpy as np
 from quantum_mind.quantum import qft_circuit, qft_matrix, find_period
 

@@ -11,7 +11,7 @@ can be fitted to observed judgements (here: judgements simulated from chosen pha
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/ql.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_03.png'
 import numpy as np
 from quantum_mind.core import compare
 from quantum_mind.families.qlbn import BayesNet, classical_marginal, quantum_like_marginal, for_network, ClassicalBNModel
