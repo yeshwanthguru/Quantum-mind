@@ -15,6 +15,8 @@ jobs:
           python-version: "3.12"
       - name: Look the references up in Crossref and build references.bib
         run: python docs/_ext/check_refs.py --bib
+      - name: Show the report and the BibTeX file in the log
+        run: cat references_report.md references.bib
       - uses: actions/upload-artifact@v4
         with:
           name: references
