@@ -158,7 +158,8 @@ def bibtex(doi):
     """BibTeX for a DOI from doi.org content negotiation."""
     req = urllib.request.Request('https://doi.org/' + doi, headers={**UA, 'Accept': 'application/x-bibtex'})
     with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read().decode('utf-8')
+        text = r.read().decode('utf-8')
+    return re.sub(r'</?(i|b|sub|sup|scp|em|strong|mml:[a-z]+)[^>]*>', '', text)     # Crossref's HTML in titles
 
 
 def _citekey(entry, used):

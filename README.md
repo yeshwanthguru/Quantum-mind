@@ -416,6 +416,15 @@ Sampler (`qiskit_ibm_runtime.executor_sampler`), falling back to `SamplerV2` on 
 
 <a id="status"></a>
 
+## A packaged use case: trust-aware hand-over
+
+[`tutorials/trust_handover_package`](https://github.com/yeshwanthguru/Quantum-mind/tree/main/tutorials/trust_handover_package)
+turns one robotics model into an installable package (`quantum-handover`): a robot arm decides before
+each hand-over whether to hand over, hand over slowly, ask or wait, using the quantum-like trust model.
+It has a benchmark against two populations of simulated people, a PyBullet simulation recorded as a GIF,
+a ROS 2 node, its own tests and a `requirements.txt`; tutorial 19 walks through it. Results are for
+simulated people only.
+
 ## What is published and what is new
 
 Most models here were published by other researchers; each is implemented from its paper and cited in
@@ -546,8 +555,11 @@ Every other data set in the examples is simulated and labelled as such.
 
 To cite Quantum Mind, use `CITATION.cff` (GitHub's "Cite this repository" button), together with the
 original paper of every model you use, listed on the
-[references by model](https://yeshwanthguru.github.io/Quantum-mind/docs/atlas/references.html) page. The
-"references" workflow (Actions tab) checks every reference against Crossref and builds a BibTeX file. The package is released under the
+[references by model](https://yeshwanthguru.github.io/Quantum-mind/docs/atlas/references.html) page. All 91
+references are in [`references.bib`](https://github.com/yeshwanthguru/Quantum-mind/blob/main/references.bib):
+55 entries come from Crossref records whose author, year and title match ours; the other 36 (mostly
+books and conference papers without a matching record) hold the text as cited and are marked
+`UNVERIFIED`. The "references" workflow (Actions tab) rebuilds the file. The package is released under the
 [Apache License 2.0](https://github.com/yeshwanthguru/Quantum-mind/blob/main/LICENSE) (see also [NOTICE](https://github.com/yeshwanthguru/Quantum-mind/blob/main/NOTICE)). The licence permits commercial and research
 use and includes an explicit patent grant. For contributing, see [CONTRIBUTING.md](https://github.com/yeshwanthguru/Quantum-mind/blob/main/CONTRIBUTING.md);
 for release history, see [CHANGELOG.md](https://github.com/yeshwanthguru/Quantum-mind/blob/main/CHANGELOG.md).

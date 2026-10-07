@@ -20,6 +20,16 @@
   references after merging duplicates and resolving short citations), judges each Crossref match by
   first author and year, and builds `references.bib` from confirmed matches, marking the rest as
   unverified.
+- `tutorials/trust_handover_package` (`quantum-handover` 0.1.0) and tutorial 19: the trust-aware
+  hand-over as an installable package, with populations of simulated people, a benchmark (each trust
+  model wins on the people who behave like it; the quantum-like policy loses 5.7 when wrong against
+  17.1 for the Markov policy), a PyBullet simulation of a KUKA arm recorded as a GIF, a ROS 2 node over
+  a plain-Python controller, six tests (run in CI; the simulation test needs pybullet) and a
+  `requirements.txt`. Tested against quantum-mind 2.0.1 from PyPI in a clean environment. The tutorial
+  documents a property of the trust model: right after a "yes" makes trust certain, a success lowers it
+  and a following failure can raise it.
+- `references.bib`: all 91 references, 55 from Crossref records that match author, year and title, 36
+  marked unverified.
 - Citations added: Roeder et al. (2023) for the trust model and Rosenthal, Dey and Veloso (2009) as
   related work for the question planner.
 - Robotics extensions of published methods:

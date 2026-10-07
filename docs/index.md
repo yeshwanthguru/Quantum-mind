@@ -218,7 +218,7 @@ Robotics, AI, machine learning, deep learning, RL, perception, embodied AI and q
 :link: tutorials/index
 :link-type: doc
 
-Eighteen step-by-step tutorials, from the introduction to every model, with real outputs and figures.
+Nineteen step-by-step tutorials, from the introduction to every model, with real outputs and figures.
 :::
 
 :::{grid-item-card} {fas}`diagram-project` Model atlas

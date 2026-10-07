@@ -38,6 +38,10 @@ jobs:
           done
           python -W ignore examples/13_quantum_classifiers_triage.py --quick > /dev/null
           python -W ignore examples/11_cloud_run.py --dry-run > /dev/null
+      - name: Hand-over package (tutorial 19; the PyBullet test is skipped without pybullet)
+        run: |
+          pip install -e tutorials/trust_handover_package
+          pytest -q -p no:cacheprovider tutorials/trust_handover_package/tests
       - name: Tutorials (converted to notebooks and executed)
         if: matrix.python-version == '3.12'
         run: |
