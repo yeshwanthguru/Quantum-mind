@@ -39,3 +39,20 @@ print(person.predict()['BA'])                                 # this person's pr
 
 The bootstrap needs repeated fits, so it belongs before or between interactions. The online model
 and the design functions cost a fraction of a second per answer and can run during one.
+
+## For robots
+
+Four published robotics methods are extended in the same spirit; example 37 uses all of them on
+simulated people.
+
+| Published method | Quantum Mind's extension |
+|---|---|
+| Split conformal prediction | {class}`~quantum_mind.applications.calibration.AdaptiveConformalSets`: sets for a person's next answer that keep their long-run coverage while the person changes, with a guaranteed bound; the robot asks when the set holds more than one answer |
+| Partial pooling | `PersonalisedHumanModel(method='online')`: a full per-person posterior from the population prior, with credible intervals |
+| Task allocation QUBO | {func}`~quantum_mind.applications.allocation.trust_aware_allocation`: expected failures of robot-assisted steps from each person's trust in the robot, plus workload; solved exactly, by annealing or by QAOA |
+| Tabular and quantum reinforcement learning | {func}`~quantum_mind.envs.sample_people` and the `people=` option of the environments: a new simulated person every episode, drawn from a fitted model's uncertainty |
+
+What example 37 measured: the trust-aware plan had an expected cost of 4.91 against 16.27 for a
+trust-blind plan; the adaptive sets missed 14.7% of answers at a 15% target while the robot learned a
+new person; agents trained against one simulated person or a population scored the same on new people,
+because in that environment asking resets every person's trust in the same way.

@@ -142,7 +142,7 @@ $\bigl[q_{\alpha/2}, q_{1-\alpha/2}\bigr]$ of $\{\hat\theta^{(b)}\}$ for each pa
 $\{p_c(\hat\theta^{(b)})\}$ for each predicted probability.
 
 **Online per-person model** ({class}`~quantum_mind.core.online.OnlinePersonModel`). Particles
-$x_i \sim \mathcal N(x_0, s^2 I)$ on the unconstrained scale, $i = 1, \dots, N$, with $x_0$ the
+$x_i \sim \mathcal N(x_0, \Sigma_0)$ on the unconstrained scale ($\Sigma_0 = s^2 I$ or a population covariance), $i = 1, \dots, N$, with $x_0$ the
 population estimate. After outcome $k$ in condition $c$,
 
 $$
@@ -151,9 +151,12 @@ $$
 $$
 
 with $\bar w$ the normalised weights. When $\mathrm{ESS} < \tfrac12 N$, the particles are resampled
-systematically and moved by the Liu-West kernel
-$x_i \leftarrow a\,x_i + (1-a)\,\bar x + \mathcal N(0, h^2 V)$, $a = \sqrt{1-h^2}$, where $\bar x$ and
-$V$ are the particle mean and covariance. Predictions are posterior predictive,
+systematically and each is moved by Metropolis-Hastings steps with a Gaussian random-walk proposal
+$x' = x_i + \mathcal N\bigl(0, \tfrac{2.38^2}{k} V\bigr)$ ($V$ the particle covariance, $k$ the number of
+parameters), accepted with probability $\min\{1, \pi(x')/\pi(x_i)\}$ where
+$\log\pi(x) = -\tfrac12 (x - x_0)^T \Sigma_0^{-1} (x - x_0) + \sum_c\sum_k y_{c,k}\log p_{c,k}(x)$ is the
+log posterior given every answer so far. These moves leave the posterior unchanged and restore the
+diversity that resampling removes (resample-move). Predictions are posterior predictive,
 $\hat p_c = \sum_i \bar w_i\, p_c(x_i)$.
 
 **Choosing the most informative condition** ({func}`~quantum_mind.core.design.information_gain`).
@@ -172,7 +175,6 @@ model probabilities become $w_m \propto w_m \prod_c \prod_k p_{m,c,k}^{\,y_{c,k}
 ({func}`~quantum_mind.core.design.model_posterior`).
 
 References: Efron, B., & Tibshirani, R. J. (1993). *An Introduction to the Bootstrap*. Chapman & Hall.
-Liu, J., & West, M. (2001). Combined parameter and state estimation in simulation-based filtering. In
-*Sequential Monte Carlo Methods in Practice* (pp. 197-223). Springer. Chopin, N. (2002). A sequential
+Chopin, N. (2002). A sequential
 particle filter method for static models. *Biometrika*, 89(3), 539-551. Myung, J. I., & Pitt, M. A.
 (2009). Optimal experimental design for model discrimination. *Psychological Review*, 116(3), 499-518.

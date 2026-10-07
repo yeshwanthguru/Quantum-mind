@@ -41,7 +41,7 @@ except ImportError:                            # pragma: no cover - exercised on
             if seed is not None:
                 self.np_random = np.random.default_rng(seed)
 
-__all__ = ['ClarificationEnv', 'TrustHandoverEnv', 'GridWorldEnv', 'register_envs']
+__all__ = ['ClarificationEnv', 'TrustHandoverEnv', 'GridWorldEnv', 'register_envs', 'sample_people']
 
 
 class _Discrete:
@@ -67,6 +67,49 @@ def _box(low, high, shape):
     if _spaces is not None:
         return _spaces.Box(low, high, shape, dtype=np.float32)
     return type('Box', (), {'shape': shape, 'low': low, 'high': high})()
+
+
+def sample_people(source, n, rng=None):
+    """Draw simulated people whose parameters reflect what is known, and not known, about real people.
+
+    An agent trained against one simulated person learns that person. Drawing a new person for every
+    episode from the uncertainty of the fitted human model (domain randomisation over people) trains
+    a policy that holds up across the people the model is unsure about.
+
+    Parameters
+    ----------
+    source : BootstrapResult, OnlinePersonModel, PopulationPrior or Model
+        :class:`~quantum_mind.core.uncertainty.BootstrapResult` (refits of a fitted model),
+        :class:`~quantum_mind.core.online.OnlinePersonModel` (particles weighted by the posterior),
+        :class:`~quantum_mind.applications.personalisation.PopulationPrior` (Gaussian on the free
+        parameters), or a single model (returned ``n`` times).
+    n : int
+        Number of people.
+    rng : numpy.random.Generator, optional
+
+    Returns
+    -------
+    list of Model
+    """
+    rng = np.random.default_rng() if rng is None else rng
+    if hasattr(source, 'samples') and hasattr(source, 'fit'):              # BootstrapResult
+        cls, opts = type(source.fit.model), source.fit.options
+        idx = rng.integers(source.n_boot, size=n)
+        return [cls(**{k: float(v[i]) for k, v in source.samples.items()}, **opts) for i in idx]
+    if hasattr(source, 'particles'):                                       # OnlinePersonModel
+        idx = rng.choice(len(source.particles), size=n, p=source.weights)
+        return [source.model_cls.from_vector(source.particles[i], **source.options) for i in idx]
+    if hasattr(source, 'cov') and hasattr(source, 'mean'):                 # PopulationPrior
+        xs = rng.multivariate_normal(source.mean, source.cov, size=n)
+        return [source.model_cls.from_vector(x) for x in xs]
+    return [source] * n
+
+
+def _draw_person(people, rng):
+    """One person from a list or a callable ``rng -> model``."""
+    if callable(people):
+        return people(rng)
+    return people[int(rng.integers(len(people)))]
 
 
 def default_domain(seed=7):
@@ -107,11 +150,15 @@ class ClarificationEnv(_Base):
         Penalty for acting on a wrong hypothesis.
     max_questions : int, optional
         After this many questions the episode is truncated with the error cost.
+    people : list or callable, optional
+        A population of answer models (same questions and hypotheses) or a function ``rng -> model``;
+        a new person is drawn at every :meth:`reset`.
     """
     metadata = {'render_modes': []}
 
-    def __init__(self, model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6):
-        self.model = model or default_domain()
+    def __init__(self, model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6, people=None):
+        self.people = people
+        self.model = model or (_draw_person(people, np.random.default_rng(0)) if people is not None else default_domain())
         self.Q, self.H = len(self.model.questions), len(self.model.hypotheses)
         self.ask_cost, self.success_reward, self.error_cost, self.max_questions = ask_cost, success_reward, error_cost, max_questions
         self.action_space = _discrete(self.Q + self.H)
@@ -143,6 +190,8 @@ class ClarificationEnv(_Base):
         super().reset(seed=seed)
         if seed is not None:
             self.np_random = np.random.default_rng(seed)
+        if self.people is not None:
+            self.model = _draw_person(self.people, self.np_random)
         self.history = []
         self.target = (options or {}).get('target') or self.model.hypotheses[int(self.np_random.integers(self.H))]
         return self._obs(), {'target': self.target}
@@ -190,10 +239,15 @@ class TrustHandoverEnv(_Base):
         Costs (rewards are their negatives); a successful hand-over gives +1.
     slow_factor : float, optional
         Failure probability of a slow hand-over relative to a normal one.
+    people : list or callable, optional
+        A population of trust models (for example from :func:`sample_people`) or a function
+        ``rng -> model``; a new person is drawn at every :meth:`reset`.
     """
     metadata = {'render_modes': []}
 
-    def __init__(self, model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5):
+    def __init__(self, model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5,
+                 people=None):
+        self.people = people
         self.model = model or OpenSystemBelief(phi0=1.6, a_pos=0.8, a_neg=1.2, gamma=0.3)
         self.n_steps, self.fail_cost, self.slow_cost = n_steps, fail_cost, slow_cost
         self.ask_cost, self.wait_cost, self.slow_factor = ask_cost, wait_cost, slow_factor
@@ -233,6 +287,8 @@ class TrustHandoverEnv(_Base):
         super().reset(seed=seed)
         if seed is not None:
             self.np_random = np.random.default_rng(seed)
+        if self.people is not None:
+            self.model = _draw_person(self.people, self.np_random)
         v = np.array([np.cos(self.model.phi0 / 2), np.sin(self.model.phi0 / 2)])
         self.rho = np.outer(v, v)
         self.t, self.last_outcome, self.last_answer = 0, 0.0, 0.0

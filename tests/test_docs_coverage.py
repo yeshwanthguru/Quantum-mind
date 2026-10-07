@@ -15,7 +15,7 @@ MODEL_MODULES = (['quantum_mind.families.%s' % f for f in ('order_effects', 'con
                                                            'dynamics', 'decision', 'contextuality', 'similarity',
                                                            'game_theory', 'memory', 'concepts', 'perception')]
                  + ['quantum_mind.applications.%s' % a for a in ('robotics', 'intent', 'calibration', 'orchestration',
-                                                                 'questioning', 'personalisation', 'handover', 'fusion')]
+                                                                 'questioning', 'personalisation', 'handover', 'fusion', 'allocation')]
                  + ['quantum_mind.envs', 'quantum_mind.quantum', 'quantum_mind.inspired', 'quantum_mind.problems'])
 
 #: Public classes that are results, settings or helpers rather than models.

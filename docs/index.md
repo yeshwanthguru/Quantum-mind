@@ -246,7 +246,7 @@ The three pillars, every model family, circuits, hardware and the viewer.
 :link: auto_examples/index
 :link-type: doc
 
-36 runnable scripts across surveys, finance, medicine, robotics, perception, learning, physics and networks.
+37 runnable scripts across surveys, finance, medicine, robotics, perception, learning, physics and networks.
 :::
 
 :::{grid-item-card} {fas}`laptop-code` Notebooks

@@ -268,13 +268,16 @@ PAGES['robotics'] = ('Robot decision layer',
     pl & ts & iso --> p["calibrated probability"]:::out
     p --> ece["ECE · Brier · reliability diagram"]:::out''',
       'raw scores', 'Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017). Proceedings of ICML.', '05_calibration'),
-    M('Conformal prediction sets', ['quantum_mind.applications.calibration.SplitConformalClassifier'],
-      'Sets of labels that contain the truth with probability ≥ 1 − α for exchangeable data.',
+    M('Conformal prediction sets', ['quantum_mind.applications.calibration.SplitConformalClassifier',
+                                    'quantum_mind.applications.calibration.AdaptiveConformalSets'],
+      'Sets of labels that contain the truth with probability ≥ 1 − α for exchangeable data; the adaptive '
+      'version keeps its long-run coverage for one person\'s answers while that person changes.',
       '''flowchart LR
     cal[("calibration data")]:::in --> sc["non-conformity scores"]:::op --> q["(1 − α) quantile"]:::op
     new["new scores"]:::in --> S["labels with score ≤ q"]:::op
     q --> S --> set["prediction set<br/>size > 1 → ask"]:::out''',
-      'top-1 prediction', 'Angelopoulos, A. N., & Bates, S. (2023). Foundations and Trends in Machine Learning, 16(4), 494-591.',
+      'top-1 prediction', 'Angelopoulos, A. N., & Bates, S. (2023). Foundations and Trends in Machine Learning, 16(4), 494-591; '
+      'Gibbs, I., & Candès, E. (2021). Adaptive conformal inference under distribution shift. NeurIPS 34.',
       '05_calibration'),
     M('Calibration monitor', ['quantum_mind.applications.calibration.CalibrationMonitor',
                               'quantum_mind.applications.calibration.clopper_pearson'],
@@ -321,8 +324,8 @@ PAGES['robotics'] = ('Robot decision layer',
       'Partial pooling: each person\'s parameters are shrunk towards the population, most when data are few.',
       '''flowchart LR
     pop[("many people")]:::hum --> pp["population prior<br/>mean, covariance"]:::op
-    me[("this person's answers")]:::hum --> map["MAP fit"]:::op
-    pp --> map --> pers["personal model"]:::out
+    me[("this person's answers")]:::hum --> map["MAP fit<br/>or online posterior"]:::op
+    pp --> map --> pers["personal model<br/>with credible intervals"]:::out
     ind["individual fit"]:::base -.-> pers
     one["one model for all"]:::base -.-> pers''',
       'population model, individual fits', 'Gelman, A., & Hill, J. (2007). Data Analysis Using Regression and Multilevel/Hierarchical Models.'),
@@ -387,8 +390,9 @@ PAGES['learning'] = ('Learning',
     ag["agent"]:::op -->|ask q| P["simulated person<br/>projective answers"]:::hum -->|±1| obs["answers so far"]:::in --> ag
     ag -->|act on object| R["reward: +1 right · −5 wrong<br/>−0.3 per question"]:::out''',
       None, 'Towers, M., et al. (2024). Gymnasium. arXiv:2407.17032.', '10_rl_environments'),
-    M('Trust hand-over environment', ['quantum_mind.envs.hri.TrustHandoverEnv'],
-      'Hand objects to a person whose trust follows the trust qubit.',
+    M('Trust hand-over environment', ['quantum_mind.envs.hri.TrustHandoverEnv', 'quantum_mind.envs.hri.sample_people'],
+      'Hand objects to a person whose trust follows the trust qubit; a new simulated person can be drawn '
+      'for every episode from the uncertainty of a fitted model.',
       '''flowchart LR
     ag["agent"]:::op -->|hand over · slow · ask · wait| P["person: trust qubit"]:::hum
     P --> o["outcome · answer"]:::in --> ag
@@ -583,6 +587,19 @@ PAGES['infrastructure'] = ('Problems, circuits and the viewer',
     pb["task allocation · Max-Cut · knapsack · portfolio"]:::in --> Q["QUBO: xᵀQx + offset"]:::op
     Q --> qa["QAOA"]:::out & sqa["SQA · QIEA"]:::out & sa["simulated annealing"]:::out & bf["brute force"]:::out''',
       None, 'Lucas, A. (2014). Frontiers in Physics, 2, 5.', '14_task_allocation'),
+    M('Trust-aware task allocation', ['quantum_mind.applications.allocation.trust_aware_allocation',
+                                      'quantum_mind.applications.allocation.expected_costs',
+                                      'quantum_mind.applications.allocation.decode'],
+      'Assign tasks among people working with a robot: robot-assisted tasks cost more with a person who '
+      'does not trust the robot, and heavy workloads are penalised. The trust values come from the '
+      'people models.',
+      '''flowchart LR
+    T["trust per person<br/>trust qubit · online posterior"]:::hum --> C["expected cost<br/>C + F·r·(1 − τ)"]:::op
+    B[("effort per person and task")]:::in --> C
+    C --> Q["QUBO + workload term"]:::op --> S["QAOA · SQA · exact"]:::op --> A["who does what"]:::out
+    blind["trust-blind allocation"]:::base -.-> A''',
+      'trust-blind task allocation', 'Lucas, A. (2014). Frontiers in Physics, 2, 5 (allocation QUBO); '
+      'trust from Busemeyer & Bruza (2024) and Roeder et al. (2023).'),
     M('Circuits for the quantum-like families', ['quantum_mind.circuits.builders.order_effects_circuit',
                                                  'quantum_mind.circuits.builders.belief_circuit',
                                                  'quantum_mind.circuits.builders.chsh_circuit'],
@@ -650,13 +667,15 @@ ORIGIN = {
     'Human-model service': ('tool', None),
     'Intent resolution': ('unique', None),
     'Recalibration': ('published', None),
-    'Conformal prediction sets': ('published', None),
+    'Conformal prediction sets': ('extended', 'adaptive conformal sets for a person\'s next answer, which keep their '
+                                  'long-run coverage while the person changes, and tell the robot when to ask'),
     'Calibration monitor': ('published', None),
     'Confidence gate': ('published', None),
     'Meta-calibrated gate': ('unique', None),
     'Question planner': ('unique', None),
     'Answer models': ('unique', None),
-    'Personalised human models': ('published', None),
+    'Personalised human models': ('extended', 'a full per-person posterior updated after every answer, with credible '
+                                  'intervals (method=\'online\')'),
     'Trust-aware hand-over': ('unique', None),
     # perception
     'Perception adapters': ('published', None),
@@ -693,6 +712,7 @@ ORIGIN = {
     'Quantum language model': ('published', None),
     # infrastructure
     'QUBO problems': ('published', None),
+    'Trust-aware task allocation': ('unique', None),
     'Circuits for the quantum-like families': ('unique', None),
     'Back ends': ('tool', None),
     'Bloch-sphere viewer': ('tool', None),

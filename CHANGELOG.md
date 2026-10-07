@@ -13,6 +13,20 @@
   Quantum Mind adds to published models".
 - Citations added: Roeder et al. (2023) for the trust model and Rosenthal, Dey and Veloso (2009) as
   related work for the question planner.
+- Robotics extensions of published methods:
+  `applications.calibration.AdaptiveConformalSets` (prediction sets for a person's next answer that keep
+  their long-run coverage while the person changes; Gibbs and Candès, 2021);
+  `PersonalisedHumanModel(method='online')` and `PopulationPrior.online()` (a full per-person posterior
+  with credible intervals); `applications.allocation.trust_aware_allocation` (task allocation QUBO with
+  expected failures from each person's trust in the robot, and a workload term); `envs.sample_people`
+  and the `people=` option of `ClarificationEnv` and `TrustHandoverEnv` (a new simulated person every
+  episode, drawn from a fitted model's uncertainty).
+- `OnlinePersonModel` moves particles by Metropolis-Hastings after resampling (resample-move); the first
+  version used a kernel jitter whose 95% intervals covered the truth in only about a third of
+  simulated people. It accepts a full prior covariance (`prior_cov`).
+- Example 37: a robot that adapts to each person (simulated people). In it, agents trained against one
+  simulated person or a population scored the same on new people; the population option is reported
+  as a safeguard, not a gain.
 
 ## 2.0.1 (7 October 2026)
 

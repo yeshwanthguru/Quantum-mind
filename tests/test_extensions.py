@@ -141,3 +141,19 @@ def test_extensions_run_on_every_extended_family(cls, design, opts):
     person.update(c, int(np.argmax(data[c])))
     assert abs(float(np.sum(person.predict()[c])) - 1) < 1e-6
     assert information_gain([res.model, person], c, design) >= 0
+
+
+def test_online_intervals_cover_the_truth_at_about_their_level():
+    """Resample-move keeps the intervals calibrated; without the move step coverage collapsed to about 30%."""
+    truth = BayesOrderModel(pA=0.7, pB=0.4, rho=0.0)
+    pt = truth.predict(None)
+    hits = 0
+    for seed in range(20):
+        person = OnlinePersonModel(BayesOrderModel, n_particles=200, rng=np.random.default_rng(seed))
+        rng = np.random.default_rng(100 + seed)
+        for i in range(120):
+            c = 'AB' if i % 2 else 'BA'
+            person.update(c, rng.choice(4, p=pt[c]))
+        lo, hi = person.credible_interval('pB', 0.9)
+        hits += lo <= 0.4 <= hi
+    assert hits >= 14                       # 90% intervals: expect about 18 of 20

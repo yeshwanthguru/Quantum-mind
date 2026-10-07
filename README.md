@@ -365,6 +365,7 @@ Pillar: QL quantum-like, Q quantum, QI quantum-inspired, viz Bloch-sphere viewer
 | 34 | Perception | QL | [bistable perception: quantum Zeno vs Markov and gamma renewal](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/34_bistable_perception_zeno.py) |
 | 35 | Learning, HRI | QI, Q | [RL with simulated people: amplitude exploration, quantum policy](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/35_rl_with_simulated_people.py) |
 | 36 | Robotics, HRI | QL | [trust-aware hand-over vs Markov-based and always hand over](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/36_trust_aware_handover.py) |
+| 37 | Robotics, HRI | QL, QI | [robot that adapts to each person: online posterior, adaptive conformal sets, trust-aware allocation](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/37_robot_adapts_to_each_person.py) |
 
 Notebooks: [`01_bloch_sphere_live`](https://github.com/yeshwanthguru/Quantum-mind/blob/main/notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
 tomography under device noise) and [`02_robot_questioning_and_trust`](https://github.com/yeshwanthguru/Quantum-mind/blob/main/notebooks/02_robot_questioning_and_trust.ipynb)
@@ -414,6 +415,26 @@ No hardware results are included in the package. IBM jobs use the client-side Qi
 Sampler (`qiskit_ibm_runtime.executor_sampler`), falling back to `SamplerV2` on releases before 0.50.
 
 <a id="status"></a>
+
+## What is published and what is new
+
+Most models here were published by other researchers; each is implemented from its paper and cited in
+the [model atlas](https://yeshwanthguru.github.io/Quantum-mind/docs/atlas/index.html), where every
+entry carries one of four labels:
+
+| Label | Entries | Meaning |
+|---|---|---|
+| Unique to Quantum Mind | 13 | designed in this library, building on the cited methods: the robot decision layer (ensemble, ask or act, question planner, trust-aware hand-over, trust-aware task allocation), the environments, the circuits for the quantum-like families, and the tools below |
+| Published model, extended | 16 | implemented as published, with capabilities the papers do not have |
+| Published method | 31 | implemented as published |
+| Software tool | 6 | infrastructure |
+
+The extensions that apply to every people model: bootstrap intervals (`bootstrap`), a per-person
+posterior updated after every answer (`OnlinePersonModel`), and the choice of the question or order
+that best separates competing models (`rank_conditions`, `model_posterior`). For robots: adaptive
+conformal sets for a person's next answer (`AdaptiveConformalSets`), online personalisation, trust-aware
+task allocation as a QUBO (`trust_aware_allocation`), and training against populations of simulated
+people (`sample_people`).
 
 ## Status and scope
 

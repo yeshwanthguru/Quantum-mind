@@ -70,3 +70,13 @@ def test_zeno_row(capsys):
     for line in out.splitlines():
         if 'BIC' in line:
             assert line.split('BIC')[1].strip() in row
+
+
+def test_allocation_row(capsys):
+    out = _run_example('37_robot_adapts_to_each_person.py', capsys)
+    row = _row('Trust-aware task allocation')
+    costs = [line.split('expected cost')[1].strip() for line in out.splitlines() if 'expected cost' in line]
+    assert len(costs) == 2 and all(c in row for c in costs)
+    assert out.split('miss rate ')[1].split()[0] in row
+    returns = out.split('mean return on new people:')[1]
+    assert all(v.strip(',') in row for v in returns.split() if v.lstrip('-').replace('.', '').replace(',', '').isdigit())

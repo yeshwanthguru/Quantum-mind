@@ -39,7 +39,7 @@ Core layer: linear algebra of quantum-like models, the Model base class, fitting
   - `to_vector(self)`: Unconstrained vector of the fitted parameters.
 - `model_posterior(models, data, design=None, prior=None)`: Posterior probabilities of the models after observing outcome counts.
 - `normalize(v)`: Scale a vector to unit length.
-- **class `OnlinePersonModel(model_cls, prior=None, prior_scale=1.0, n_particles=500, design=None, resample_below=0.5, jitter=0.1, rng=None, **options)`**: Posterior over one person's parameters, updated one observed outcome at a time.
+- **class `OnlinePersonModel(model_cls, prior=None, prior_scale=1.0, n_particles=500, design=None, resample_below=0.5, move_steps=3, rng=None, prior_cov=None, **options)`**: Posterior over one person's parameters, updated one observed outcome at a time.
   - `credible_interval(self, name, level=0.9)`: Weighted quantile interval of one parameter.
   - `observe(self, data)`: Condition on a batch of outcome counts.
   - `posterior_mean(self)`: Posterior mean of the parameters on their natural scale.
@@ -323,6 +323,11 @@ Intent resolution from ambiguous commands and context cues (robots, assistants, 
 
 Calibration of confidence signals: measure it, correct it, and bound it.
 
+- **class `AdaptiveConformalSets(alpha=0.1, gamma=0.01, calibration_scores=None)`**: Prediction sets for a person's next answer that keep their coverage while the person changes.
+  - `bound(self)`: float: the guaranteed bound on ``|miscoverage - alpha|`` after the answers so far.
+  - `predict_set(self, prob)`: Answers in the prediction set.
+  - `should_ask(self, prob)`: bool: True when more than one answer is in the set.
+  - `update(self, prob, answer)`: Record the observed answer and correct the working level.
 - `brier_score(prob, outcome)`: Brier score (mean squared error of probabilities).
 - **class `CalibrationMonitor(bins=10, alpha=0.05, min_count=10)`**: Online calibration check of one module, with a guaranteed lower bound on its success rate.
   - `ece(self)`: Expected calibration error of the outcomes recorded so far (bin centres as confidences).
@@ -388,13 +393,15 @@ Adaptive questioning: which question a robot should ask next, and when to stop a
 Personalised human models: start from the population, adapt to each person.
 
 - `fit_map(model_cls, data, prior, design=None, restarts=4, rng=None, **options)`: Maximum a posteriori fit of one person's data under a population prior.
-- **class `PersonalisedHumanModel(model_cls, prior, design=None, outcomes=4)`**: Per-person human models with partial pooling.
+- **class `PersonalisedHumanModel(model_cls, prior, design=None, outcomes=4, method='map', n_particles=300)`**: Per-person human models with partial pooling.
   - `add(self, person, condition, answers)`: Record one answer pair and refit that person.
+  - `credible_interval(self, person, name, level=0.9)`: Posterior interval of one of a person's parameters (``method='online'`` only).
   - `model(self, person)`: The person's model (the population mean model for a new person).
   - `predict(self, person, design=None)`: Predicted answer distribution for one person.
 - `population_prior(model_cls, data_by_person, design=None, restarts=4, rng=None)`: Convenience: fit every person by maximum likelihood and build the empirical-Bayes prior.
 - **class `PopulationPrior(model_cls, mean, cov)`**: Gaussian prior on a model's free (unconstrained) parameters.
   - `neg_log_prior(self, x)`: Negative log prior density, up to a constant.
+  - `online(self, n_particles=500, design=None, rng=None, **options)`: A per-person posterior that starts from this prior.
 
 ## `quantum_mind.applications.handover`
 
@@ -636,14 +643,15 @@ Tensor-train (matrix product operator) compression of neural-network layers.
 
 Reinforcement-learning environments with simulated people (Gymnasium API).
 
-- **class `ClarificationEnv(model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6)`**: Resolve an ambiguous request by asking questions, then act.
+- **class `ClarificationEnv(model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6, people=None)`**: Resolve an ambiguous request by asking questions, then act.
   - `reset(self, seed=None, options=None)`: Start an episode with a new hidden intent.
   - `step(self, action)`: Ask a question or act.
 - **class `GridWorldEnv(**kwargs)`**: The grid world of :class:`quantum_mind.inspired.rl.GridWorld` with the Gymnasium interface.
   - `reset(self, seed=None, options=None)`: Return to the start cell.
   - `step(self, action)`: Move one cell.
 - `register_envs()`: Register the environments with Gymnasium.
-- **class `TrustHandoverEnv(model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5)`**: Hand objects to a simulated person whose trust follows the trust qubit.
+- `sample_people(source, n, rng=None)`: Draw simulated people whose parameters reflect what is known, and not known, about real people.
+- **class `TrustHandoverEnv(model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5, people=None)`**: Hand objects to a simulated person whose trust follows the trust qubit.
   - `reset(self, seed=None, options=None)`: Start an episode at the model's initial trust.
   - `step(self, action)`: Take one action.
 

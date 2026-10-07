@@ -46,6 +46,11 @@ RESULTS = [
     ('Trust-aware hand-over, 40 simulated sessions of 20 hand-overs (example 36)', 'mean session cost: order-aware 42.1 · '
      'Markov-based 60.9 · always hand over 96.2 (the simulated people follow the open-system model, which favours the '
      'order-aware policy by construction)'),
+    ('Trust-aware task allocation and adaptive conformal sets (simulated, example 37)',
+     'expected cost under the true trust: <strong>trust-aware plan 4.91</strong> · trust-blind plan 16.27; adaptive '
+     'conformal miss rate 0.147 at a 0.150 target while the robot learns a new person; agents trained against one '
+     'simulated person or a population of them scored the same on new people (-5.47), so the population is a '
+     'safeguard here, not a gain'),
     ('Detector calibration, 5 classes (simulated, example 32)', 'ECE raw 0.192 · Platt 0.020 · temperature 0.017 · '
      '<strong>isotonic 0.009</strong>; conformal sets reach 0.911 coverage at a 0.90 target'),
     ('Multimodal fusion, held-out log loss (simulated, example 33)', 'quantum-like 0.759 · Bayes 0.793 · '
