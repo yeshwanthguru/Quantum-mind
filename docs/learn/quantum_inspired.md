@@ -7,6 +7,8 @@ must be judged against strong classical heuristics, which they do not always bea
 
 ```{mermaid}
 flowchart TB
+    accTitle: Quantum-inspired algorithms, diagram 1
+    accDescr: Five quantum ideas and the classical algorithms they inspire (QIEA and amplitude exploration, simulated quantum annealing, QPSO, tensor networks, the quantum language model), each compared with a classical baseline.
     Q["quantum idea"]:::hum --> A1["amplitudes and the Born rule"]:::op --> R1["QIEA · amplitude exploration · QIRL"]:::out
     Q --> A2["tunnelling between solutions"]:::op --> R2["simulated quantum annealing"]:::out
     Q --> A3["delta-potential-well sampling"]:::op --> R3["QPSO"]:::out
@@ -47,8 +49,9 @@ from quantum_mind.inspired import QIEA, simulated_annealing
 rng = np.random.default_rng(0)
 edges = [e for e in itertools.combinations(range(12), 2) if rng.random() < 0.4]
 q = maxcut(edges, n=12)
-print(QIEA(q, seed=0).run().value, simulated_annealing(q, seed=0).value)
-# -20.0 -21.0: both minimise minus the cut, and here simulated annealing finds the larger cut
+qiea, sa = QIEA(q, seed=0).run().value, simulated_annealing(q, seed=0).value
+print(qiea, sa)                  # both minimise minus the cut
+assert sa <= qiea                # on this graph simulated annealing finds a cut at least as large
 ```
 
 ## Where Quantum Mind fits

@@ -6,6 +6,8 @@ action; it has to balance **exploring** new actions against **exploiting** what 
 
 ```{mermaid}
 flowchart LR
+    accTitle: Reinforcement learning, diagram 1
+    accDescr: An agent with a policy acts on an environment, which returns a new state and a reward; a value estimate is updated from the temporal-difference error.
     AG["agent<br/>policy π(a | s)"]:::op -->|action aₜ| EN(("environment")):::hum
     EN -->|state sₜ₊₁| AG
     EN -->|reward rₜ₊₁| AG

@@ -7,6 +7,8 @@ pixels, audio or joint readings. Training uses **gradient descent**, with gradie
 
 ```{mermaid}
 flowchart LR
+    accTitle: Deep learning, diagram 1
+    accDescr: An input passes through two layers of linear maps and ReLU activations to softmax probabilities; a loss is computed and backpropagation sends gradients back to each layer.
     X["input<br/>image · sound · state"]:::in --> L1["layer 1<br/>W₁x + b₁ → ReLU"]:::op --> L2["layer 2<br/>W₂h + b₂ → ReLU"]:::op --> O["output<br/>softmax probabilities"]:::out
     O --> LOSS["loss<br/>cross-entropy"]:::base
     LOSS -.->|backpropagation: ∂loss/∂W| L2

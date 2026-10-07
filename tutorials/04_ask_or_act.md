@@ -93,6 +93,14 @@ ax.set_title('Act (yellow) or ask (purple), by hazard')
 plt.show()
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+assert rows[0][3] == 'ask' and rows[-1][3] == 'act'     # asks while the models disagree, then acts
+assert rows[-1][2] < 0.01
+print('checked')
+```
+
 **Summary.** The decision layer is small and framework-free: call it from a ROS 2 node, a behaviour
 tree or a planner. What makes it work is reliable inputs: calibrated confidence (tutorial 5) and models
 that know when they disagree.

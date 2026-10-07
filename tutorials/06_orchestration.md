@@ -81,6 +81,15 @@ ax.set_title('Routing on a new task'); ax.legend()
 plt.show()
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+early = meta[:, :10].mean() - scratch[:, :10].mean()
+late = meta[:, -10:].mean() - scratch[:, -10:].mean()
+assert meta[:, :25].mean() > scratch[:, :25].mean() and early > late
+print('checked')
+```
+
 The advantage is largest at the start of a task and shrinks as both gates collect task-specific
 data.
 

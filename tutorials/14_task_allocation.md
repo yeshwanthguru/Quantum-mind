@@ -82,6 +82,13 @@ except ImportError:
     print('install "quantum-mind[qiskit]" to sample the circuit with Aer')
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+assert all(np.isclose(v, e_opt) for v in results.values())
+print('checked')
+```
+
 **Result.** All methods find the optimum of this 9-variable instance, and enumeration takes
 milliseconds. The value of the QUBO formulation is that the same problem runs unchanged on annealers,
 gate-model hardware and classical heuristics, so they can be compared as problems grow.

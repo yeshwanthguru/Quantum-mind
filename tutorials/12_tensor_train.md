@@ -80,6 +80,15 @@ for r in (4, 16, 64):
     print('1024x1024, rank %2d: %6.0fx fewer numbers, TT %.2f ms, dense %.2f ms' % (r, Wbig.size / tt.n_params, 1e3 * t_tt, 1e3 * t_d))
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+acc = {r: a for r, _, _, a in rows}
+ratio = {r: x for r, _, x, _ in rows}
+assert acc[8] < dense_acc - 0.2 and acc[32] >= dense_acc - 0.01 and ratio[2] > 10 and ratio[32] < 1.1
+print('checked')
+```
+
 **Result.** Compressing a trained layer after the fact with TT-SVD loses accuracy quickly on this
 small network: the layer only becomes accurate again near full rank, where it is no smaller. In
 practice TT layers are trained directly in the TT format (Novikov et al., 2015) or fine-tuned after

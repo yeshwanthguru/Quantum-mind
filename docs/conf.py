@@ -110,6 +110,10 @@ html_baseurl = SITE + 'docs/'
 html_show_sourcelink = False
 html_last_updated_fmt = '%d %B %Y'
 html_context = {
+    'docs_url': SITE + 'docs/',
+    'site_description': ('Quantum Mind %s: quantum-like models of human judgement and trust, quantum machine '
+                         'learning and quantum-inspired algorithms for robots that work with people, each '
+                         'compared with classical baselines.' % version),
     'github_user': 'yeshwanthguru',
     'github_repo': 'quantum-mind',
     'github_version': 'main',
@@ -132,8 +136,9 @@ html_theme_options = {
     'navigation_with_keys': False,
     'pygments_light_style': 'tango',
     'pygments_dark_style': 'github-dark',
-    'announcement': ('Quantum Mind %s: robot decision layer, perception and learning modules. '
-                     '<a href="%sdocs/about/changelog.html">What changed</a>' % (version, SITE)),
+    'announcement': ('Documentation for Quantum Mind %s (<code>pip install quantum-mind</code>), built from the '
+                     'release branch. <a href="%sdocs/about/changelog.html">What changed</a> · '
+                     '<a href="%sdocs/help/faq.html">FAQ</a>' % (version, SITE, SITE)),
     'footer_start': ['copyright'],
     'footer_end': ['sphinx-version'],
 }

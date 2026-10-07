@@ -7,6 +7,8 @@ Python is assumed.
 
 ```{mermaid}
 flowchart LR
+    accTitle: Foundations, diagram 1
+    accDescr: How the Foundations topics connect: robotics, AI, machine learning, deep learning, reinforcement learning and perception lead to embodied AI; quantum computing leads to quantum-inspired algorithms and quantum-like cognition.
     R["Robotics"]:::a --> E["Embodied AI"]:::c
     AI["Artificial intelligence"]:::a --> ML["Machine learning"]:::b --> DL["Deep learning"]:::b
     ML --> RL["Reinforcement learning"]:::b

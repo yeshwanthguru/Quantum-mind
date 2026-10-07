@@ -7,6 +7,8 @@ an agent from data instead of by hand.
 
 ```{mermaid}
 flowchart LR
+    accTitle: Artificial intelligence, diagram 1
+    accDescr: An agent receives percepts from its environment, keeps a belief, weighs utilities and chooses the action with the highest expected utility.
     E(("environment")):::hum -->|percepts| A
     subgraph A["agent"]
       direction TB
@@ -20,6 +22,8 @@ flowchart LR
 
 ```{mermaid}
 flowchart TB
+    accTitle: Artificial intelligence, diagram 2
+    accDescr: Artificial intelligence contains search, reasoning and machine learning; machine learning contains deep learning and reinforcement learning; embodied AI combines them in agents with bodies.
     AI["Artificial intelligence<br/>agents that act well"]:::op --> SR["search and planning"]:::in
     AI --> KR["knowledge and reasoning<br/>logic · probability"]:::in
     AI --> ML["machine learning<br/>learn from data"]:::in

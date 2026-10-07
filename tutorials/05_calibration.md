@@ -95,6 +95,19 @@ print('when the detector says 0.95: observed accuracy %.3f, 95%% lower bound %.3
 print('Clopper-Pearson for 18 of 20 correct:', np.round(clopper_pearson(18, 20), 3))
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+raw_ece = expected_calibration_error(conf[te], correct[te])
+assert all(expected_calibration_error(c, correct[te]) < raw_ece / 2 for k, c in methods.items() if k != 'raw')
+S = SplitConformalClassifier(alpha=0.1).fit(P_det[tr], y[tr]).predict_sets(P_det[te])
+assert S[np.arange(S.shape[0]), y[te]].mean() >= 0.87          # about 90% coverage, as guaranteed
+print('checked')
+```
+
+**Summary.** Every recalibration method at least halves the calibration error of the over-confident
+detector, and the conformal sets reach their coverage target.
+
 References: Guo et al. (2017), ICML; Platt (1999); Zadrozny & Elkan (2002), KDD; Angelopoulos & Bates
 (2023), *Foundations and Trends in Machine Learning* 16, 494-591; Clopper & Pearson (1934),
 *Biometrika* 26, 404-413.

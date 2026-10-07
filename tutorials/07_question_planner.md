@@ -82,9 +82,17 @@ ax.set_title('Episode costs on simulated people')
 plt.show()
 ```
 
-In this domain the gain from modelling order is modest. Across 60 randomly drawn domains (see the
-CHANGELOG for 2.0.0) the order-aware planner saved 0.18 cost units on average, with a standard
-deviation of 0.21, and was better in about half of the domains: the benefit depends on how strongly
-the questions interfere.
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+mean_cost = {k: np.array(v, float)[:, 0].mean() for k, v in res.items()}
+assert mean_cost['order-aware'] <= mean_cost['independent']
+print('checked')
+```
+
+**Result.** In this domain the order-aware planner has a lower average cost than the planner that
+treats answers as independent; the printed numbers give the size of the gain. The gain is not
+universal: across randomly drawn domains it depends on how strongly the questions interfere, and in
+some domains it is close to zero.
 
 References: Howard (1966); Wang & Busemeyer (2013), *Topics in Cognitive Science* 5, 689-710.

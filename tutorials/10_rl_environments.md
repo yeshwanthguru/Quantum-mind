@@ -83,12 +83,21 @@ for k, v in lake.items():
 plot(lake, 'FrozenLake (slippery)', w=100)
 ```
 
-**Result.** All four explorers learn the grid world. On the clarification task amplitude
-exploration ends slightly behind the classical explorers, and on slippery FrozenLake the ranking
-depends on seeds and settings: in this run softmax leads, amplitude exploration is second and UCB
-last, while an earlier run with other seeds had UCB first (0.368), softmax second (0.331) and
-amplitude third (0.297). Amplitude exploration is a quantum-inspired heuristic that is competitive
-with, not better than, standard exploration; it is not a quantum speed-up.
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+assert all(v[:, -30:].mean() < v[:, :10].mean() for v in grid.values())          # all learn the grid
+for curves, last in ((clar, 100), (lake, 300)):
+    amp = curves['amplitude'][:, -last:].mean()
+    assert amp <= max(v[:, -last:].mean() for k, v in curves.items() if k != 'amplitude')   # not the best
+print('checked')
+```
+
+**Result.** All four explorers learn the grid world. On the clarification task and on slippery
+FrozenLake amplitude exploration does not beat the best classical explorer; the ranking of the others
+changes with seeds and settings (compare the printed numbers across runs). Amplitude exploration is a
+quantum-inspired heuristic that is competitive with, not better than, standard exploration; it is not
+a quantum speed-up.
 
 References: Sutton & Barto (2018); Dong et al. (2008), *IEEE TSMC-B* 38, 1207-1220; Towers et al.
 (2024), arXiv:2407.17032.

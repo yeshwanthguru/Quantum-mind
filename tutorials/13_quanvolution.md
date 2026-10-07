@@ -72,6 +72,15 @@ ax.set_xlim(0.6, 1.0); ax.set_xlabel('cross-validated accuracy'); ax.set_title('
 plt.show()
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+q = max(v.mean() for k, v in scores.items() if k.startswith('quanvolution'))
+c = min(v.mean() for k, v in scores.items() if k.startswith('random'))
+assert q < c and q < scores['raw pixels'].mean()
+print('checked')
+```
+
 **Result.** On this data the quanvolution features are less accurate than both the random classical
 filter and the raw pixels. The filter is included as a common reference point in quantum image
 processing and because its circuits export to Qiskit, not because it helps a robot's vision.

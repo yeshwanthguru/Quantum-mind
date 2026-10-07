@@ -1,9 +1,14 @@
 """Draw the example-gallery thumbnails (python3 docs/make_thumbs.py).
 
-Each thumbnail is a small Bloch sphere in the colour of a pillar, so the gallery shows at a glance
-which kind of model an example uses. The images are committed; rerun this script after changing it.
+Each example gets its own thumbnail: a small Bloch sphere in the colour of its pillar, its number and
+its title, so the gallery shows at a glance what each example is about and which kind of model it
+uses. The pillar comes from the ``sphinx_gallery_thumbnail_path`` line of the example, which this
+script also points at the example's own thumbnail. The images are committed; rerun this script after
+adding or renaming an example.
 """
 import pathlib
+import re
+import textwrap
 
 import matplotlib
 matplotlib.use('Agg')
@@ -48,8 +53,55 @@ def thumbnail(name, label, arrow, wire):
     plt.close(fig)
 
 
+def example_thumbnail(number, title, pillar):
+    """Save the 400 x 280 thumbnail of one example."""
+    label, arrow, wire = PILLARS[pillar]
+    fig = plt.figure(figsize=(4, 2.8), dpi=100, facecolor=BG)
+    ax = fig.add_axes([0.02, 0.30, 0.42, 0.62])
+    ax.set_xlim(-1.3, 1.3)
+    ax.set_ylim(-1.1, 1.1)
+    ax.set_aspect('equal')
+    ax.axis('off')
+    sphere(ax, arrow, wire, theta=0.4 + 0.07 * number, phi=0.3 * number)
+    fig.text(0.95, 0.62, '%02d' % number, color=arrow, ha='right', va='center', fontsize=54, fontweight='bold')
+    fig.text(0.95, 0.36, label, color='#8b949e', ha='right', va='center', fontsize=12)
+    fig.text(0.05, 0.10, '\n'.join(textwrap.wrap(title, 38)[:2]), color='#e6edf3', ha='left', va='bottom',
+             fontsize=12.5, fontweight='bold')
+    fig.savefig(OUT / 'thumbs' / ('ex_%02d.png' % number), facecolor=BG)
+    plt.close(fig)
+
+
+def examples():
+    """Draw a thumbnail per example and point each example at its own thumbnail."""
+    root = pathlib.Path(__file__).resolve().parents[1] / 'examples'
+    pattern = re.compile(r"# sphinx_gallery_thumbnail_path = '_static/thumbs/(\w+)\.png'")
+    for f in sorted(root.glob('[0-9][0-9]_*.py')):
+        src = f.read_text()
+        number, title = int(f.name[:2]), src.split('\n', 1)[0].strip('"\' ')
+        m = pattern.search(src)
+        key = m.group(1) if m else 'q'
+        pillar = key if key in PILLARS else META.get(f.name, 'q')
+        pattern_own = "# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_%02d.png'" % number
+        if not m and pattern_own not in src:
+            raise SystemExit('%s has no sphinx_gallery_thumbnail_path line' % f.name)
+        example_thumbnail(number, title, pillar)
+        line = "# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_%02d.png'" % number
+        new = pattern.sub(line, src) if m else src
+        if new != src:
+            f.write_text(new)
+        META[f.name] = pillar
+
+
+#: Pillar of each example once its thumbnail line points at its own image (kept in thumbs/pillars.txt).
+META = {}
+
 if __name__ == '__main__':
     (OUT / 'thumbs').mkdir(parents=True, exist_ok=True)
     for key, (label, arrow, wire) in PILLARS.items():
         thumbnail(key, label, arrow, wire)
+    store = OUT / 'thumbs' / 'pillars.txt'
+    if store.exists():
+        META.update(dict(line.split() for line in store.read_text().splitlines() if line.strip()))
+    examples()
+    store.write_text(''.join('%s %s\n' % kv for kv in sorted(META.items())))
     print('thumbnails written to', OUT / 'thumbs')

@@ -616,7 +616,10 @@ def write():
                  'classical baselines.', '']
         for m in models:
             total += 1
-            lines += ['## ' + m['title'], '', m['summary'], '', '```{mermaid}', m['diagram'], STYLE, '```', '']
+            first, rest = m['diagram'].split('\n', 1)
+            acc = ['    accTitle: Block diagram of %s' % m['title'],
+                   '    accDescr: %s' % m['summary'].replace('\n', ' ')]
+            lines += ['## ' + m['title'], '', m['summary'], '', '```{mermaid}', first, *acc, rest, STYLE, '```', '']
             lines += ['- **API:** ' + ', '.join(_role(p) for p in m['api'])]
             if m['baselines']:
                 lines += ['- **Compared with:** ' + m['baselines']]
@@ -636,6 +639,8 @@ def write():
              'inside, what comes out, and which classical baselines it is compared with. Each entry links '
              'to the API, a tutorial where there is one, and a reference.' % total, '',
              '```{mermaid}', '''flowchart LR
+    accTitle: How the parts of Quantum Mind fit together
+    accDescr: Data from sensors and people feed the core fitting tools, the quantum-like families, perception and learning, which all feed the robot decision layer; quantum and quantum-inspired models feed learning; classical baselines are compared everywhere.
     D[("data · sensors · people")]:::hum --> C["core: fit · compare"]:::op
     C --> QL["quantum-like families"]:::op --> R["robot decision layer"]:::out
     P["perception and fusion"]:::op --> R

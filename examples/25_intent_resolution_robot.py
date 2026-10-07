@@ -11,7 +11,7 @@ every theta = 0. The robot asks for clarification when the posterior is still un
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/robot.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_25.png'
 from quantum_mind.applications.intent import QuantumIntentResolver, BayesIntentResolver
 from quantum_mind.applications.robotics import ask_or_act
 

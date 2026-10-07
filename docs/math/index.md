@@ -6,6 +6,8 @@ names the class or function that implements each equation, so the mathematics, t
 
 ```{mermaid}
 flowchart LR
+    accTitle: Mathematics, diagram 1
+    accDescr: The core rules feed the quantum-like families and the decision layer; perception feeds the decision layer; quantum and quantum-inspired models feed learning.
     C["Core<br/>Born and Lüders rules · Lindblad · likelihood · AIC/BIC"]:::op --> QL["Quantum-like families<br/>projections · interference · walks · Zeno"]:::hum
     C --> R["Decision layer<br/>value of information · calibration · conformal · empirical Bayes"]:::out
     QL --> R

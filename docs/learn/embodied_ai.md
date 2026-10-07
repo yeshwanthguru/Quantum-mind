@@ -8,6 +8,8 @@ agent also needs models of **them**.
 
 ```{mermaid}
 flowchart TB
+    accTitle: Embodied AI, diagram 1
+    accDescr: A body with sensors and actuators and an agent with perception, a world model, models of people and a policy, in a loop where actions change what is sensed next.
     subgraph Body["body"]
       SEN["sensors"]:::in
       ACT["actuators"]:::out

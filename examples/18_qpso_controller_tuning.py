@@ -10,7 +10,7 @@ of a unit step plus a control-effort penalty, simulated for 3 s.
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/qi.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_18.png'
 import numpy as np
 from quantum_mind.inspired import QPSO
 

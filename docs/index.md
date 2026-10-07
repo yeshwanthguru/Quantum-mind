@@ -35,7 +35,7 @@ pip install "quantum-mind[all]"
 :link-type: doc
 
 Models of human judgement, decision and trust in quantum probability, each with classical
-baselines and a distinctive test. Eleven families.
+baselines and a distinctive test. Twelve families.
 :::
 
 :::{grid-item-card} Quantum
@@ -214,7 +214,7 @@ Robotics, AI, machine learning, deep learning, RL, perception, embodied AI and q
 :link: tutorials/index
 :link-type: doc
 
-Fifteen step-by-step tutorials, from the introduction to every model, with real outputs and figures.
+Eighteen step-by-step tutorials, from the introduction to every model, with real outputs and figures.
 :::
 
 :::{grid-item-card} {fas}`diagram-project` Model atlas
@@ -242,7 +242,7 @@ The three pillars, every model family, circuits, hardware and the viewer.
 :link: auto_examples/index
 :link-type: doc
 
-31 runnable scripts across surveys, finance, medicine, robotics, physics and networks.
+36 runnable scripts across surveys, finance, medicine, robotics, perception, learning, physics and networks.
 :::
 
 :::{grid-item-card} {fas}`laptop-code` Notebooks
@@ -257,6 +257,13 @@ Interactive Bloch spheres, robot questioning and trust.
 :link-type: doc
 
 Every public class and function, with parameters, returns and examples.
+:::
+
+:::{grid-item-card} {fas}`circle-question` Help
+:link: help/index
+:link-type: doc
+
+Which model do I need, glossary, FAQ and what is validated.
 :::
 
 :::{grid-item-card} {fas}`circle-info` About
@@ -277,8 +284,9 @@ tutorials/index
 user_guide/index
 atlas/index
 math/index
+api/index
 auto_examples/index
 notebooks/index
-api/index
+help/index
 about/index
 ```

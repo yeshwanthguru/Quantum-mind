@@ -105,6 +105,18 @@ for ax, (n, rec) in zip(axes, out.items()):
 fig.suptitle('Model recovery: how often the generating model wins'); plt.tight_layout(); plt.show()
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+err = {k: np.abs(v - observed).max() for k, v in fits.items()}
+assert err['Bayes'] > 0.03 and err['quantum-like'] < 0.01 and err['anchoring'] < 0.01   # Bayes misses the shift
+p_ql = qq_test(ql.sample(None, 1000, np.random.default_rng(7)))[2]
+p_an = qq_test(anc.sample(None, 1000, np.random.default_rng(7)))[2]
+assert p_ql > 0.05 > p_an                        # the QQ test separates the two order models
+assert out[400]['quantum-like']['QuantumOrderModel'] >= 8 and out[400]['anchoring']['AnchoringOrderModel'] >= 8
+print('checked')
+```
+
 **Summary.** The order effect itself rules out the Bayesian model. Separating the quantum-like model
 from anchoring needs the joint answers (the QQ test) and enough people per order; recovery shows how
 many.

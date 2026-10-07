@@ -7,6 +7,8 @@ uncertain sources (camera, speech, gaze).
 
 ```{mermaid}
 flowchart LR
+    accTitle: Perception and computer vision, diagram 1
+    accDescr: Camera, microphone and gaze signals become detector scores, speech hypotheses and a direction; they are calibrated and fused into a belief over targets.
     C["camera"]:::in --> DET["object detector<br/>labels + scores"]:::op
     M["microphone"]:::in --> ASR["speech recogniser<br/>n-best list"]:::op
     G["gaze / pointing"]:::in --> DIR["direction estimate"]:::op
@@ -64,8 +66,8 @@ print(bayes_fusion([det, asr]).round(3))     # the two sources together favour c
 
 The library recalibrates perception outputs, fuses them with three methods that can be compared on
 held-out data, and models bistable perception with a quantum Zeno model against Markov and
-gamma-renewal baselines. On simulated data the quantum-like fusion had the lowest held-out log loss
-(0.740 against 0.755 for Bayes), with weakly identifiable angles.
+gamma-renewal baselines. Tutorial 8 compares the three fusion rules on held-out simulated choices;
+the fitted incompatibility angles are only weakly identifiable from choices alone.
 
 - [Tutorial: multimodal fusion](../tutorials/08_fusion.ipynb)
 - [Tutorial: bistable perception](../tutorials/09_bistable_perception.ipynb)

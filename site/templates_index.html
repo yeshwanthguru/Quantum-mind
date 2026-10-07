@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quantum Mind: quantum-like, quantum and quantum-inspired models</title>
+<title>Quantum Mind: models of people for robots that work with them</title>
 <meta name="description" content="Open-source Python library: quantum-like models of human judgement, decision and trust with classical baselines, quantum machine learning and algorithms as Qiskit circuits, quantum-inspired optimisers, and a 3D Bloch-sphere viewer. Built for robots that work with people.">
 <meta property="og:title" content="Quantum Mind">
 <meta property="og:description" content="Quantum-like, quantum and quantum-inspired models in one open-source library, with a live 3D Bloch-sphere playground. Apache-2.0.">
@@ -19,8 +19,8 @@
 <header class="top"><div class="wrap">
   <a class="brand" href="#"><img src="assets/logo.svg" alt="" width="26" height="26"> Quantum Mind</a>
   <nav>
-    <a href="#playground-section">Playground</a><a href="#pillars">Models</a><a href="#animations">Animations</a>
-    <a href="#robotics">Robotics</a><a href="#results">Results</a><a href="#start">Get started</a><a href="docs/">Docs</a>
+    <a href="#new">New in 2.0</a><a href="#robotics">Robotics</a><a href="#pillars">Models</a><a href="#playground-section">Playground</a>
+    <a href="#results">Results</a><a href="docs/learn/index.html">Learn</a><a href="docs/tutorials/index.html">Tutorials</a><a href="docs/">Docs</a>
   </nav>
   <a class="gh" href="{{REPO}}">GitHub</a>
 </div></header>
@@ -28,18 +28,44 @@
 <main>
 <section class="hero"><div class="wrap">
   <img src="assets/banner.svg" alt="quantum-mind banner: quantum-like, quantum, quantum-inspired, 3D Bloch viewer" width="1200" height="300">
-  <h1>Quantum-like, quantum and quantum-inspired models, compared on the same problems.</h1>
-  <p><strong>Quantum Mind</strong> is an open-source Python library for robots and AI agents that work with people. It models
-  how people judge, decide and trust with quantum probability, always next to the classical models it must beat;
-  runs quantum machine learning and algorithms as Qiskit circuits; offers quantum-inspired optimisers; and shows
-  every qubit moving on a 3D Bloch sphere.</p>
+  <h1>Models of people for robots that work with them.</h1>
+  <p>A robot's questions change people's answers, and asking about trust changes trust. <strong>Quantum Mind</strong> is an
+  open-source Python library that models these effects with quantum probability, always next to the classical models
+  it has to beat, and turns them into decisions: when to ask, which question to ask, how to fuse what the robot sees
+  and hears, and how to hand an object over. It also runs quantum machine learning and algorithms as Qiskit circuits,
+  offers quantum-inspired optimisers, and shows every qubit on a 3D Bloch sphere.</p>
+  <p class="badges">
+    <a href="https://pypi.org/project/quantum-mind/"><img src="https://img.shields.io/pypi/v/quantum-mind?label=PyPI&amp;color=d2a8ff" alt="PyPI version" height="20"></a>
+    <a href="{{REPO}}/actions/workflows/tests.yml"><img src="{{REPO}}/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests" height="20"></a>
+    <a href="{{REPO}}/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-79c0ff" alt="Apache-2.0 licence" height="20"></a>
+    <a href="docs/"><img src="https://img.shields.io/badge/docs-Sphinx-7ee787" alt="Documentation" height="20"></a>
+  </p>
   <div class="cta">
     <a class="btn primary" href="#playground-section">Try it in the browser</a>
     <a class="btn" href="{{REPO}}">Source on GitHub</a>
     <a class="btn" href="docs/">Documentation</a>
   </div>
-  <pre class="install"><code>pip install "quantum-mind[all]"</code></pre>
+  <pre class="install"><code>pip install quantum-mind          # or "quantum-mind[all]" for Qiskit, plots and RL</code></pre>
+  <div class="grid3 audience">
+    <div class="card"><h3>Robotics and HRI</h3><p>Ask-or-act, question planning, calibrated perception, fusion and trust-aware hand-over, with a ROS 2 node.</p></div>
+    <div class="card"><h3>Cognitive science</h3><p>Twelve families of quantum-like models of judgement, each with classical baselines, fitting and recovery tools.</p></div>
+    <div class="card"><h3>Quantum computing</h3><p>QML and algorithms on a fast simulator with exact gradients, exported to Qiskit, IBM Quantum and Braket.</p></div>
+  </div>
   <p class="note">Version {{VERSION}} · Apache-2.0 · Python 3.10–3.12 · {{TESTS}} tests in CI · Qiskit, IBM Quantum, Amazon Braket</p>
+</div></section>
+
+<section id="new"><div class="wrap">
+  <h2>New in 2.0</h2>
+  <p class="lead">A decision layer for robots, perception and learning modules, and documentation that explains every
+  model from the basics. Every result is checked against a classical baseline.</p>
+  <div class="grid3">
+    <a class="card" href="docs/tutorials/04_ask_or_act.html"><h3>Robot decision layer</h3><p>Ask or act with hazard levels, calibration and conformal sets, an orchestration gate with a meta-learned prior, a value-of-information question planner, partial pooling and trust-aware hand-over.</p></a>
+    <a class="card" href="docs/tutorials/08_fusion.html"><h3>Perception</h3><p>Detector, speech and gaze adapters; Bayesian, Dempster-Shafer and quantum-like fusion; a quantum Zeno model of bistable perception.</p></a>
+    <a class="card" href="docs/tutorials/10_rl_environments.html"><h3>Learning</h3><p>Gymnasium environments with simulated people, amplitude exploration, a variational quantum policy, tensor-train layers and quanvolution.</p></a>
+    <a class="card" href="docs/learn/index.html"><h3>Foundations</h3><p>Robotics, AI, machine learning, deep learning, RL, perception, embodied AI and quantum, from the basics.</p></a>
+    <a class="card" href="docs/tutorials/index.html"><h3>18 tutorials</h3><p>From the introduction to an end-to-end robot loop and ROS 2, executed on every build, with their claims checked.</p></a>
+    <a class="card" href="docs/atlas/index.html"><h3>Model atlas and maths</h3><p>A block diagram for every model and the equations as the code computes them, tested against the code.</p></a>
+  </div>
 </div></section>
 
 <section id="playground-section"><div class="wrap">
@@ -144,7 +170,8 @@ svc.query({'order': 'AB', 'ask_cost': 1.0, 'error_cost': 3.0})
   <ul>
     <li>No quantum advantage is claimed. On the example classification task a classical model with quadratic features is the most accurate.</li>
     <li>No hardware results are included yet. IBM and Braket submission code is tested against local stand-ins (a fake IBM device, the Braket local simulator).</li>
-    <li>All data in the examples are simulated or published aggregates, and labelled as such.</li>
+    <li>All data in the examples are simulated or published aggregates, and labelled as such. No study with real people and a robot has been run yet; the <a href="docs/help/validation.html">validation page</a> lists what is checked and gives a protocol for a pilot.</li>
+    <li>In several robotics comparisons the simulated people follow the same model the robot uses, which favours the order-aware method by construction; the tutorials say where.</li>
   </ul>
 </div></section>
 
@@ -174,9 +201,15 @@ from quantum_mind.viz import circuit_trajectory, animate_bloch
 animate_bloch(circuit_trajectory(qc))</code></pre></div>
   </div>
   <div class="grid3" style="margin-top:18px">
-    <a class="card" href="docs/"><h3>Documentation</h3><p>Concepts, API reference, model READMEs, changelog.</p></a>
-    <a class="card" href="docs/notebooks/index.html"><h3>Notebooks</h3><p>Live Bloch spheres; robot questioning and trust (rendered with outputs).</p></a>
-    <a class="card" href="docs/auto_examples/index.html"><h3>{{N_EXAMPLES}} examples</h3><p>Robotics, medicine, finance, physics, scheduling, control, surveys.</p></a>
+    <a class="card" href="docs/getting_started.html"><h3>Getting started</h3><p>Install, then fit, compare and simulate in a few lines.</p></a>
+    <a class="card" href="docs/tutorials/index.html"><h3>Tutorials</h3><p>18 step-by-step tutorials with real outputs and figures.</p></a>
+    <a class="card" href="docs/learn/index.html"><h3>Foundations</h3><p>The background fields explained from the basics.</p></a>
+    <a class="card" href="docs/atlas/index.html"><h3>Model atlas</h3><p>A block diagram for every model, with baselines and references.</p></a>
+    <a class="card" href="docs/math/index.html"><h3>Mathematics</h3><p>The equations of every model, as the code computes them.</p></a>
+    <a class="card" href="docs/auto_examples/index.html"><h3>{{N_EXAMPLES}} examples</h3><p>Robotics, perception, learning, medicine, finance, physics, scheduling, surveys.</p></a>
+    <a class="card" href="docs/help/which_model.html"><h3>Which model?</h3><p>From your problem to the right module, plus a glossary and FAQ.</p></a>
+    <a class="card" href="docs/api/index.html"><h3>API reference</h3><p>Every public class and function with parameters and examples.</p></a>
+    <a class="card" href="docs/about/changelog.html"><h3>Changelog and citing</h3><p>What changed in each release, and how to cite the library.</p></a>
   </div>
 </div></section>
 </main>

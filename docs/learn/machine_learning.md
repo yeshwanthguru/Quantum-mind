@@ -6,6 +6,8 @@ the real test is how well it predicts data it has **not** seen.
 
 ```{mermaid}
 flowchart LR
+    accTitle: Machine learning, diagram 1
+    accDescr: Data are split into training and test sets; a model is fitted on the training set and evaluated on unseen data against a baseline model.
     D[("data<br/>inputs x, labels y")]:::in --> S{"split"}:::op
     S -->|train| F["fit<br/>minimise loss over parameters θ"]:::op
     F --> M["model f(x; θ)"]:::out

@@ -1,0 +1,16 @@
+{%- extends "!layout.html" %}
+{#- Search and social-media metadata on every documentation page. -#}
+{%- block extrahead %}
+  {{ super() }}
+  {%- set page_title = (title|striptags) if title else project %}
+  {%- set page_url = docs_url + pagename + '.html' %}
+  <meta name="description" content="{{ page_title }}: {{ site_description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Quantum Mind documentation">
+  <meta property="og:title" content="{{ page_title }} | Quantum Mind">
+  <meta property="og:description" content="{{ site_description }}">
+  <meta property="og:url" content="{{ page_url }}">
+  <meta property="og:image" content="{{ docs_url }}_static/assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="{{ page_url }}">
+{%- endblock %}

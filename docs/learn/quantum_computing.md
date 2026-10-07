@@ -7,6 +7,8 @@ Computation is a sequence of **gates** (unitary matrices) applied to qubits, fol
 
 ```{mermaid}
 flowchart LR
+    accTitle: Quantum computing, diagram 1
+    accDescr: A variational quantum algorithm: qubits start in zero, data are encoded by rotations, trainable layers follow, measurement gives probabilities, and a classical optimiser updates the angles.
     I["|0…0⟩"]:::in --> E["encode data<br/>RY(x) rotations"]:::op --> V["variational layers<br/>RY(θ) · RZ(θ) · CNOT"]:::op --> MZ["measure<br/>Born-rule probabilities"]:::out
     MZ --> CL["classical optimiser<br/>updates θ"]:::base
     CL -.-> V

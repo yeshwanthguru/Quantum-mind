@@ -6,6 +6,8 @@ serves one of those three steps.
 
 ```{mermaid}
 flowchart LR
+    accTitle: Robotics, diagram 1
+    accDescr: The sense, perceive, decide and act loop: sensors observe the world and people, perception estimates the situation, the robot decides, actuators change the world.
     W(("world<br/>and people")):::hum -->|light, sound, contact| S["Sense<br/>cameras · lidar · microphones · joint encoders"]:::in
     S --> P["Perceive<br/>where am I, what is there, who is there"]:::op
     P --> D["Decide<br/>plan · ask · act · wait"]:::op
@@ -65,6 +67,7 @@ def forward_kinematics(theta1, theta2, l1=0.5, l2=0.4):
     return round(float(x), 3), round(float(y), 3)
 
 print(forward_kinematics(np.pi / 4, np.pi / 6))   # (0.457, 0.74)
+assert forward_kinematics(np.pi / 4, np.pi / 6) == (0.457, 0.74)
 ```
 
 ## A small example: a Bayes filter in one line
@@ -76,6 +79,7 @@ time and wrongly 30% of the time. After one "open" reading:
 prior = 0.5
 p_open_given_reading = 0.8 * prior / (0.8 * prior + 0.3 * (1 - prior))
 print(round(p_open_given_reading, 3))   # 0.727
+assert round(p_open_given_reading, 3) == 0.727
 ```
 
 ## Where Quantum Mind fits

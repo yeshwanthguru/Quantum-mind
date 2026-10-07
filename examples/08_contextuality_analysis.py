@@ -10,7 +10,7 @@ Contextuality analysis for any set of binary measurements (physics, psychology, 
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_08.png'
 import numpy as np
 from quantum_mind.families.contextuality import chsh, qubit_chsh_correlations, cyclic_contextuality
 from quantum_mind.circuits import chsh_circuit, run

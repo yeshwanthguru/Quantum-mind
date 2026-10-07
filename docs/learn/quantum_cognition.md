@@ -9,6 +9,8 @@ the order of questions can matter.
 
 ```{mermaid}
 flowchart LR
+    accTitle: Quantum-like cognition, diagram 1
+    accDescr: A belief state is projected onto the yes subspace of question A, renormalised, then projected onto question B; the result is compared with the opposite order.
     B["belief state ψ<br/>unit vector"]:::hum --> PA["question A<br/>projector Pₐ"]:::op
     PA -->|"P(yes to A) = ‖Pₐψ‖²"| S1["state after answering A<br/>Pₐψ / ‖Pₐψ‖"]:::op
     S1 --> PB["question B<br/>projector P_b"]:::op --> R["P(yes A, then yes B)<br/>= ‖P_b Pₐ ψ‖²"]:::out
@@ -58,7 +60,7 @@ print(p['AB'].round(3), p['BA'].round(3))   # the joint answers depend on the or
 
 ## Where Quantum Mind fits
 
-This is the library's first pillar: eleven families of quantum-like models of judgement, decision,
+This is the library's first pillar: twelve families of quantum-like models of judgement, decision,
 memory, concepts, trust and perception, each next to classical baselines, all fitted and compared the
 same way, with circuits for each.
 

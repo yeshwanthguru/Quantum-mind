@@ -53,11 +53,22 @@ With one check interval, the models can mimic each other. With **two** intervals
 specific scaling identifies it.
 
 ```python
+ranking = {}
 for name, conds in (('one interval', {'only': 0.07}), ('two intervals', {'fast': 0.035, 'slow': 0.14})):
     d = dwell_time_design(conds, max_time=40, n_bins=25)
     data = zeno.sample(d, 300, np.random.default_rng(0))
     res = compare([QuantumZenoBistableModel, MarkovSwitchingModel, GammaRenewalModel], data, d)
+    ranking[name] = {type(r.model).__name__: r.bic for r in res}
     print('%-14s ' % name + '   '.join('%s BIC %.1f' % (type(r.model).__name__.replace('Model', ''), r.bic) for r in res))
+```
+
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+one, two = ranking['one interval'], ranking['two intervals']
+assert abs(one['QuantumZenoBistableModel'] - one['MarkovSwitchingModel']) < 10     # one interval: hard to tell apart
+assert min(two, key=two.get) == 'QuantumZenoBistableModel' and min(v for k, v in two.items() if k != 'QuantumZenoBistableModel') - two['QuantumZenoBistableModel'] > 10
+print('checked')
 ```
 
 **Summary.** The Zeno model makes a testable prediction (dwell time against check interval) that

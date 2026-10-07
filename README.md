@@ -222,7 +222,7 @@ The same service runs as a ROS 2 node with standard `std_msgs/String` JSON topic
 ## Model catalogue
 
 <details>
-<summary><b>Quantum-like families</b>: 11 families, each with classical baselines and a README</summary>
+<summary><b>Quantum-like families</b>: 12 families, each with classical baselines and a README</summary>
 
 | Family | Phenomenon | Quantum-like model(s) | Classical baselines | Circuit | README |
 |---|---|---|---|---|---|
@@ -281,7 +281,7 @@ split), a trust protocol, `HumanModelEnsemble`, and Bayesian and quantum-like in
 ```mermaid
 flowchart TB
     core["quantum_mind.core<br/>Model · Param · fit · compare · recovery"]
-    fam["quantum_mind.families<br/>11 quantum-like families"]
+    fam["quantum_mind.families<br/>12 quantum-like families"]
     app["quantum_mind.applications<br/>robotics"]
     prob["quantum_mind.problems<br/>QUBO builders"]
     qm["quantum_mind.quantum<br/>VQC · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
@@ -357,6 +357,11 @@ Pillar: QL quantum-like, Q quantum, QI quantum-inspired, viz Bloch-sphere viewer
 | 29 | Forecasting, monitoring (simulated) | Q | [variational regressor, anomaly detection, clustering vs classical](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/29_forecasting_and_anomalies.py) |
 | 30 | Robotics | QI | [navigation: quantum-inspired RL vs Q-learning](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/30_robot_navigation_qrl.py) |
 | 31 | Information retrieval | QI | [document ranking: quantum language model vs query likelihood](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/31_document_ranking_qlm.py) |
+| 32 | Robotics, perception | classical | [calibration, conformal sets and hazard-aware ask-or-act](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/32_calibration_and_conformal.py) |
+| 33 | Robotics, perception | QL | [fusing detector, speech and gaze: Bayes, Dempster-Shafer, quantum-like](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/33_multimodal_fusion.py) |
+| 34 | Perception | QL | [bistable perception: quantum Zeno vs Markov and gamma renewal](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/34_bistable_perception_zeno.py) |
+| 35 | Learning, HRI | QI, Q | [RL with simulated people: amplitude exploration, quantum policy](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/35_rl_with_simulated_people.py) |
+| 36 | Robotics, HRI | QL | [trust-aware hand-over vs Markov-based and always hand over](https://github.com/yeshwanthguru/Quantum-mind/blob/main/examples/36_trust_aware_handover.py) |
 
 Notebooks: [`01_bloch_sphere_live`](https://github.com/yeshwanthguru/Quantum-mind/blob/main/notebooks/01_bloch_sphere_live.ipynb) (interactive and live spheres,
 tomography under device noise) and [`02_robot_questioning_and_trust`](https://github.com/yeshwanthguru/Quantum-mind/blob/main/notebooks/02_robot_questioning_and_trust.ipynb)
@@ -411,8 +416,8 @@ Sampler (`qiskit_ibm_runtime.executor_sampler`), falling back to `SamplerV2` on 
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
-| Quantum-like models | 11 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison (`fit_individuals`, `compare_individuals`); published aggregate data | hierarchical (partial-pooling) models |
-| Robotics | simulated human populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, `HumanModelService`, a ROS 2 node (`integrations/ros2`) | a run of the ROS 2 node inside a ROS 2 installation (its callbacks are tested with stand-in modules); data from human–robot studies |
+| Quantum-like models | 12 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison (`fit_individuals`, `compare_individuals`), partial pooling (`applications.personalisation`); published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
+| Robotics | simulated human populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, risk-aware decisions, calibration and conformal sets, orchestration gates, a question planner, trust-aware hand-over, multimodal fusion, Gymnasium environments, `HumanModelService`, a ROS 2 node (`integrations/ros2`) | a run of the ROS 2 node inside a ROS 2 installation (its callbacks are tested with stand-in modules); data from human–robot studies |
 | Quantum models | VQC, regressor, quantum kernel (classification, anomalies, clustering), QAOA, VQE, Grover, QFT, amplitude estimation, quantum walks on an exact simulator with adjoint gradients; Qiskit export; IBM submission through the current Qiskit Runtime Sampler | quantum advantage (none claimed); noise-aware training; runs on hardware |
 | Quantum-inspired | QIEA with Han and Kim's rotation table (or a simplified rule), QPSO, SQA, simulated-annealing baseline, MPS classifier with DMRG-style sweeps or Adam, quantum reinforcement learning, quantum language model | – |
 | Viewer | trajectories, animations, interactive HTML, live widget, tomography, pairwise concurrence and entanglement timeline, Q-sphere | – |

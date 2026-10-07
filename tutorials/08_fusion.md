@@ -80,6 +80,13 @@ ax.set_title('Fusion rules on simulated order-dependent choices')
 plt.show()
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+assert res['quantum_like']['log_loss'] < res['bayes']['log_loss']
+print('checked')
+```
+
 **Caveat.** These people are simulated from the quantum-like resolver, so it is expected to win; the
 point is the workflow. The angles are only weakly identifiable from choices alone, so report them
 with uncertainty.

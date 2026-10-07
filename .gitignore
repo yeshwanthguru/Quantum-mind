@@ -24,3 +24,4 @@ docs/sg_execution_times.rst
 .coverage.*
 docs/tutorials/*.ipynb
 docs/atlas/
+references_report.md

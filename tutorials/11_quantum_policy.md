@@ -81,9 +81,16 @@ except ImportError:
     print('install qiskit to export the circuit')
 ```
 
-**Result.** Both policies learn, but the classical linear policy learns much faster: over the last 25
-of 250 episodes it balances the pole for about 378 steps on average, against about 90 for the quantum
-policy. The quantum policy also has to be simulated, which costs far more than evaluating a linear
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+assert returns_c[-25:].mean() > returns_q[-25:].mean() > returns_q[:25].mean()
+print('checked')
+```
+
+**Result.** Both policies learn, but the classical linear policy learns much faster and balances the
+pole for longer by the end of training (the printed averages over the last 25 episodes give the
+numbers for this run). The quantum policy also has to be simulated, which costs far more than evaluating a linear
 model. It is a teaching and research tool for small tasks, not a controller for a real robot.
 
 References: Williams (1992), *Machine Learning* 8, 229-256; Jerbi et al. (2021), NeurIPS; Pérez-Salinas

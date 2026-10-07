@@ -63,3 +63,14 @@ html[data-theme="dark"] .sphx-glr-download a { background: #161b22 !important; b
 html[data-theme="dark"] pre.mermaid > svg { filter: none !important; }
 pre.mermaid > svg { max-height: 720px; }
 pre.mermaid { background: transparent; border: 1px solid var(--pst-color-border); border-radius: 12px; padding: 0.8rem; }
+
+/* phones: wide block diagrams scroll sideways instead of shrinking until the text is unreadable */
+pre.mermaid { overflow-x: auto; }
+@media (max-width: 720px) {
+  pre.mermaid > svg { min-width: 640px; max-width: none !important; }
+  .bd-article table { display: block; overflow-x: auto; }
+}
+
+/* executed figures in the tutorials: framed so the dark plots also sit well on the light theme */
+div.cell_output img { border-radius: 10px; border: 1px solid var(--pst-color-border); }
+html[data-theme="light"] div.cell_output img { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }

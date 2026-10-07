@@ -110,6 +110,14 @@ ax.set_title('Hand-over policies on simulated people')
 plt.show()
 ```
 
+The statements below are checked by this cell every time the documentation is built:
+
+```python
+assert abs(question_effect(markov, events, 5, 2)) < 1e-12 < abs(question_effect(person, events, 5, 2))
+assert results['order-aware'].mean() < results['Markov-based'].mean() < results['always hand over'].mean()
+print('checked')
+```
+
 **Caveat.** The simulated people follow the open-system model, which favours the order-aware policy
 by construction. Whether real people behave this way is an empirical question; tutorial 2 shows how
 to test it.

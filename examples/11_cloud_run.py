@@ -13,7 +13,7 @@ shot. Results are printed with the analytic prediction; report hardware results 
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/q.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_11.png'
 import argparse, json, datetime
 from quantum_mind.core import tvd
 from quantum_mind.circuits import run, order_effects_circuit

@@ -11,12 +11,18 @@ Where the classical method wins, the tutorial says so.
 
 ```{mermaid}
 flowchart LR
+    accTitle: Reading order of the tutorials
+    accDescr: The introduction leads to five tracks: models of people (2, 3, 17), the robot decision layer (4 to 7, then 16 and 18), perception (8, 9), learning (10 to 13) and quantum computing (14, 15).
     T1["1 · Introduction"]:::a --> T2["2 · Question order"]:::h --> T3["3 · Trust on a qubit"]:::h
     T1 --> T4["4 · Ask or act"]:::r --> T5["5 · Calibration"]:::r --> T6["6 · Orchestration"]:::r --> T7["7 · Question planner"]:::r
     T5 --> T8["8 · Fusion"]:::p --> T9["9 · Bistable perception"]:::p
     T1 --> T10["10 · RL environments"]:::l --> T11["11 · Quantum policy"]:::l
     T10 --> T12["12 · Tensor trains"]:::l --> T13["13 · Quanvolution"]:::l
     T1 --> T14["14 · Task allocation"]:::q --> T15["15 · Bloch sphere"]:::q
+    T2 --> T17["17 · Judgement families"]:::h
+    T7 --> T16["16 · End to end"]:::r
+    T8 --> T16
+    T3 --> T16 --> T18["18 · ROS 2"]:::r
     classDef a fill:#0b2a4a,stroke:#79c0ff,color:#e6edf3
     classDef h fill:#3d1414,stroke:#ff7b72,color:#e6edf3
     classDef r fill:#2a1b3d,stroke:#d2a8ff,color:#e6edf3
@@ -58,6 +64,14 @@ Fit the Clinton-Gore poll, run the QQ test, check model recovery.
 
 Trust on the Bloch sphere, the effect of asking, and a trust-aware hand-over policy.
 :::
+
+:::{grid-item-card} 17 · A tour of the judgement families
+:class-card: pillar-like
+:link: 17_judgement_families
+:link-type: doc
+
+Conjunction, interference, QLBN, decision, similarity, memory, concepts, contextuality and games.
+:::
 ::::
 
 ## Robot decision layer
@@ -95,6 +109,22 @@ A cost-aware gate and a meta-learned prior for new tasks.
 :link-type: doc
 
 Value of information with order-dependent answers.
+:::
+
+:::{grid-item-card} 16 · End to end: fetch and hand over
+:class-card: pillar-inspired
+:link: 16_end_to_end_robot
+:link-type: doc
+
+Calibration, fusion, questions and trust-aware hand-over in one robot loop.
+:::
+
+:::{grid-item-card} 18 · Running it on a robot (ROS 2)
+:class-card: pillar-inspired
+:link: 18_ros2_service
+:link-type: doc
+
+The JSON service and the ROS 2 node, run without a ROS installation.
 :::
 ::::
 
@@ -197,4 +227,7 @@ States, circuits, entanglement and animations.
 13_quanvolution
 14_task_allocation
 15_bloch_sphere
+16_end_to_end_robot
+17_judgement_families
+18_ros2_service
 ```
