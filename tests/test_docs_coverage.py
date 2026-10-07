@@ -82,3 +82,12 @@ def test_every_atlas_entry_has_an_origin_label():
         kind, adds = atlas.ORIGIN[title]
         assert kind in atlas.LABELS
         assert (kind == 'extended') == bool(adds), title      # only extended entries list additions
+
+
+def test_every_atlas_entry_has_a_category():
+    titles = [m['title'] for _, _, models in atlas.PAGES.values() for m in models]
+    assert sorted(titles) == sorted(atlas.CATEGORY), 'CATEGORY in docs/_ext/atlas.py must list every atlas entry once'
+    assert set(atlas.CATEGORY.values()) <= set(atlas.CATEGORIES)
+    pages = {key: [m['title'] for m in models] for key, (_, _, models) in atlas.PAGES.items()}
+    assert all(atlas.CATEGORY[t] == 'quantum' for t in pages['quantum'])
+    assert all(atlas.CATEGORY[t] == 'quantum-inspired' for t in pages['inspired'])

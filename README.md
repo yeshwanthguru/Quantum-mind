@@ -429,6 +429,21 @@ entry carries one of four labels:
 | Published method | 31 | implemented as published |
 | Software tool | 6 | infrastructure |
 
+Every entry also carries a category. Quantum-like models use quantum probability to describe people
+and run on an ordinary computer; only the quantum-computing entries are circuits.
+
+| Category | All entries | Robotics entries | Meaning |
+|---|---|---|---|
+| Quantum-like | 21 | 10 | quantum probability used to model people; runs on an ordinary computer |
+| Quantum computing | 15 | 4 | quantum circuits; run on the simulator or sent to quantum hardware |
+| Quantum-inspired | 7 | 4 | classical algorithms that borrow ideas from quantum mechanics |
+| Classical | 18 | 15 | classical statistics, decision theory or baselines |
+| Mixed | 5 | 4 | combines parts from more than one category |
+
+The robotics entries are the robot decision layer, perception and fusion, learning, the people models a
+robot uses (question order, trust, bistable perception) and the planning solvers (task allocation,
+QAOA, annealing, Grover, QPSO).
+
 The extensions that apply to every people model: bootstrap intervals (`bootstrap`), a per-person
 posterior updated after every answer (`OnlinePersonModel`), and the choice of the question or order
 that best separates competing models (`rank_conditions`, `model_posterior`). For robots: adaptive

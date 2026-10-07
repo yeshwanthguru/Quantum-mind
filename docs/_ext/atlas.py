@@ -734,6 +734,112 @@ def origin_counts():
     return counts
 
 
+#: Category of each atlas entry: (badge colour, label, meaning).
+CATEGORIES = {
+    'quantum-like': ('danger-line', 'Quantum-like',
+                     'quantum probability used to model people; runs on an ordinary computer'),
+    'quantum': ('primary-line', 'Quantum computing',
+                'quantum circuits; run on the simulator or sent to quantum hardware'),
+    'quantum-inspired': ('info-line', 'Quantum-inspired',
+                         'classical algorithms that borrow ideas from quantum mechanics'),
+    'classical': ('secondary-line', 'Classical', 'classical statistics, decision theory or baselines'),
+    'mixed': ('dark-line', 'Mixed', 'combines parts from more than one of these categories'),
+}
+
+#: Category of every atlas entry, by title.
+CATEGORY = {
+    # core
+    'Lüders rule and answer sequences': 'quantum-like',
+    'Open-system evolution': 'quantum-like',
+    'Model and parameters': 'classical',
+    'Fit, compare and recover': 'classical',
+    'Individual differences': 'classical',
+    'Uncertainty, online updating and informative questions': 'classical',
+    # quantum-like families
+    'Question order: quantum-like model': 'quantum-like',
+    'Question order: classical baselines': 'classical',
+    'Conjunction fallacy': 'quantum-like',
+    'Interference and the disjunction effect': 'quantum-like',
+    'Quantum-like Bayesian network': 'quantum-like',
+    'Belief dynamics: quantum and Markov walks': 'mixed',
+    'Trust belief (open system)': 'quantum-like',
+    'Quantum decision theory': 'quantum-like',
+    'Contextuality tests': 'quantum-like',
+    'Asymmetric similarity': 'quantum-like',
+    'Quantum games': 'quantum-like',
+    'Episodic memory overdistribution': 'quantum-like',
+    'Concept combination (Fock space)': 'quantum-like',
+    'Bistable perception (quantum Zeno)': 'quantum-like',
+    # robot decision layer
+    'Human-model ensemble': 'mixed',
+    'Ask or act': 'classical',
+    'Human-model service': 'classical',
+    'Intent resolution': 'quantum-like',
+    'Recalibration': 'classical',
+    'Conformal prediction sets': 'classical',
+    'Calibration monitor': 'classical',
+    'Confidence gate': 'classical',
+    'Meta-calibrated gate': 'classical',
+    'Question planner': 'quantum-like',
+    'Answer models': 'quantum-like',
+    'Personalised human models': 'classical',
+    'Trust-aware hand-over': 'quantum-like',
+    # perception
+    'Perception adapters': 'classical',
+    'Fusion rules': 'mixed',
+    'Cue incompatibility': 'quantum-like',
+    'Dwell-time baselines': 'classical',
+    # learning
+    'Clarification environment': 'quantum-like',
+    'Trust hand-over environment': 'quantum-like',
+    'Grid world': 'classical',
+    'Exploration strategies': 'mixed',
+    'Tabular agent': 'classical',
+    'Quantum-inspired Q-learning': 'quantum-inspired',
+    'Variational quantum policy': 'quantum',
+    'Tensor-train layers': 'quantum-inspired',
+    'Quanvolutional filter': 'quantum',
+    # quantum
+    'State-vector simulator': 'quantum',
+    'Feature maps and ansatz': 'quantum',
+    'Variational classifier and regressor': 'quantum',
+    'Quantum kernel methods': 'quantum',
+    'QAOA': 'quantum',
+    'VQE': 'quantum',
+    'Grover search': 'quantum',
+    'Quantum Fourier transform and period finding': 'quantum',
+    'Amplitude estimation': 'quantum',
+    'Quantum walks on networks': 'quantum',
+    # quantum-inspired
+    'QIEA': 'quantum-inspired',
+    'QPSO': 'quantum-inspired',
+    'Simulated quantum annealing': 'quantum-inspired',
+    'MPS classifier': 'quantum-inspired',
+    'Quantum language model': 'quantum-inspired',
+    # infrastructure
+    'QUBO problems': 'classical',
+    'Trust-aware task allocation': 'mixed',
+    'Circuits for the quantum-like families': 'quantum',
+    'Back ends': 'quantum',
+    'Bloch-sphere viewer': 'quantum',
+}
+
+
+def category_badge(title):
+    """Sphinx-design badge with the category of an atlas entry."""
+    colour, label, _ = CATEGORIES[CATEGORY[title]]
+    return '{bdg-%s}`%s`' % (colour, label)
+
+
+def category_counts():
+    """Number of atlas entries per category."""
+    counts = {k: 0 for k in CATEGORIES}
+    for _, _, models in PAGES.values():
+        for m in models:
+            counts[CATEGORY[m['title']]] += 1
+    return counts
+
+
 ORDER = ['core', 'quantum_like', 'robotics', 'perception', 'learning', 'quantum', 'inspired', 'infrastructure']
 
 #: Mathematics page for each atlas page.
@@ -761,20 +867,24 @@ def write():
         lines = ['# ' + title, '', intro, 'The equations are on the {doc}`mathematics page <../math/%s>`.' % MATH[key], '',
                  'Legend: blue inputs, violet internal steps, green outputs, coral people, dashed grey '
                  'classical baselines. Each entry is labelled by origin: '
-                 + ', '.join('%s %s' % ('{bdg-%s}`%s`' % (c, l), d) for c, l, d in LABELS.values()) + '.', '']
+                 + ', '.join('%s %s' % ('{bdg-%s}`%s`' % (c, l), d) for c, l, d in LABELS.values())
+                 + '; and by category: '
+                 + ', '.join('%s %s' % ('{bdg-%s}`%s`' % (c, l), d) for c, l, d in CATEGORIES.values()) + '.', '']
         for m in models:
             total += 1
             first, rest = m['diagram'].split('\n', 1)
             acc = ['    accTitle: Block diagram of %s' % m['title'],
                    '    accDescr: %s' % m['summary'].replace('\n', ' ')]
             kind, adds = ORIGIN[m['title']]
-            lines += ['## ' + m['title'], '', badge(m['title']), '', m['summary'], '', '```{mermaid}', first, *acc, rest, STYLE, '```', '']
+            lines += ['## ' + m['title'], '', badge(m['title']) + ' ' + category_badge(m['title']), '', m['summary'], '', '```{mermaid}', first, *acc, rest, STYLE, '```', '']
             lines += ['- **API:** ' + ', '.join(_role(p) for p in m['api'])]
             if m['baselines']:
                 lines += ['- **Compared with:** ' + m['baselines']]
             if m['tutorial']:
                 lines += ['- **Tutorial:** {doc}`../tutorials/%s`' % m['tutorial']]
             lines += ['- **Origin:** %s: %s.' % (LABELS[kind][1], LABELS[kind][2])]
+            cat = CATEGORIES[CATEGORY[m['title']]]
+            lines += ['- **Category:** %s: %s.' % (cat[1], cat[2])]
             if adds:
                 lines += ['- **Quantum Mind adds:** ' + adds + '.']
             if m['ref']:
@@ -811,6 +921,11 @@ def write():
              '| Label | Entries | Meaning |', '|---|---|---|']
     counts = origin_counts()
     index += ['| %s | %d | %s |' % ('{bdg-%s}`%s`' % (c, l), counts[k], d) for k, (c, l, d) in LABELS.items()]
+    index += ['', 'Every entry also carries a category, so the quantum-like models of people, the quantum '
+              'circuits and the quantum-inspired algorithms can be told apart; quantum-like models need no '
+              'quantum computer.', '', '| Category | Entries | Meaning |', '|---|---|---|']
+    ccounts = category_counts()
+    index += ['| %s | %d | %s |' % ('{bdg-%s}`%s`' % (c, l), ccounts[k], d) for k, (c, l, d) in CATEGORIES.items()]
     for k in ('unique', 'extended'):
         index += ['', '**%s:** ' % LABELS[k][1] + ', '.join(
             '{doc}`%s <%s>`' % (m['title'], key) for key in ORDER for m in PAGES[key][2] if ORIGIN[m['title']][0] == k) + '.']

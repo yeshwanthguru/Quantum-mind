@@ -11,6 +11,10 @@
 - Model atlas: every entry is labelled by origin (unique to Quantum Mind, published model extended
   here, published method, software tool), with counts on the atlas index and a new page, "What
   Quantum Mind adds to published models".
+- Model atlas: every entry also carries a category label (quantum-like, quantum computing,
+  quantum-inspired, classical or mixed), with counts on the atlas index and in the README; of the 37
+  robotics entries, 10 are quantum-like, 4 quantum computing, 4 quantum-inspired, 15 classical and 4
+  mixed.
 - Citations added: Roeder et al. (2023) for the trust model and Rosenthal, Dey and Veloso (2009) as
   related work for the question planner.
 - Robotics extensions of published methods:
