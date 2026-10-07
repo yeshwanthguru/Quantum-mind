@@ -3,6 +3,9 @@
 </p>
 
 <p align="center">
+  <a href="https://pypi.org/project/quantum-mind/"><img src="https://img.shields.io/pypi/v/quantum-mind?label=PyPI" alt="PyPI version"></a>
+  <a href="https://pypistats.org/packages/quantum-mind"><img src="https://img.shields.io/pypi/dm/quantum-mind?label=downloads%2Fmonth" alt="PyPI downloads per month"></a>
+  <a href="https://pepy.tech/projects/quantum-mind"><img src="https://static.pepy.tech/badge/quantum-mind" alt="Total PyPI downloads"></a>
   <a href="https://github.com/yeshwanthguru/Quantum-mind/actions/workflows/tests.yml"><img src="https://github.com/yeshwanthguru/Quantum-mind/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
   <a href="https://github.com/yeshwanthguru/Quantum-mind/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0"></a>
   <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white" alt="Python 3.10-3.12">

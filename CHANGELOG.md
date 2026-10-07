@@ -51,6 +51,8 @@ Website:
 - Robot-first landing page with a "New in 2.0" section, results for the 2.0 modules (including the
   cases where a classical method wins), badges and audience cards; the Plotly bundle is served once
   instead of twice.
+- PyPI download counts (per month and in total) are shown on the website, the documentation home and
+  the README.
 
 ## 2.0.1 (6 October 2026)
 

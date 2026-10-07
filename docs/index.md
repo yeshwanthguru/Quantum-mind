@@ -20,6 +20,10 @@ quantum-inspired optimisers and learners; and shows every qubit moving on a 3D B
 <span>Version __VERSION__</span><span>Apache-2.0</span><span>Python 3.10 to 3.12</span>
 <span>Qiskit 2.x</span><span>IBM Quantum</span><span>Amazon Braket</span><span>NumPy-style API</span>
 </div>
+<p class="qm-downloads">
+<a href="https://pypistats.org/packages/quantum-mind"><img src="https://img.shields.io/pypi/dm/quantum-mind?label=downloads%2Fmonth" alt="PyPI downloads per month" height="20"></a>
+<a href="https://pepy.tech/projects/quantum-mind"><img src="https://static.pepy.tech/badge/quantum-mind" alt="Total PyPI downloads" height="20"></a>
+</p>
 ```
 
 ```bash
