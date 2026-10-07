@@ -21,6 +21,9 @@
   <b><a href="#examples">Examples</a></b> ·
   <b><a href="#hardware">Hardware</a></b> ·
   <b><a href="#status">Status</a></b> ·
+  <b><a href="https://yeshwanthguru.github.io/Quantum-mind/docs/tutorials/index.html">Tutorials</a></b> ·
+  <b><a href="https://yeshwanthguru.github.io/Quantum-mind/docs/learn/index.html">Foundations</a></b> ·
+  <b><a href="https://yeshwanthguru.github.io/Quantum-mind/docs/atlas/index.html">Model atlas</a></b> ·
   <b><a href="https://github.com/yeshwanthguru/Quantum-mind/tree/main/notebooks">Notebooks</a></b> ·
   <b><a href="https://yeshwanthguru.github.io/Quantum-mind/docs/api/index.html">API</a></b> ·
   <b><a href="https://github.com/yeshwanthguru/Quantum-mind/blob/main/docs/concepts.md">Concepts</a></b>

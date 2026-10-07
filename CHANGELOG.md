@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+Documentation:
+
+- **Foundations**: ten pages that introduce robotics, AI, machine learning, deep learning,
+  reinforcement learning, perception and computer vision, embodied AI, quantum computing,
+  quantum-like cognition and quantum-inspired algorithms from the basics, each with a diagram, a
+  runnable example and references. The documentation home has a tab per topic.
+- **Tutorials**: fifteen step-by-step tutorials (`tutorials/*.md`, converted to notebooks and executed
+  when the documentation is built), from an introduction to every model group, each with figures and
+  a classical baseline. They report where the classical method wins (quantum policy against a linear
+  policy, quanvolution against a random filter, TT compression without retraining).
+- **Model atlas**: a block diagram for every model (64 diagrams), with its baselines, API, tutorial and
+  a reference.
+- `quantum_mind.viz.use_mpl_style()` applies the documentation's colour theme to Matplotlib figures.
+- CI executes the tutorials.
+
 ## 2.0.1 (6 October 2026)
 
 - Website and documentation links use the repository's exact name, `Quantum-mind`: GitHub Pages

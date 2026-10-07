@@ -57,3 +57,9 @@ section#quantum-mind > h1:first-child { display: none; }
 html[data-theme="dark"] .sphx-glr-script-out .highlight pre,
 html[data-theme="dark"] div.sphx-glr-script-out pre { background: #0b0f15 !important; color: #c9d1d9 !important; }
 html[data-theme="dark"] .sphx-glr-download a { background: #161b22 !important; border-color: #30363d !important; }
+
+/* Mermaid block diagrams: keep the diagrams' own colours in dark mode (the theme inverts SVGs by
+   default) and cap very tall diagrams */
+html[data-theme="dark"] pre.mermaid > svg { filter: none !important; }
+pre.mermaid > svg { max-height: 720px; }
+pre.mermaid { background: transparent; border: 1px solid var(--pst-color-border); border-radius: 12px; padding: 0.8rem; }

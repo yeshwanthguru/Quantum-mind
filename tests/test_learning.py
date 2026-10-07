@@ -110,3 +110,21 @@ def test_quanvolution_filter():
     enc = QuanvolutionFilter(layers=0).transform(imgs)
     assert np.allclose(enc, np.cos(np.pi * P))
     assert RandomConvFilter(channels=6).transform(imgs).shape == (2, 3, 3, 6)
+
+
+def test_mpl_style_and_tutorial_converter(tmp_path):
+    pytest.importorskip('matplotlib')
+    import matplotlib as mpl
+    import sys
+    import pathlib
+    from quantum_mind.viz import use_mpl_style
+    t = use_mpl_style('dark')
+    assert mpl.rcParams['axes.facecolor'] == t['bg']
+    mpl.rcdefaults()
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'tutorials'))
+    from _convert import to_notebook, sources
+    assert len(sources()) >= 15
+    src = tmp_path / '99_x.md'
+    src.write_text('# T\n\ntext\n\n```python\nx = 1\n```\n\nmore\n')
+    nb = to_notebook(src)
+    assert [c.cell_type for c in nb.cells] == ['markdown', 'code', 'markdown'] and nb.cells[1].source == 'x = 1'

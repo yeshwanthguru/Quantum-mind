@@ -86,6 +86,111 @@ save_html(animate_bloch(circuit_trajectory(qc, steps=15)), 'bell.html')
 The [two-qubit playground](https://yeshwanthguru.github.io/Quantum-mind/#playground-section)
 runs the same simulation in the browser.
 
+## Learn the foundations
+
+New to some of these fields? Each tab is a short start; the full pages explain the terms from the
+basics, with diagrams, runnable examples and references.
+
+::::{tab-set}
+
+:::{tab-item} Robotics
+:sync: robotics
+
+A robot **senses**, **decides** and **acts**, in a loop, in real time. Kinematics maps joint angles to
+positions, controllers turn errors into motor commands, filters keep a belief about the robot's state,
+planners choose actions, and middleware such as ROS 2 connects the parts. Robots that work with people
+also need models of what people want and how much they trust the robot.
+
+{bdg-primary}`kinematics` {bdg-primary}`control` {bdg-primary}`state estimation` {bdg-primary}`planning` {bdg-primary}`HRI` {bdg-primary}`ROS 2`
+
+[Read: Robotics](learn/robotics.md) · [Tutorial: when to ask for help](tutorials/04_ask_or_act.ipynb)
+:::
+
+:::{tab-item} AI
+:sync: ai
+
+Artificial intelligence designs **agents** that choose actions to reach goals: search, reasoning with
+probability, decision theory and the value of information. Machine learning, deep learning and
+reinforcement learning are ways to build parts of an agent from data.
+
+{bdg-secondary}`agents` {bdg-secondary}`Bayes' rule` {bdg-secondary}`expected utility` {bdg-secondary}`value of information` {bdg-secondary}`LLMs and VLMs`
+
+[Read: Artificial intelligence](learn/ai.md) · [Tutorial: planning which question to ask](tutorials/07_question_planner.ipynb)
+:::
+
+:::{tab-item} Machine learning
+:sync: ml
+
+Fit a model's parameters to data and judge it on data it has not seen. Likelihood, model comparison by
+AIC and BIC, partial pooling across people, calibration of confidence and kernel methods, all of which
+the library uses.
+
+{bdg-info}`likelihood` {bdg-info}`BIC` {bdg-info}`partial pooling` {bdg-info}`calibration` {bdg-info}`conformal sets` {bdg-info}`kernels`
+
+[Read: Machine learning](learn/machine_learning.md) · [Tutorial: calibration](tutorials/05_calibration.ipynb)
+:::
+
+:::{tab-item} Deep learning
+:sync: dl
+
+Neural networks with many layers learn features from raw data, trained by backpropagation. Their
+softmax confidences are often over-confident, and large networks must be compressed for robots. The
+library recalibrates their outputs, fuses them, and offers tensor-train compression and quanvolution.
+
+{bdg-warning}`neural networks` {bdg-warning}`backpropagation` {bdg-warning}`CNNs` {bdg-warning}`transformers` {bdg-warning}`compression`
+
+[Read: Deep learning](learn/deep_learning.md) · [Tutorial: tensor trains](tutorials/12_tensor_train.ipynb)
+:::
+
+:::{tab-item} Reinforcement learning
+:sync: rl
+
+Learn what to do from reward: Markov decision processes, value functions, Q-learning, exploration and
+policy gradients. The library ships Gymnasium environments with simulated people, amplitude
+exploration and a variational quantum policy.
+
+{bdg-success}`MDP` {bdg-success}`Q-learning` {bdg-success}`exploration` {bdg-success}`REINFORCE` {bdg-success}`Gymnasium`
+
+[Read: Reinforcement learning](learn/reinforcement_learning.md) · [Tutorial: RL with simulated people](tutorials/10_rl_environments.ipynb)
+:::
+
+:::{tab-item} Perception
+:sync: perception
+
+Turn camera, microphone and gaze signals into objects, words and intentions, each with a trustworthy
+confidence, and fuse several uncertain sources. Includes multistable perception and the quantum Zeno
+model.
+
+{bdg-danger}`detection` {bdg-danger}`calibration` {bdg-danger}`sensor fusion` {bdg-danger}`Dempster-Shafer` {bdg-danger}`bistable perception`
+
+[Read: Perception and vision](learn/perception.md) · [Tutorial: fusing vision, speech and gaze](tutorials/08_fusion.ipynb)
+:::
+
+:::{tab-item} Embodied AI
+:sync: embodied
+
+Agents with bodies that perceive and act in the world, trained in simulation and transferred to real
+robots, increasingly driven by foundation models. When people are in the loop, the agent's own
+questions change the person; that is where quantum-like models of people come in.
+
+{bdg-primary-line}`embodiment` {bdg-primary-line}`sim-to-real` {bdg-primary-line}`VLA models` {bdg-primary-line}`behaviour trees` {bdg-primary-line}`interaction`
+
+[Read: Embodied AI](learn/embodied_ai.md) · [Tutorial: trust on a qubit](tutorials/03_trust_on_a_qubit.ipynb)
+:::
+
+:::{tab-item} Quantum
+:sync: quantum
+
+Quantum computing (qubits, gates, entanglement, variational algorithms), quantum-like cognition (the
+mathematics of quantum probability applied to human judgement) and quantum-inspired algorithms
+(classical heuristics that borrow quantum ideas).
+
+{bdg-secondary-line}`qubits` {bdg-secondary-line}`QAOA` {bdg-secondary-line}`order effects` {bdg-secondary-line}`QQ test` {bdg-secondary-line}`tensor networks`
+
+[Quantum computing](learn/quantum_computing.md) · [Quantum-like cognition](learn/quantum_cognition.md) · [Quantum-inspired algorithms](learn/quantum_inspired.md)
+:::
+::::
+
 ## Where to go next
 
 ::::{grid} 1 2 3 3
@@ -96,6 +201,27 @@ runs the same simulation in the browser.
 :link-type: doc
 
 Install, then fit, compare and simulate in a few lines.
+:::
+
+:::{grid-item-card} {fas}`graduation-cap` Foundations
+:link: learn/index
+:link-type: doc
+
+Robotics, AI, machine learning, deep learning, RL, perception, embodied AI and quantum, from the basics.
+:::
+
+:::{grid-item-card} {fas}`person-chalkboard` Tutorials
+:link: tutorials/index
+:link-type: doc
+
+Fifteen step-by-step tutorials, from the introduction to every model, with real outputs and figures.
+:::
+
+:::{grid-item-card} {fas}`diagram-project` Model atlas
+:link: atlas/index
+:link-type: doc
+
+A block diagram for every model: inputs, internals, outputs, baselines and references.
 :::
 
 :::{grid-item-card} {fas}`book` User guide
@@ -139,7 +265,10 @@ Changelog, citing, licence and contributing.
 :maxdepth: 2
 
 getting_started
+learn/index
+tutorials/index
 user_guide/index
+atlas/index
 auto_examples/index
 notebooks/index
 api/index

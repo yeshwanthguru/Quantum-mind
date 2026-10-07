@@ -73,6 +73,11 @@ nb_execution_mode = 'off'
 nb_render_markdown_format = 'myst'
 myst_substitutions = {'version': version}
 mermaid_version = '11.4.1'
+mermaid_light_theme = 'default'
+mermaid_dark_theme = 'dark'           # node colours come from each diagram's classDef
+mermaid_height = 'auto'               # keep each diagram's own aspect ratio (text stays readable)
+mermaid_init_config = {'flowchart': {'curve': 'basis', 'nodeSpacing': 28, 'rankSpacing': 36},
+                       'themeVariables': {'fontSize': '15px'}}
 
 # -- example gallery --------------------------------------------------------------------------------
 sphinx_gallery_conf = {
@@ -118,7 +123,7 @@ html_theme_options = {
         {'name': 'Playground', 'url': SITE + '#playground-section', 'icon': 'fa-solid fa-globe'},
     ],
     'navbar_align': 'left',
-    'header_links_before_dropdown': 6,
+    'header_links_before_dropdown': 7,
     'navbar_end': ['theme-switcher', 'navbar-icon-links'],
     'secondary_sidebar_items': ['page-toc', 'edit-this-page'],
     'use_edit_page_button': True,

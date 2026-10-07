@@ -22,3 +22,5 @@ docs/about/*.md
 docs/sg_execution_times.rst
 .coverage
 .coverage.*
+docs/tutorials/*.ipynb
+docs/atlas/

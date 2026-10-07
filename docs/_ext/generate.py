@@ -11,6 +11,7 @@ import os
 import pathlib
 import re
 import shutil
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
@@ -185,6 +186,31 @@ def notebooks(execute=True):
         nbformat.write(nb, out / f.name)
 
 
+def tutorials(execute=True):
+    """Convert tutorials/*.md into notebooks under docs/tutorials and execute them (figures included)."""
+    import nbformat
+    sys.path.insert(0, str(ROOT / 'tutorials'))
+    from _convert import to_notebook, sources
+    out = DOCS / 'tutorials'
+    out.mkdir(parents=True, exist_ok=True)
+    for src in sources():
+        nb = to_notebook(src)
+        if execute:
+            import nbclient
+            os.environ['PLOTLY_RENDERER'] = 'notebook_connected'
+            saved = os.environ.get('MPLBACKEND')
+            os.environ['MPLBACKEND'] = 'module://matplotlib_inline.backend_inline'   # figures as outputs
+            try:
+                nbclient.NotebookClient(nb, timeout=1800, kernel_name='python3',
+                                        resources={'metadata': {'path': str(ROOT)}}).execute()
+            finally:
+                if saved is None:
+                    os.environ.pop('MPLBACKEND', None)
+                else:
+                    os.environ['MPLBACKEND'] = saved
+        nbformat.write(nb, out / (src.stem + '.ipynb'))
+
+
 def demos(static):
     """Interactive Bloch-sphere animations for the landing page (needs qiskit and plotly)."""
     import numpy as np
@@ -228,6 +254,9 @@ def run(execute_notebooks=True, with_demos=True):
     api_pages()
     copy_assets(static)
     notebooks(execute_notebooks)
+    tutorials(execute_notebooks)
+    import atlas
+    atlas.write()
     if with_demos:
         try:
             demos(static)

@@ -14,12 +14,13 @@ The plotting back ends are imported only when first used. See README.md in this 
 from .states import (bloch_vector, state_from_bloch, reduced_density, reduced_density_pair, concurrence,
                      entanglement_summary, bloch_vectors, Trajectory, circuit_trajectory, belief_trajectory,
                      rotation_trajectory, bloch_tomography, tomography_circuits)
-from .themes import THEMES
+from .themes import THEMES, use_mpl_style
 
 __all__ = ['bloch_vector', 'state_from_bloch', 'reduced_density', 'reduced_density_pair', 'concurrence',
            'entanglement_summary', 'plot_entanglement', 'plot_qsphere', 'bloch_vectors', 'Trajectory', 'circuit_trajectory',
            'belief_trajectory', 'rotation_trajectory', 'bloch_tomography', 'tomography_circuits', 'THEMES',
-           'BlochSphere', 'plot_bloch', 'animate_trajectory', 'bloch_figure', 'animate_bloch', 'LiveBloch', 'save_html']
+           'BlochSphere', 'plot_bloch', 'animate_trajectory', 'bloch_figure', 'animate_bloch', 'LiveBloch', 'save_html',
+           'use_mpl_style']
 
 
 def __getattr__(name):            # plotting back ends are imported only when used

@@ -706,6 +706,7 @@ Bloch-sphere visualisation: watch qubits evolve in 3D.
 - **class `Trajectory(vectors: 'np.ndarray', labels: 'list' = <factory>, names: 'list' = <factory>, title: 'str' = '', states: 'list' = <factory>) -> None`**: Bloch vectors over time.
   - `concurrence(self, a=0, b=1)`: Concurrence of two qubits in every frame.
   - `purity(self)`: Bloch-vector length per frame and qubit.
+- `use_mpl_style(name='dark')`: Apply a theme to every Matplotlib figure that follows (used by the tutorials).
 
 ## `quantum_mind.data`
 
