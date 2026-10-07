@@ -127,13 +127,31 @@ def lookup(ref):
             'doi': it.get('DOI', ''), 'surnames': [_plain(a.get('family', '')) for a in it.get('author', [])]}
 
 
+def our_title(ref):
+    """The title in a reference ('Author (Year). Title. Journal ...'), or None when it gives only the journal."""
+    m = re.search(r'\(\d{4}\)\.\s*(.+?)(?:\.\s|\.$|\s\()', ref)
+    if not m or re.search(r',\s*\d', m.group(1)) or m.group(1).startswith('arXiv'):
+        return None
+    return m.group(1)
+
+
+def _words(s):
+    return set(re.findall(r'[a-z]{3,}', _plain(s)))
+
+
 def verdict(entry, match):
-    """'confirmed' when the first author's surname and the year agree, else 'check by hand'."""
+    """'confirmed' when the first author and the year agree and, if our reference gives a title, Crossref's
+    title matches it (80% of its words appear in our reference); otherwise 'check by hand'."""
     if not match or not entry['key']:
         return 'check by hand'
     surname, year = entry['key']
-    ok = surname in match['surnames'] and match['year'] == year
-    return 'confirmed' if ok else 'check by hand'
+    if surname not in match['surnames'] or match['year'] != year:
+        return 'check by hand'
+    if our_title(entry['text']):
+        theirs = _words(match.get('title', ''))
+        if not theirs or len(theirs & _words(entry['text'])) < 0.8 * len(theirs):
+            return 'check by hand'
+    return 'confirmed'
 
 
 def bibtex(doi):
