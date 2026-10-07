@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+- Every people model gains three tools that the source papers do not provide:
+  `quantum_mind.core.bootstrap` (parameter and predictive intervals),
+  `quantum_mind.core.OnlinePersonModel` (a per-person posterior updated after every answer, by
+  sequential Monte Carlo from the population fit) and `quantum_mind.core.rank_conditions` /
+  `model_posterior` (the question or order that best tells competing models apart, after Myung and
+  Pitt, 2009). `fit` accepts a starting point `x0`.
+- Model atlas: every entry is labelled by origin (unique to Quantum Mind, published model extended
+  here, published method, software tool), with counts on the atlas index and a new page, "What
+  Quantum Mind adds to published models".
+- Citations added: Roeder et al. (2023) for the trust model and Rosenthal, Dey and Veloso (2009) as
+  related work for the question planner.
+
 ## 2.0.1 (7 October 2026)
 
 Documentation:

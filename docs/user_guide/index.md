@@ -103,6 +103,7 @@ Trajectories, animations, interactive HTML, live updates and tomography.
 :maxdepth: 2
 
 concepts
+extensions
 families/index
 quantum
 inspired

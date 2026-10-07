@@ -73,3 +73,12 @@ def test_foundations_examples_run():
         for block in re.findall(r"```python\n(.*?)```", page.read_text(), re.S):
             with contextlib.redirect_stdout(io.StringIO()):
                 exec(compile(block, str(page), 'exec'), ns)
+
+
+def test_every_atlas_entry_has_an_origin_label():
+    titles = [m['title'] for _, _, models in atlas.PAGES.values() for m in models]
+    assert sorted(titles) == sorted(atlas.ORIGIN), 'ORIGIN in docs/_ext/atlas.py must list every atlas entry once'
+    for title in titles:
+        kind, adds = atlas.ORIGIN[title]
+        assert kind in atlas.LABELS
+        assert (kind == 'extended') == bool(adds), title      # only extended entries list additions

@@ -66,6 +66,22 @@ PAGES['core'] = ('Core: states, fitting and comparison',
     P --> Po["pooled fit"]:::base --> S2["pooled BIC"]:::out
     S & S2 --> V{"which explains people better?"}:::op''',
       'pooled model', None),
+    M('Uncertainty, online updating and informative questions',
+      ['quantum_mind.core.uncertainty.bootstrap', 'quantum_mind.core.online.OnlinePersonModel',
+       'quantum_mind.core.design.information_gain', 'quantum_mind.core.design.rank_conditions',
+       'quantum_mind.core.design.model_posterior'],
+      'Three tools that work with every model: bootstrap intervals for parameters and predictions, a '
+      'per-person posterior updated after every answer, and the choice of the condition (question, '
+      'order or display) that best tells competing models apart.',
+      '''flowchart LR
+    F["fitted model<br/>(population)"]:::in --> B["bootstrap<br/>simulate · refit"]:::op --> CI["parameter and<br/>predictive intervals"]:::out
+    F --> O["particles around the estimate"]:::op
+    A["one answer from this person"]:::hum --> O --> PP["per-person posterior<br/>predictive"]:::out
+    PP & M2["competing models"]:::base --> IG["information gain per condition<br/>H(mix) − Σ w H(p)"]:::op --> Q["ask the most<br/>informative question"]:::out
+    A --> MP["model posterior"]:::out''',
+      'point estimates of one pooled fit (how the source papers report the models)',
+      'Myung, J. I., & Pitt, M. A. (2009). Psychological Review, 116(3), 499-518; Chopin, N. (2002). '
+      'Biometrika, 89(3), 539-551; Efron, B., & Tibshirani, R. J. (1993). An Introduction to the Bootstrap.'),
 ])
 
 # ------------------------------------------------------------------------------------ quantum-like
@@ -137,7 +153,8 @@ PAGES['quantum_like'] = ('Quantum-like families',
     q -->|yes| proj["project · answer"]:::out
     q -->|no| nxt["next interaction"]:::op
     mk["Markov belief"]:::base -.-> proj''',
-      'MarkovBelief', 'Busemeyer, J. R., & Bruza, P. D. (2024). Quantum Models of Cognition and Decision (2nd ed.).',
+      'MarkovBelief', 'Busemeyer, J. R., & Bruza, P. D. (2024). Quantum Models of Cognition and Decision (2nd ed.); '
+      'Roeder, L., et al. (2023). A quantum model of trust calibration in human-AI interactions. Entropy, 25(9), 1362.',
       '03_trust_on_a_qubit'),
     M('Quantum decision theory', ['quantum_mind.families.decision.models.QDTModel'],
       'Choice probability = utility factor + attraction (interference) factor.',
@@ -289,7 +306,8 @@ PAGES['robotics'] = ('Robot decision layer',
     am["answer model<br/>projective or independent"]:::in --> v
     d -->|yes| ask["ask it"]:::hum --> up["update posterior"]:::op --> pr
     d -->|no| act["act on the MAP hypothesis"]:::out''',
-      'IndependentAnswerModel (order-free)', 'Howard (1966); Wang & Busemeyer (2013).', '07_question_planner'),
+      'IndependentAnswerModel (order-free)', 'Howard (1966); Wang & Busemeyer (2013); related: Rosenthal, S., Dey, A. K., & Veloso, M. (2009). How robots\' '
+      'questions affect the accuracy of the human responses. IEEE RO-MAN.', '07_question_planner'),
     M('Answer models', ['quantum_mind.applications.questioning.ProjectiveAnswerModel',
                         'quantum_mind.applications.questioning.IndependentAnswerModel'],
       'How a person with a given intent answers a sequence of questions.',
@@ -587,6 +605,115 @@ PAGES['infrastructure'] = ('Problems, circuits and the viewer',
       None, 'Wootters, W. K. (1998). Physical Review Letters, 80, 2245.', '15_bloch_sphere'),
 ])
 
+# ------------------------------------------------------------------------------------------ origin
+#: Origin labels: (badge colour, label, meaning).
+LABELS = {
+    'unique': ('success', 'Unique to Quantum Mind',
+               'designed in this library; it builds on the methods cited with it'),
+    'extended': ('info', 'Published model, extended',
+                 'implements the cited model as published; Quantum Mind adds the capabilities listed'),
+    'published': ('secondary', 'Published method', 'implements the cited method as published'),
+    'tool': ('muted', 'Software tool', 'infrastructure rather than a model'),
+}
+
+_ALL = ('bootstrap intervals, a per-person posterior updated after every answer, and the choice of the '
+        'most informative condition ({doc}`what Quantum Mind adds <../user_guide/extensions>`)')
+_BOOT = 'bootstrap intervals (fitted by least squares, so no per-answer updating)'
+
+#: Origin of every atlas entry, by title: (label, what Quantum Mind adds or None).
+ORIGIN = {
+    # core
+    'Lüders rule and answer sequences': ('published', None),
+    'Open-system evolution': ('published', None),
+    'Model and parameters': ('tool', None),
+    'Fit, compare and recover': ('published', None),
+    'Individual differences': ('published', None),
+    'Uncertainty, online updating and informative questions': ('unique', None),
+    # quantum-like families
+    'Question order: quantum-like model': ('extended', _ALL),
+    'Question order: classical baselines': ('extended', _ALL),
+    'Conjunction fallacy': ('extended', _BOOT),
+    'Interference and the disjunction effect': ('extended', _ALL),
+    'Quantum-like Bayesian network': ('extended', _ALL),
+    'Belief dynamics: quantum and Markov walks': ('extended', _ALL),
+    'Trust belief (open system)': ('extended', _ALL + '; used for robot hand-over decisions'),
+    'Quantum decision theory': ('extended', _ALL),
+    'Contextuality tests': ('published', None),
+    'Asymmetric similarity': ('extended', _BOOT),
+    'Quantum games': ('published', None),
+    'Episodic memory overdistribution': ('extended', _BOOT),
+    'Concept combination (Fock space)': ('extended', _BOOT),
+    'Bistable perception (quantum Zeno)': ('extended', _ALL),
+    # robot decision layer
+    'Human-model ensemble': ('unique', None),
+    'Ask or act': ('unique', None),
+    'Human-model service': ('tool', None),
+    'Intent resolution': ('unique', None),
+    'Recalibration': ('published', None),
+    'Conformal prediction sets': ('published', None),
+    'Calibration monitor': ('published', None),
+    'Confidence gate': ('published', None),
+    'Meta-calibrated gate': ('unique', None),
+    'Question planner': ('unique', None),
+    'Answer models': ('unique', None),
+    'Personalised human models': ('published', None),
+    'Trust-aware hand-over': ('unique', None),
+    # perception
+    'Perception adapters': ('published', None),
+    'Fusion rules': ('extended', 'a quantum-like (Kraus) fusion rule designed here, next to the Bayesian and '
+                                 'Dempster-Shafer rules'),
+    'Cue incompatibility': ('unique', None),
+    'Dwell-time baselines': ('extended', _ALL),
+    # learning
+    'Clarification environment': ('unique', None),
+    'Trust hand-over environment': ('unique', None),
+    'Grid world': ('tool', None),
+    'Exploration strategies': ('published', None),
+    'Tabular agent': ('published', None),
+    'Quantum-inspired Q-learning': ('published', None),
+    'Variational quantum policy': ('published', None),
+    'Tensor-train layers': ('published', None),
+    'Quanvolutional filter': ('published', None),
+    # quantum
+    'State-vector simulator': ('tool', None),
+    'Feature maps and ansatz': ('published', None),
+    'Variational classifier and regressor': ('published', None),
+    'Quantum kernel methods': ('published', None),
+    'QAOA': ('published', None),
+    'VQE': ('published', None),
+    'Grover search': ('published', None),
+    'Quantum Fourier transform and period finding': ('published', None),
+    'Amplitude estimation': ('published', None),
+    'Quantum walks on networks': ('published', None),
+    # quantum-inspired
+    'QIEA': ('published', None),
+    'QPSO': ('published', None),
+    'Simulated quantum annealing': ('published', None),
+    'MPS classifier': ('published', None),
+    'Quantum language model': ('published', None),
+    # infrastructure
+    'QUBO problems': ('published', None),
+    'Circuits for the quantum-like families': ('unique', None),
+    'Back ends': ('tool', None),
+    'Bloch-sphere viewer': ('tool', None),
+}
+
+
+def badge(title):
+    """Sphinx-design badge with the origin label of an atlas entry."""
+    colour, label, _ = LABELS[ORIGIN[title][0]]
+    return '{bdg-%s}`%s`' % (colour, label)
+
+
+def origin_counts():
+    """Number of atlas entries per origin label."""
+    counts = {k: 0 for k in LABELS}
+    for _, _, models in PAGES.values():
+        for m in models:
+            counts[ORIGIN[m['title']][0]] += 1
+    return counts
+
+
 ORDER = ['core', 'quantum_like', 'robotics', 'perception', 'learning', 'quantum', 'inspired', 'infrastructure']
 
 #: Mathematics page for each atlas page.
@@ -613,18 +740,23 @@ def write():
         title, intro, models = PAGES[key]
         lines = ['# ' + title, '', intro, 'The equations are on the {doc}`mathematics page <../math/%s>`.' % MATH[key], '',
                  'Legend: blue inputs, violet internal steps, green outputs, coral people, dashed grey '
-                 'classical baselines.', '']
+                 'classical baselines. Each entry is labelled by origin: '
+                 + ', '.join('%s %s' % ('{bdg-%s}`%s`' % (c, l), d) for c, l, d in LABELS.values()) + '.', '']
         for m in models:
             total += 1
             first, rest = m['diagram'].split('\n', 1)
             acc = ['    accTitle: Block diagram of %s' % m['title'],
                    '    accDescr: %s' % m['summary'].replace('\n', ' ')]
-            lines += ['## ' + m['title'], '', m['summary'], '', '```{mermaid}', first, *acc, rest, STYLE, '```', '']
+            kind, adds = ORIGIN[m['title']]
+            lines += ['## ' + m['title'], '', badge(m['title']), '', m['summary'], '', '```{mermaid}', first, *acc, rest, STYLE, '```', '']
             lines += ['- **API:** ' + ', '.join(_role(p) for p in m['api'])]
             if m['baselines']:
                 lines += ['- **Compared with:** ' + m['baselines']]
             if m['tutorial']:
                 lines += ['- **Tutorial:** {doc}`../tutorials/%s`' % m['tutorial']]
+            lines += ['- **Origin:** %s: %s.' % (LABELS[kind][1], LABELS[kind][2])]
+            if adds:
+                lines += ['- **Quantum Mind adds:** ' + adds + '.']
             if m['ref']:
                 lines += ['- **Reference:** ' + m['ref']]
             lines += ['']
@@ -650,6 +782,19 @@ def write():
     QL --> CI["circuits · back ends · viewer"]:::in
     QM --> CI
     B["classical baselines everywhere"]:::base -.-> QL & P & L & QM & QI''', STYLE, '```', '',
+             '## Where each model comes from', '',
+             'Every entry carries one of four labels. Most models are published by other researchers and '
+             'implemented here from their papers (the reference is on each entry). Quantum Mind\'s own '
+             'contributions are the robot decision layer, the environments, the circuits for the '
+             'quantum-like families, and the tools that give every published people model uncertainty, '
+             'per-person updating and informative-question selection.', '',
+             '| Label | Entries | Meaning |', '|---|---|---|']
+    counts = origin_counts()
+    index += ['| %s | %d | %s |' % ('{bdg-%s}`%s`' % (c, l), counts[k], d) for k, (c, l, d) in LABELS.items()]
+    for k in ('unique', 'extended'):
+        index += ['', '**%s:** ' % LABELS[k][1] + ', '.join(
+            '{doc}`%s <%s>`' % (m['title'], key) for key in ORDER for m in PAGES[key][2] if ORIGIN[m['title']][0] == k) + '.']
+    index += ['', '## Pages', '',
              '::::{grid} 1 2 2 2', ':gutter: 3', ''] + cards + ['::::', '', '```{toctree}', ':hidden:', ''] + ORDER + ['```', '']
     (OUT / 'index.md').write_text('\n'.join(index))
     return total

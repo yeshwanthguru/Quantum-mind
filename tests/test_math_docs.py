@@ -277,3 +277,21 @@ def test_sqa_coupling_formula():
     P, T, G = 16, 0.05, 1.5
     Jp = -0.5 * P * T * np.log(np.tanh(G / (P * T)))
     assert Jp > 0 and -0.5 * P * T * np.log(np.tanh(0.1 / (P * T))) > Jp      # grows as the field falls
+
+
+def test_extension_formulas():
+    """Online reweighting, ESS, information-gain bound and model posterior as on docs/math/core.md."""
+    from quantum_mind.core import OnlinePersonModel, information_gain, model_posterior
+    from quantum_mind.families.order_effects import BayesOrderModel, QuantumOrderModel4D
+    person = OnlinePersonModel(BayesOrderModel, n_particles=50, resample_below=0.0, rng=np.random.default_rng(0))
+    p = np.array([pr['AB'][2] for pr in person._preds])
+    person.update('AB', 2)
+    assert np.allclose(person.weights, p / p.sum())
+    assert np.isclose(person.ess, 1 / np.sum((p / p.sum()) ** 2))
+    models = [BayesOrderModel(pA=0.9, pB=0.1), BayesOrderModel(pA=0.1, pB=0.9), QuantumOrderModel4D()]
+    assert 0 <= information_gain(models, 'AB') <= np.log2(3)
+    y = {'AB': [3, 1, 0, 2]}
+    ll = np.array([np.dot(y['AB'], np.log(m.predict(None)['AB'])) for m in models])
+    w = np.array([0.2, 0.3, 0.5])
+    expected = w * np.exp(ll - ll.max())
+    assert np.allclose(model_posterior(models, y, prior=w), expected / expected.sum())

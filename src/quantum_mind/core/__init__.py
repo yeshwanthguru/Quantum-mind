@@ -2,3 +2,6 @@
 from .linalg import *          # noqa: F401,F403
 from .model import Param, Model
 from .fit import FitResult, fit, compare, recovery, kl, tvd, IndividualFits, fit_individuals, compare_individuals
+from .uncertainty import BootstrapResult, bootstrap
+from .online import OnlinePersonModel
+from .design import information_gain, rank_conditions, model_posterior
