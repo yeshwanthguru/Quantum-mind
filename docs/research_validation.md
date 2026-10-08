@@ -44,6 +44,17 @@ files or their checksums.
 The benchmark harness in benchmarks/hri_decision_benchmark.py implements common
 scoring and bootstrap reporting.
 
+
+## Decision-policy assumptions
+
+The benchmark uses an explicit binary act-vs-ask policy. The model probability is converted to an act/no-act decision at 0.5. Asking has a configurable cost and ask_resolution in [0, 1]. A value of 1.0 means the question resolves uncertainty perfectly; 0.0 means no residual uncertainty reduction. The perfect-resolution setting is an optimistic sensitivity-analysis case, not a claim about real robot questioning.
+
+## Model provenance
+
+Each reported model should identify its original reference, DOI where available, original algorithm, Quantum Mind extension, classical baseline, validation status, and whether evidence is simulation-only, hardware-validated, or human-data-validated.
+
+See docs/research_claims.md for the claim-status registry.
+
 ## Quantum claims
 
 A circuit executing successfully is not evidence of quantum advantage. Any such

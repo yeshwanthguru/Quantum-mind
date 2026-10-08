@@ -56,6 +56,27 @@ Core layer: linear algebra of quantum-like models, the Model base class, fitting
 - `tvd(p, q)`: Total variation distance.
 - `unitary(H, t)`: Time-evolution operator :math:`e^{-iHt}`.
 
+## `quantum_mind.evaluation`
+
+Evaluation and reproducibility utilities for model comparisons.
+
+- `brier_score(y_true, y_prob)`: Binary Brier score; lower is better.
+- `bootstrap_ci(values, statistic=<function mean>, confidence=0.95, n_boot=2000, rng=None)`: Percentile bootstrap confidence interval for a statistic.
+- `classification_report(y_true, y_prob, bins=10)`: Return a JSON-friendly probabilistic evaluation summary.
+- `compare_models(y_true, predictions, metric, n_boot=2000, n_permutations=5000, seed=0)`: Compare every pair of named probability predictions with paired tests.
+- `create_manifest(experiment, dataset, models, metrics, seed, split=None, dataset_version=None, dataset_hash=None, data_source=None, model_provenance=None, parameters=None, notes=None)`: Create a JSON-serialisable reproducibility manifest.
+- `expected_calibration_error(y_true, y_prob, bins=10)`: Equal-width expected calibration error; lower is better.
+- `holm_bonferroni(p_values, alpha=0.05)`: Apply Holm's step-down correction and return adjusted p-values.
+- `log_loss(y_true, y_prob)`: Mean binary log loss; lower is better.
+- **class `ModelProvenance(model_id: 'str', category: 'str', original_reference: 'Optional[str]' = None, doi: 'Optional[str]' = None, original_algorithm: 'Optional[str]' = None, quantum_mind_extension: 'Optional[str]' = None, classical_baseline: 'Optional[str]' = None, validated_against: 'Optional[str]' = None, simulation_only: 'bool' = True, hardware_validated: 'bool' = False, human_data_validated: 'bool' = False) -> None`**: Evidence and implementation metadata for one benchmark model.
+  - `to_dict(self)`: Convert provenance metadata to a dictionary.
+- `paired_bootstrap_difference(y_true, p_a, p_b, metric, n_boot=2000, confidence=0.95, rng=None, chunk_size=256)`: Estimate a paired bootstrap CI for metric(A) - metric(B).
+- `paired_effect_size(y_true, p_a, p_b, metric)`: Return standardised paired loss difference for log loss or Brier score.
+- `paired_permutation_test(y_true, p_a, p_b, metric, n_permutations=5000, rng=None)`: Run a paired randomisation test by swapping model labels per observation.
+- `sha256_file(path)`: Return the SHA-256 digest of a dataset or result file.
+- `validate_provenance(record)`: Validate a provenance mapping and return a normalised dictionary.
+- `write_manifest(manifest, path)`: Write a manifest as formatted JSON and return its path.
+
 ## `quantum_mind.families.order_effects`
 
 Question-order effects (see README.md in this folder).
