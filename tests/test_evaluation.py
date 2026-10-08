@@ -4,7 +4,7 @@ import pytest
 
 from quantum_mind.evaluation import (
     ModelProvenance, brier_score, bootstrap_ci, classification_report,
-    compare_models, create_manifest, expected_calibration_error, log_loss,
+    create_manifest, expected_calibration_error, log_loss,
     paired_permutation_test, sha256_file, validate_provenance,
 )
 from benchmarks.hri_decision_benchmark import evaluate
