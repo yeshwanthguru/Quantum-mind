@@ -3,6 +3,7 @@
 import importlib
 import inspect
 import pathlib
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -50,7 +51,7 @@ def first_paragraph(obj):
 
 def signature(obj):
     try:
-        return str(inspect.signature(obj))
+        return re.sub(r' at 0x[0-9a-fA-F]+', '', str(inspect.signature(obj)))
     except (TypeError, ValueError):
         return ''
 
