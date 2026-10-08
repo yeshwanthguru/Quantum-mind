@@ -1,0 +1,28 @@
+{
+  "baseline_majority": {
+    "model_id": "baseline_majority",
+    "category": "classical-baseline",
+    "original_reference": null,
+    "doi": null,
+    "original_algorithm": "Majority/frequency baseline",
+    "quantum_mind_extension": null,
+    "classical_baseline": null,
+    "validated_against": "same held-out benchmark records",
+    "simulation_only": false,
+    "hardware_validated": false,
+    "human_data_validated": false
+  },
+  "quantum_like": {
+    "model_id": "quantum_like",
+    "category": "quantum-like",
+    "original_reference": null,
+    "doi": null,
+    "original_algorithm": null,
+    "quantum_mind_extension": "Benchmark adapter for probability-based robot decision evaluation",
+    "classical_baseline": "baseline_majority",
+    "validated_against": "same held-out benchmark records",
+    "simulation_only": true,
+    "hardware_validated": false,
+    "human_data_validated": false
+  }
+}
