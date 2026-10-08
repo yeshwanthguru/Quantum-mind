@@ -52,6 +52,25 @@ research, physics and operations research.
 > circuits for quantum hardware. Quantum-inspired models are classical algorithms. The
 > [concepts page](https://github.com/yeshwanthguru/Quantum-mind/blob/main/docs/concepts.md) explains the difference and how to test each.
 
+## Research positioning and validation
+
+Quantum Mind is a **research platform, not a claim of quantum advantage**. Its strongest
+scientific use case is evaluating quantum-like models of human judgement against classical
+alternatives and connecting calibrated uncertainty to robot questioning, trust, and
+ask-vs-act decisions.
+
+The repository now includes a model-agnostic evaluation layer for **log loss, Brier score,
+expected calibration error, decision cost, and bootstrap confidence intervals**, plus a
+reproducible HRI benchmark harness in
+[`benchmarks/hri_decision_benchmark.py`](benchmarks/hri_decision_benchmark.py).
+
+For scientific claims, use the same held-out data for every baseline and report uncertainty,
+seeds, splits, and decision costs. The default HRI parameters are illustrative/simulated;
+they are **not human-subject evidence**. See
+[`docs/research_validation.md`](docs/research_validation.md) for the required comparison
+protocol and the limits of what the repository currently establishes.
+
+
 <a id="pillars"></a>
 
 ## Three pillars
