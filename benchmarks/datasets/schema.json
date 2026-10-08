@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Quantum Mind HRI Benchmark Record",
+  "type": "object",
+  "required": ["y"],
+  "properties": {
+    "y": {"type": "integer", "enum": [0, 1]},
+    "subject_id": {"type": ["string", "null"]},
+    "session_id": {"type": ["string", "null"]},
+    "condition": {"type": ["string", "null"]},
+    "order": {"type": ["string", "null"]},
+    "timestamp": {"type": ["string", "null"]},
+    "metadata": {"type": ["object", "null"]},
+    "p_<model>": {"type": "number", "minimum": 0, "maximum": 1}
+  },
+  "additionalProperties": true
+}
