@@ -1,11 +1,14 @@
 """Contextual Counterfactual Quantum Decision Field (CCQDF).
 
-CCQDF is a proposed quantum-cognitive decision model for robots. It is not a
-claim that a robot or human brain performs physical quantum computation.
+CCQDF is a proposed robotics-first quantum-cognitive decision architecture.
+It is designed for robots that must choose safe actions under uncertain,
+context-dependent human and environmental observations. It is not a claim
+that a robot or human brain performs physical quantum computation.
 
-The central hypothesis is that a robot should select an action from the
-counterfactual state produced by applying that action to a contextual cognitive
-field, rather than from a static probability estimate alone.
+The central hypothesis is that robot action selection should emerge from an
+evolving contextual field, where sensor evidence is transformed in order,
+each candidate action is evaluated counterfactually, and safety constraints
+remain explicit rather than being treated as an afterthought.
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -21,6 +24,7 @@ class DecisionResult:
     risk: dict[str, float]
     uncertainty: float
     counterfactual_gain: dict[str, float]
+    safety_margin: dict[str, float]
     reason: str
 
 @dataclass(frozen=True)
@@ -105,12 +109,16 @@ class CCQDFModel:
         return self._unitary(0.45 * (G + G.T) / 2.0) @ state
 
     def _risk(self, probability: float, state: np.ndarray, action_index: int) -> float:
-        """Estimate action risk from residual ambiguity and phase instability."""
+        """Estimate robotics risk from ambiguity, state entropy and phase."""
         p = np.abs(state) ** 2
         entropy = -float(np.sum(np.where(p > 1e-12, p * np.log(np.clip(p, 1e-12, 1)), 0.0)))
         entropy /= np.log(len(self.actions))
         phase = abs(np.angle(state[action_index])) / np.pi
-        return float(np.clip(0.65 * (1.0 - probability) + 0.25 * entropy + 0.10 * phase, 0.0, 1.0))
+        return float(np.clip(0.55 * (1.0 - probability) + 0.30 * entropy + 0.15 * phase, 0.0, 1.0))
+
+    def _safety_margin(self, risk: float, risk_limit: float) -> float:
+        """Return positive margin when an action remains inside its safety limit."""
+        return float(np.clip((risk_limit - risk) / max(risk_limit, 1e-12), -1.0, 1.0))
 
     def _ask_gain(self, state: np.ndarray, action_index: int) -> float:
         """Estimate the value of resolving ambiguity before an action."""
@@ -123,8 +131,9 @@ class CCQDFModel:
                risk_limits: Sequence[float] | None = None) -> DecisionResult:
         """Make one context-sensitive, counterfactual robot decision.
 
-        Mapping insertion order is intentional: changing evidence order can
-        change the field when context operators are non-commuting.
+        Context channels represent ordered robot observations. Mapping insertion
+        order is intentional: changing evidence order can change the field when
+        context operators are non-commuting.
         """
         channels = list(context.values()) if isinstance(context, Mapping) else list(context)
         if not channels:
@@ -146,6 +155,7 @@ class CCQDFModel:
             raise ValueError("invalid utilities or risk limits")
 
         risks = np.array([self._risk(probs[i], counter[i], i) for i in range(len(self.actions))])
+        safety_margins = np.array([self._safety_margin(risks[i], risk_limits[i]) for i in range(len(self.actions))])
         gains = np.array([self._ask_gain(counter[i], i) for i in range(len(self.actions))])
         interference = np.array([
             np.real(state[i].conjugate() * counter[i][i]) for i in range(len(self.actions))
@@ -183,6 +193,7 @@ class CCQDFModel:
             risk={a: float(risks[i]) for i, a in enumerate(self.actions)},
             uncertainty=uncertainty,
             counterfactual_gain={a: float(gains[i]) for i, a in enumerate(self.actions)},
+            safety_margin={a: float(safety_margins[i]) for i, a in enumerate(self.actions)},
             reason=reason,
         )
 
