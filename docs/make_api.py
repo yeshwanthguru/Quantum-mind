@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / 'src'))
 
 MODULES = [
     'quantum_mind.core',
+    'quantum_mind.evaluation',
     'quantum_mind.families.order_effects',
     'quantum_mind.families.conjunction',
     'quantum_mind.families.interference',
