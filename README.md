@@ -64,6 +64,14 @@ expected calibration error, decision cost, and bootstrap confidence intervals**,
 reproducible HRI benchmark harness in
 [`benchmarks/hri_decision_benchmark.py`](benchmarks/hri_decision_benchmark.py).
 
+The validation layer also supports **paired bootstrap differences, paired randomisation tests,
+effect sizes, Holm correction for multiple comparisons, dataset SHA-256 hashes, experiment
+manifests, and model-provenance records**. The HRI benchmark makes its ask-vs-act assumptions
+explicit through a configurable question-resolution parameter.
+
+For the scientific workflow, use docs/research_validation.md and docs/research_claims.md;
+synthetic benchmark results remain debugging/sensitivity evidence, not human-subject validation.
+
 For scientific claims, use the same held-out data for every baseline and report uncertainty,
 seeds, splits, and decision costs. The default HRI parameters are illustrative/simulated;
 they are **not human-subject evidence**. See
