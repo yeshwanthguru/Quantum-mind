@@ -12,7 +12,7 @@ Where the classical method wins, the tutorial says so.
 ```{mermaid}
 flowchart LR
     accTitle: Reading order of the tutorials
-    accDescr: The introduction leads to five tracks: models of people (2, 3, 17), the robot decision layer (4 to 7, then 16 and 18), perception (8, 9), learning (10 to 13) and quantum computing (14, 15).
+    accDescr: The introduction leads to five tracks: models of people (2, 3, 17), the robot decision layer (4 to 7, then 16, 18 and the packaged hand-over use case 19), perception (8, 9), learning (10 to 13) and quantum computing (14, 15).
     T1["1 · Introduction"]:::a --> T2["2 · Question order"]:::h --> T3["3 · Trust on a qubit"]:::h
     T1 --> T4["4 · Ask or act"]:::r --> T5["5 · Calibration"]:::r --> T6["6 · Orchestration"]:::r --> T7["7 · Question planner"]:::r
     T5 --> T8["8 · Fusion"]:::p --> T9["9 · Bistable perception"]:::p
@@ -22,7 +22,7 @@ flowchart LR
     T2 --> T17["17 · Judgement families"]:::h
     T7 --> T16["16 · End to end"]:::r
     T8 --> T16
-    T3 --> T16 --> T18["18 · ROS 2"]:::r
+    T3 --> T16 --> T18["18 · ROS 2"]:::r --> T19["19 · Hand-over package"]:::r
     classDef a fill:#0b2a4a,stroke:#79c0ff,color:#e6edf3
     classDef h fill:#3d1414,stroke:#ff7b72,color:#e6edf3
     classDef r fill:#2a1b3d,stroke:#d2a8ff,color:#e6edf3
@@ -125,6 +125,14 @@ Calibration, fusion, questions and trust-aware hand-over in one robot loop.
 :link-type: doc
 
 The JSON service and the ROS 2 node, run without a ROS installation.
+:::
+
+:::{grid-item-card} 19 · A robot package: trust-aware hand-over
+:class-card: pillar-inspired
+:link: 19_trust_handover_package
+:link-type: doc
+
+An installable package with a benchmark, a PyBullet arm simulation (GIF), a ROS 2 node and tests.
 :::
 ::::
 
@@ -230,4 +238,5 @@ States, circuits, entanglement and animations.
 16_end_to_end_robot
 17_judgement_families
 18_ros2_service
+19_trust_handover_package
 ```

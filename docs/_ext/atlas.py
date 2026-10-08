@@ -929,9 +929,22 @@ def write():
     for k in ('unique', 'extended'):
         index += ['', '**%s:** ' % LABELS[k][1] + ', '.join(
             '{doc}`%s <%s>`' % (m['title'], key) for key in ORDER for m in PAGES[key][2] if ORIGIN[m['title']][0] == k) + '.']
-    index += ['', '## Pages', '',
-             '::::{grid} 1 2 2 2', ':gutter: 3', ''] + cards + ['::::', '', '```{toctree}', ':hidden:', ''] + ORDER + ['```', '']
+    index += ['', 'The original paper of every model, for citing, is listed on {doc}`references by model <references>`.',
+              '', '## Pages', '',
+             '::::{grid} 1 2 2 2', ':gutter: 3', ''] + cards + ['::::', '', '```{toctree}', ':hidden:', ''] + ORDER + ['references', '```', '']
     (OUT / 'index.md').write_text('\n'.join(index))
+    refs = ['# References by model', '',
+            'How to cite: cite Quantum Mind (`CITATION.cff`, or "Cite this repository" on GitHub) for the '
+            'software, and the original paper of every model you use, listed below. A BibTeX file of these '
+            'references, checked against Crossref, is built by the "references" workflow '
+            '(`docs/_ext/check_refs.py --bib`).', '',
+            '| Model | Category | Origin | Reference |', '|---|---|---|---|']
+    for key in ORDER:
+        for m in PAGES[key][2]:
+            refs.append('| {doc}`%s <%s>` | %s | %s | %s |' % (m['title'], key, CATEGORIES[CATEGORY[m['title']]][1],
+                                                            LABELS[ORIGIN[m['title']][0]][1],
+                                                            (m['ref'] or 'none (software or design of this library)').replace('|', '/')))
+    (OUT / 'references.md').write_text('\n'.join(refs) + '\n')
     return total
 
 

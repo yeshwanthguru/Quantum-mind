@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantum-handover"
+version = "0.1.0"
+description = "Trust-aware robot hand-over built on Quantum Mind's quantum-like trust model, with a PyBullet simulation and a ROS 2 node"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{ name = "Yeshwanth Guru" }]
+dependencies = ["quantum-mind>=2.0.1", "numpy>=1.24"]
+
+[project.optional-dependencies]
+sim = ["pybullet>=3.2.5", "pillow>=10.0"]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+quantum-handover = "quantum_handover.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

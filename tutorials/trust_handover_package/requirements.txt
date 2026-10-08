@@ -1,0 +1,9 @@
+# Core: the decision model and the benchmark
+quantum-mind>=2.0.1
+numpy>=1.24
+# Simulation and GIF (optional: pip install -r requirements.txt installs them)
+pybullet>=3.2.5
+pillow>=10.0
+# Tests
+pytest>=7.0
+# ROS 2 (optional): rclpy and std_msgs come with a ROS 2 installation (Humble or later), not from pip
