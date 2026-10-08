@@ -1,0 +1,10 @@
+{
+  "experiment": "hri_decision_benchmark",
+  "data_source": "synthetic",
+  "ask_cost": 1.0,
+  "error_cost": 5.0,
+  "ask_resolution": 1.0,
+  "seed": 0,
+  "n_boot": 2000,
+  "n_permutations": 2000
+}
