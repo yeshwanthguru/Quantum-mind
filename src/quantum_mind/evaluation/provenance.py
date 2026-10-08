@@ -19,6 +19,7 @@ class ModelProvenance:
     human_data_validated: bool = False
 
     def to_dict(self):
+        """Convert provenance metadata to a dictionary."""
         return asdict(self)
 
 def validate_provenance(record):
