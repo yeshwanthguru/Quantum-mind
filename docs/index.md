@@ -293,4 +293,6 @@ auto_examples/index
 notebooks/index
 help/index
 about/index
+research_claims
+research_validation
 ```

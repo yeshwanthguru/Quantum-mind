@@ -60,8 +60,8 @@ Core layer: linear algebra of quantum-like models, the Model base class, fitting
 
 Evaluation and reproducibility utilities for model comparisons.
 
-- `brier_score(y_true, y_prob)`: Binary Brier score; lower is better.
 - `bootstrap_ci(values, statistic=<function mean>, confidence=0.95, n_boot=2000, rng=None)`: Percentile bootstrap confidence interval for a statistic.
+- `brier_score(y_true, y_prob)`: Binary Brier score; lower is better.
 - `classification_report(y_true, y_prob, bins=10)`: Return a JSON-friendly probabilistic evaluation summary.
 - `compare_models(y_true, predictions, metric, n_boot=2000, n_permutations=5000, seed=0)`: Compare every pair of named probability predictions with paired tests.
 - `create_manifest(experiment, dataset, models, metrics, seed, split=None, dataset_version=None, dataset_hash=None, data_source=None, model_provenance=None, parameters=None, notes=None)`: Create a JSON-serialisable reproducibility manifest.
