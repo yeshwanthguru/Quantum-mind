@@ -131,7 +131,7 @@ class QuantumPerceptionDexterityModel:
 
         try:
             from qiskit import QuantumCircuit
-            from qiskit.quantum_info import Statevector
+            from qiskit.quantum_info import SparsePauliOp, Statevector
         except ImportError as exc:
             raise ImportError(
                 "backend='qiskit' requires Qiskit; install qiskit to use this backend"
@@ -149,7 +149,7 @@ class QuantumPerceptionDexterityModel:
         # trainable softmax readout. This prototype uses ideal statevector sim.
         return np.asarray(
             [float(np.real(state.expectation_value(
-                __import__("qiskit").quantum_info.SparsePauliOp.from_list(
+                SparsePauliOp.from_list(
                     [("I" * (self.n_qubits - 1 - q) + "Z" + "I" * q, 1.0)]
                 )
             ))) for q in range(self.n_qubits)],
