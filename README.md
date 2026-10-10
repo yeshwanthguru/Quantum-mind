@@ -36,25 +36,39 @@ Qiskit is imported only when the Qiskit backend is selected. Its current circuit
 ~~~python
 from qpdm import QuantumPerceptionDexterityModel
 
-# Example records are schematic. Replace them with labeled measurements
-# collected from your sensors and tasks.
+perception_examples = [
+    {"depth_m": 0.42, "contact_force_n": 0.0},
+    {"depth_m": 0.38, "contact_force_n": 0.1},
+    {"depth_m": 0.12, "contact_force_n": 1.4},
+    {"depth_m": 0.10, "contact_force_n": 1.8},
+]
+perception_labels = [
+    "object_clear", "object_clear", "contact", "contact"
+]
 perception = QuantumPerceptionDexterityModel(
-    labels=["object_clear", "object_occluded", "contact"],
+    labels=["object_clear", "contact"],
     mode="perception",
     backend="classical",
 )
 perception.fit(perception_examples, perception_labels)
 
+dexterity_examples = [
+    {"jaw_width_mm": 22, "grip_force_n": 2.0},
+    {"jaw_width_mm": 19, "grip_force_n": 2.4},
+    {"jaw_width_mm": 54, "grip_force_n": 8.0},
+    {"jaw_width_mm": 50, "grip_force_n": 7.5},
+]
+dexterity_labels = ["pinch", "pinch", "power_grasp", "power_grasp"]
 dexterity = QuantumPerceptionDexterityModel(
-    labels=["pinch", "power_grasp", "regrasp", "release"],
+    labels=["pinch", "power_grasp"],
     mode="dexterity",
     backend="qiskit",
     n_qubits=4,
 )
 dexterity.fit(dexterity_examples, dexterity_labels)
 
-scene = perception.predict_proba(sensor_history)
-skill = dexterity.predict(sensor_history)
+scene = perception.predict_proba({"depth_m": 0.11, "contact_force_n": 1.6})
+skill = dexterity.predict({"jaw_width_mm": 20, "grip_force_n": 2.2})
 print(scene)
 print(skill.label, skill.probabilities)
 ~~~
