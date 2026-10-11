@@ -70,3 +70,12 @@ def test_zeno_row(capsys):
     for line in out.splitlines():
         if 'BIC' in line:
             assert line.split('BIC')[1].strip() in row
+
+
+def test_cobra_rows():
+    """The website's COBRA numbers appear in the committed benchmark results."""
+    text = (ROOT / 'benchmarks' / 'results' / 'context_intent' / 'benchmark_results.md').read_text()
+    for prefix in ('COBRA vs Bayes filter', 'Control task'):
+        row = _row(prefix)
+        for number in __import__('re').findall(r'\d\.\d{3}', row):
+            assert number in text, number

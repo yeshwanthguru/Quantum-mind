@@ -33,13 +33,35 @@ context-dependent filter with no phase between frames. Comparing the three isola
 rotation and the coherence each add. The test suite checks both limits exactly
 (`tests/test_math_docs.py`).
 
+## Figures
+
+**What it learned: context-dependent meaning of a cue.** The shift in log-odds(handover : retrieve) that one hand
+cue adds after opposite previous looks. A Bayes filter adds the same amount either way; the oracle flips sign, and
+so does this trained COBRA (one model, seed 0).
+
+![Context effect](../../../docs/assets/cobra_context_effect.png)
+
+**Belief over time** for one correctly classified episode per intent:
+
+![Belief timeline](../../../docs/assets/cobra_belief_timeline.png)
+
+**The density matrix** `|rho|` after each frame. The coherences are small (about 0.1 after the first frame, about
+0.01 afterwards), so most of the work is done by the context-rotated evidence step.
+
+![Density matrix](../../../docs/assets/cobra_density_matrix.png)
+
+**Benchmark.** Expected decision cost against training size (mean and std over 5 seeds):
+
+![Benchmark](../../../docs/assets/cobra_benchmark.png)
+
 ## What is and is not claimed
 
 * It is a **classical simulation** of the quantum-probability formalism and runs on NumPy. No quantum
   computational advantage is claimed.
-* On a **synthetic** intent task built to contain a context effect, it beats the classical filters once it
-  has enough training data and ties the Bayes filter on a control task with no context effect; with little
-  data it loses, and training sometimes misses the context mechanism (see
-  `benchmarks/context_intent_benchmark.py` and its `results/`).
+* On a **synthetic** intent task built to contain a context effect, it lowers the expected decision cost by about
+  0.02 against the Bayes filter with 250 to 1000 training sequences (a paired test is significant in only 2 of 5
+  seeds) and is the best calibrated model under 1.5x test noise. With 60 training sequences it is worse (+0.07),
+  on a control task with no context effect it is slightly worse than the Bayes filter (+0.01), and training
+  sometimes misses the context mechanism (see `benchmarks/context_intent_benchmark.py` and its `results/`).
 * The coherence of the belief is a **weak** error flag; belief entropy is far better.
 * No study with real people or a real robot has been run.

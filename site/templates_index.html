@@ -84,7 +84,7 @@ belief = model.start()                 # online, one frame at a time
 for frame in sensor_stream:
     p = belief.update(frame)           # P(handover, retrieve, withdraw)
 action = min_cost_action(p, cost)      # hand over, wait or ask</code></pre></div>
-    <div class="card"><h3>What the benchmark says</h3><p>On a synthetic task built to contain this kind of context effect, COBRA beats a Bayes filter, logistic regression and an MLP once it has enough training data, and ties the Bayes filter where context does not matter. With little data it loses, training sometimes misses the mechanism, and the coherence signal is a weak error flag. <a href="docs/user_guide/belief.html">Full results and figures</a>.</p></div>
+    <div class="card"><h3>What the benchmark says</h3><p>On a synthetic task built to contain this kind of context effect, COBRA lowers decision cost by about 0.02 against a Bayes filter with enough training data (significant in 2 of 5 seeds) and is the best calibrated model under noise. With little data it is worse, on a control task with no context effect it is slightly worse than the Bayes filter, and training sometimes misses the mechanism. <a href="docs/user_guide/belief.html">Full results and figures</a>.</p></div>
   </div>
 </div></section>
 

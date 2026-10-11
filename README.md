@@ -93,12 +93,29 @@ regression and an MLP on a **synthetic** intent task with a context effect, and 
 adds an ablation without coherence, noise and dropout stress tests, and a paired sign-flip test. Mean ± std over 5
 seeds, 3000 test sequences per cell:
 
-<<COBRA_RESULTS>>
+| Context task, expected decision cost (lower is better) | 60 training sequences | 250 | 1000 |
+|---|---|---|---|
+| Oracle (knows the generator) | 0.147 | 0.147 | 0.147 |
+| **COBRA** | 0.347 ± 0.061 | **0.221 ± 0.005** | **0.221 ± 0.028** |
+| COBRA without coherence (ablation) | 0.345 ± 0.028 | 0.265 ± 0.014 | 0.249 ± 0.010 |
+| Gaussian Bayes filter | **0.280 ± 0.035** | 0.247 ± 0.006 | 0.239 ± 0.014 |
+| Logistic regression | 0.323 ± 0.036 | 0.276 ± 0.019 | 0.255 ± 0.009 |
+| MLP (515 parameters) | 0.358 ± 0.083 | 0.291 ± 0.036 | 0.233 ± 0.014 |
+| *Control task (no context effect), COBRA / Bayes filter* | *0.288 / 0.227* | *0.209 / 0.199* | *0.204 / 0.189* |
+
 
 <p align="center"><img src="https://raw.githubusercontent.com/yeshwanthguru/Quantum-mind/main/docs/assets/cobra_benchmark.png" alt="Expected decision cost against training size for COBRA and the baselines" width="100%"></p>
 
 The honest reading is in [`benchmarks/results/context_intent/`](https://github.com/yeshwanthguru/Quantum-mind/tree/main/benchmarks/results/context_intent)
-and on the [COBRA page](https://yeshwanthguru.github.io/Quantum-mind/docs/user_guide/belief.html): <<COBRA_READING>>
+and on the [COBRA page](https://yeshwanthguru.github.io/Quantum-mind/docs/user_guide/belief.html):
+
+* With 250 to 1000 training sequences COBRA has the lowest cost of the learned models on the context task (about 0.02 below the Bayes filter). A paired sign-flip test on per-sequence cost is significant in only 2 of 5 seeds at each size, because training varies from seed to seed.
+* With 60 training sequences COBRA is **worse** than the Bayes filter (0.347 against 0.280).
+* On the **control** task, where context does not matter, COBRA is slightly **worse** than the Bayes filter (0.204 against 0.189 at 1000 sequences).
+* Removing coherence (the ablation) loses about 0.03 to 0.04 in cost at 250 and 1000 sequences, a hint that phase interference helps; five seeds are too few to be sure.
+* Under 1.5x test noise COBRA is the best calibrated model (cost 0.481 against 0.608 for the Bayes filter at 1000 sequences).
+* Its l1 coherence flags its own errors barely better than chance (AUROC about 0.53); belief entropy (about 0.81) is far better.
+
 
 <a id="layers"></a>
 
@@ -333,7 +350,7 @@ own tests and a `requirements.txt`; tutorial 15 walks through it. Results are fo
 From a clone: `pip install -e ".[all,dev]"`. Python 3.10 or later.
 
 ```bash
-python3 -m pytest -q --cov=quantum_mind     # <<TESTS>> tests (CI requires at least 80% line coverage)
+python3 -m pytest -q --cov=quantum_mind     # 139 tests (CI requires at least 80% line coverage)
 python3 benchmarks/context_intent_benchmark.py    # the COBRA benchmark, about 10 to 20 minutes on 4 cores
 python3 docs/make_cobra_figures.py                # redraw the COBRA figures
 ```

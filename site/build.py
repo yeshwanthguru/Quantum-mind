@@ -24,8 +24,8 @@ sys.path.insert(0, str(ROOT / 'src'))
 os.environ.setdefault('MPLBACKEND', 'Agg')
 
 RESULTS = [
-    ('COBRA vs Bayes filter on a context-dependent intent task (simulated, 5 seeds)', 'COBRA_ROW'),
-    ('Control task with no context effect (simulated)', 'CONTROL_ROW'),
+    ('COBRA vs Bayes filter on a context-dependent intent task (simulated, 5 seeds)', 'context: cost 0.221 (COBRA) · 0.239 (Bayes filter) · 0.233 (MLP) · oracle 0.147 at 1000 training sequences; paired test significant in 2 of 5 seeds; with 60 sequences COBRA 0.347 against Bayes 0.280; under 1.5x test noise COBRA is best calibrated (cost 0.481 against 0.608)'),
+    ('Control task with no context effect (simulated)', 'expected cost 0.204 (COBRA) · 0.189 (Bayes filter) at 1000 training sequences: COBRA is slightly worse where context does not matter'),
     ('Individual differences (example 14)', 'a pooled fit selects the quantum-like model for a population that is half anchoring; '
      'per-person fits recover all 12 people at about 3,000 answers each'),
     ('Concept combination, "pet and fish" (simulated)', 'Fock-space model SSE 0.001 · weighted average 0.054 · '

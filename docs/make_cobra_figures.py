@@ -126,7 +126,7 @@ def fig_context(cobra, bayes):
     for i, sign in enumerate((+1, -1)):
         vals = [shift(fn, sign) for _, fn in models]
         bars = ax.bar(np.arange(len(models)) + (i - 0.5) * w, vals, w,
-                      color=["#0072B2", "#E69F00"][i], label=f"previous gaze cue a = {sign:+.1f}")
+                      color=["#0072B2", "#E69F00"][i], label=f"previous gaze cue a = {sign * 1.5:+.1f}")
         for r, v in zip(bars, vals):
             ax.text(r.get_x() + r.get_width() / 2, v + (0.15 if v >= 0 else -0.15), f"{v:+.1f}",
                     ha="center", va="bottom" if v >= 0 else "top", fontsize=8)

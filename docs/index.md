@@ -79,9 +79,9 @@ tested code:
 
 * **COBRA**, a belief filter whose generalised measurement is rotated by the previous frame, with the Bayes
   filter and an incoherent filter as built-in limits so the effect of context and the effect of coherence can be
-  separated. On a synthetic task with a context effect it beats classical filters given enough data, and it
-  ties them where context does not matter; the benchmark, the ablations and the cases where it loses are
-  reported in full.
+  separated. On a synthetic task with a context effect it lowers decision cost by about 0.02 against a Bayes
+  filter given enough data (significant in 2 of 5 seeds), but it is worse with little data and slightly worse
+  where context does not matter; the benchmark, the ablations and the cases where it loses are reported in full.
 * **Trust as an open quantum system**, an **order-aware** hand-over policy and a **value-of-information
   question planner** whose answers depend on the order of the questions.
 * A decision layer that never reports a belief without a cost, a calibration check and a classical baseline.

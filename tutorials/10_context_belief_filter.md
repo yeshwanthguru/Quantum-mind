@@ -140,8 +140,8 @@ print('checked')
 previous frame uses the hand cue the way the data require, and a commutative filter cannot, which shows up as a lower log
 loss. The gain is modest and specific: the decision cost is not clearly lower; with little training data COBRA is
 worse than the Bayes filter; training sometimes misses the context mechanism (it needs several restarts); the
-coherence of the learned belief is small; and on a control task with no context effect it only ties the
-classical filter. The full benchmark, with
+coherence of the learned belief is small; and on a control task with no context effect it is slightly worse
+than the classical filter. The full benchmark, with
 ablations and paired tests, is in `benchmarks/context_intent_benchmark.py`.
 
 References: Busemeyer & Bruza (2012), *Quantum Models of Cognition and Decision*, Cambridge University Press;
