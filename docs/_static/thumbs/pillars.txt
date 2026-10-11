@@ -15,3 +15,5 @@
 15_bistable_perception_zeno.py ql
 16_trust_aware_handover.py robot
 17_context_belief_filter.py ql
+18_robot_quantum_solvers.py q
+19_quantum_accelerometer_fusion.py q

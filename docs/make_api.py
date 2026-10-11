@@ -25,6 +25,8 @@ MODULES = [
     'quantum_mind.applications.handover',
     'quantum_mind.applications.fusion',
     'quantum_mind.belief',
+    'quantum_mind.computing',
+    'quantum_mind.sensing',
     'quantum_mind.quantum',
     'quantum_mind.envs',
     'quantum_mind.problems',

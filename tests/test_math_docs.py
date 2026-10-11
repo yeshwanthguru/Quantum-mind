@@ -294,3 +294,57 @@ def test_trust_aware_allocation_energy():
         X = x.reshape(2, 2)
         expect = ((C + F * r[None, :] * (1 - tau)[:, None]) * X).sum() + lam * (X.sum(1) ** 2).sum() + A * ((X.sum(0) - 1) ** 2).sum()
         assert q.energy(x) == pytest.approx(expect)
+
+
+# ---------------------------------------------------- computing and sensing (math/computing.md, math/sensing.md)
+def test_slot_scheduling_energy_formula():
+    from quantum_mind.computing import slot_scheduling
+    G = np.array([[0, 1, 1], [1, 0, 0], [1, 0, 0]])
+    p = slot_scheduling(G, 2, penalty=7.0)
+    rng = np.random.default_rng(0)
+    for _ in range(12):
+        X = rng.integers(0, 2, (3, 2))
+        pairs = [(0, 1), (0, 2)]
+        expect = sum((X[i] * X[j]).sum() for i, j in pairs) + 7.0 * ((X.sum(axis=1) - 1) ** 2).sum()
+        assert p.qubo.energy(X.ravel()) == pytest.approx(expect)
+
+
+def test_grasp_energy_formula():
+    from quantum_mind.computing import grasp_selection
+    q = np.array([0.9, 0.4, 0.7, 0.2])
+    c = np.array([[0, .3, .1, 0], [.3, 0, .2, 0], [.1, .2, 0, .5], [0, 0, .5, 0]])
+    p = grasp_selection(q, c, 2, penalty=5.0)
+    rng = np.random.default_rng(1)
+    for _ in range(12):
+        x = rng.integers(0, 2, 4)
+        expect = -q @ x + sum(c[i, j] * x[i] * x[j] for i in range(4) for j in range(i + 1, 4)) + 5.0 * (x.sum() - 2) ** 2
+        assert p.qubo.energy(x) == pytest.approx(expect)
+
+
+def test_random_sampling_success_probability():
+    from quantum_mind.computing import random_sampling, slot_scheduling
+    p = slot_scheduling(np.array([[0, 1], [1, 0]]), 2)                    # 4 variables, 16 strings, 2 optima
+    _, e_min = p.qubo.brute_force()
+    n_opt = int(np.isclose(p.qubo.all_energies(), e_min).sum())
+    shots, trials, rng = 4, 400, np.random.default_rng(0)
+    hits = np.mean([np.isclose(random_sampling(p.qubo, shots, seed=int(rng.integers(1 << 30))).energy, e_min) for _ in range(trials)])
+    expected = 1 - (1 - n_opt / 16) ** shots
+    assert abs(hits - expected) < 0.08
+
+
+def test_sensing_formulas():
+    from quantum_mind.sensing import atom_interferometer_sensitivity, phase_sensitivity, RB87_WAVELENGTH_M
+    k_eff = 4 * np.pi / RB87_WAVELENGTH_M
+    assert atom_interferometer_sensitivity(1e6, 0.1, contrast=0.5) == pytest.approx(phase_sensitivity(1e6) / (0.5 * k_eff * 0.01))
+
+
+def test_filter_state_transition_matches_the_documented_model():
+    from quantum_mind.sensing import mems_accelerometer, simulate_dead_reckoning, run_filter
+    m = mems_accelerometer()
+    data = simulate_dead_reckoning([m], duration=2.0, dt=0.01, seed=0)
+    err = run_filter(data)
+    # the documented model: position follows p + v dt + a dt^2/2, velocity v + a dt (simulation and filter agree)
+    dt = data.dt
+    v = np.cumsum(np.concatenate([[0.0], data.accel[:-1] * dt]))
+    p = np.concatenate([[0.0], np.cumsum(v[:-1] * dt + 0.5 * data.accel[:-1] * dt ** 2)])
+    assert np.allclose(p, data.pos) and err[0] == 0.0

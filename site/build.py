@@ -24,6 +24,8 @@ sys.path.insert(0, str(ROOT / 'src'))
 os.environ.setdefault('MPLBACKEND', 'Agg')
 
 RESULTS = [
+    ('Robot allocation, grasp selection and scheduling, QAOA against classical solvers (simulated, 10 instances each)', 'instances solved to the optimum, out of 30: <strong>greedy descent 29</strong> · QAOA depth 2 and 3: 26 · QAOA depth 1: 24 · random sampling with the same 1000 shots 24 · simulated annealing 16 (QAOA is within noise of random sampling; exact simulation, no hardware)'),
+    ('Quantum accelerometer fused with a MEMS accelerometer, position RMSE over 300 s (simulated, illustrative sensor values)', 'no position fixes: <strong>fused 10.0 m</strong> · MEMS only 339.7 m · quantum only 229.1 m; with a fix every 10 s: fused 0.144 m · MEMS only 0.173 m; the benefit vanishes when the quantum sensor is as unstable as the MEMS sensor (297 m)'),
     ('COBRA vs Bayes filter on a context-dependent intent task (simulated, 5 seeds)', 'context: cost 0.221 (COBRA) · 0.239 (Bayes filter) · 0.233 (MLP) · oracle 0.147 at 1000 training sequences; paired test significant in 2 of 5 seeds; with 60 sequences COBRA 0.347 against Bayes 0.280; under 1.5x test noise COBRA is best calibrated (cost 0.481 against 0.608)'),
     ('Control task with no context effect (simulated)', 'expected cost 0.204 (COBRA) · 0.189 (Bayes filter) at 1000 training sequences: COBRA is slightly worse where context does not matter'),
     ('Individual differences (example 11)', 'a pooled fit selects the quantum-like model for a population that is half anchoring; '

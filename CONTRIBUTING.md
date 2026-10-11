@@ -12,9 +12,10 @@ Contributions of models, baselines, circuits, data sets and examples are welcome
    analytic prediction (statevector-exact where possible).
 4. **One interface.** Quantum-like models subclass `quantum_mind.core.Model`, declare `PARAMS`, `LOSS` and
    `predict(design)`. Belief filters follow `fit / predict_proba / start` (see `quantum_mind.belief`).
-5. **Stay in scope.** Quantum-like models of people, robot beliefs and decisions, and what is needed to show or
-   run them. General-purpose quantum algorithms and quantum-inspired optimisers belong in Qiskit, PennyLane
-   and optimisation libraries, not here; see `docs/concepts.md`.
+5. **Stay in scope.** The three threads of quantum robotics (robot problems on quantum computers, quantum sensing for robots,
+   quantum-probability models of people and robot beliefs) and what is needed to show or run them. General-purpose quantum
+   algorithms and quantum-inspired optimisers belong in Qiskit, PennyLane and optimisation libraries, not here; connect to them
+   instead (see `quantum_mind.computing`).
 6. **Always compare, and ablate.** A new model is reported next to a classical baseline with the same budget,
    with the ablation that isolates what is new, a control task where it should not help, and a paired test.
 

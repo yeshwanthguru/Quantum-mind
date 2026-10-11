@@ -346,6 +346,38 @@ Belief filters that keep a robot's belief about a person as a density matrix.
 - **class `OnlineBelief(model, rho, prev)`**: A COBRA belief updated one frame at a time, as a robot would run it.
   - `update(self, frame)`: Fold one sensor frame into the belief and return the new probabilities.
 
+## `quantum_mind.computing`
+
+Quantum computing for robot algorithms: robot problems as QUBOs, classical baselines and a Qiskit QAOA adapter.
+
+- `compare_solvers(problem, solvers=None, seed=0)`: Solve a :class:`~quantum_mind.computing.RobotProblem` with several solvers.
+- `exhaustive(qubo)`: Exact optimum by enumeration (at most 22 variables).
+- `grasp_selection(quality, conflict, k, penalty=None)`: Choose exactly ``k`` grasps of high total quality that do not conflict.
+- `greedy_descent(qubo, restarts=20, seed=0)`: Best-improvement single-bit descent from random starts (the simplest classical baseline).
+- `multi_robot_allocation(costs, balance=0.0, penalty=None)`: Assign every task to exactly one robot.
+- `qaoa(qubo, depth=2, restarts=3, shots=1000, maxiter=150, seed=0)`: QAOA through Qiskit's ``QAOAAnsatz``, simulated exactly (at most 16 qubits).
+- `random_sampling(qubo, shots=1000, seed=0)`: Best of ``shots`` uniformly random bit strings: the null baseline for any sampling-based solver.
+- **class `RobotProblem(name: 'str', qubo: 'Qubo', objective: 'Callable', feasible: 'Callable', decode: 'Callable') -> None`**: A robot problem with its QUBO encoding.
+  - `optimum(self)`: Exhaustive optimum of the true objective over feasible bit strings (n at most 22).
+- `simulated_annealing(qubo, sweeps=1000, restarts=10, t_start=None, t_end=None, seed=0)`: Single-bit-flip simulated annealing with a geometric schedule (classical baseline).
+- `slot_scheduling(conflicts, n_slots, penalty=None)`: Give every robot a time slot so that conflicting robots never share one.
+- **class `SolverResult(x: 'np.ndarray', energy: 'float', method: 'str', info: 'dict' = <factory>) -> None`**: What a solver returns.
+
+## `quantum_mind.sensing`
+
+Quantum sensing for robots: sensor models with their quantum limits, and fusion with classical sensors.
+
+- `atom_interferometer_accelerometer(n_atoms=1000000.0, interrogation_time=0.1, cycle_time=1.0, contrast=0.5, bias_walk=1e-08, bias_std0=1e-06)`: A cold-atom interferometer accelerometer: slow, very sensitive, almost drift-free (illustrative values).
+- `atom_interferometer_sensitivity(n_atoms, interrogation_time, contrast=0.5, wavelength=7.8024e-07, scaling='sql')`: Single-shot acceleration sensitivity of a light-pulse atom interferometer.
+- `compare_sensor_suites(sensors, suites, duration=300.0, dt=0.01, accel_std=0.5, accel_tau=2.0, fix_period=None, fix_std=0.1, seeds=range(0, 10))`: Run the same simulated trajectories through several sensor suites.
+- **class `DeadReckoningData(dt: 'float', pos: 'np.ndarray', accel: 'np.ndarray', readings: 'dict', fixes: 'np.ndarray', sensors: 'list', accel_std: 'float', accel_tau: 'float', fix_period: 'float', fix_std: 'float') -> None`**: A simulated trajectory with the measurements of every sensor.
+- `mems_accelerometer(rate_hz=100.0, noise_density_ug=100.0, bias_walk=0.0002, bias_std0=0.02)`: A MEMS accelerometer: fast, noisy, with a drifting bias (illustrative values).
+- `phase_sensitivity(n_probes, repeats=1, scaling='sql')`: Smallest phase resolvable with ``n_probes`` probes repeated ``repeats`` times.
+- `RB87_WAVELENGTH_M` (constant)
+- `run_filter(data, use=None, use_fixes=False)`: Run the multi-rate Kalman filter on a simulated trajectory.
+- **class `Sensor(name: 'str', rate_hz: 'float', noise_std: 'float', bias_walk: 'float', bias_std0: 'float') -> None`**: One accelerometer.
+- `simulate_dead_reckoning(sensors, duration=300.0, dt=0.01, accel_std=0.5, accel_tau=2.0, fix_period=None, fix_std=0.1, seed=0)`: Simulate a trajectory and the readings of every sensor.
+
 ## `quantum_mind.quantum`
 
 Quantum state-vector simulator used by the Bloch-sphere viewer and the circuit exports.

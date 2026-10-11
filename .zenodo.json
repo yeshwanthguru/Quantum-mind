@@ -1,7 +1,7 @@
 {
-  "title": "Quantum Mind: quantum-probability cognition for robots that work with people",
+  "title": "Quantum Mind: quantum robotics (computing, sensing and cognition) with classical baselines",
   "upload_type": "software",
-  "description": "Python library for quantum-probability cognition in robotics: quantum-like models of how people judge, decide and trust, COBRA (a context-rotated density-matrix belief filter) and a cost-aware robot decision layer, each tested against classical baselines, with a 3D Bloch-sphere viewer.",
+  "description": "Python library for the three threads of quantum robotics: quantum computing for robot algorithms (robot QUBOs, classical baselines, a Qiskit QAOA adapter), quantum sensing for robots (quantum-limited sensor models and Kalman fusion) and quantum-probability cognition (the COBRA belief filter and quantum-like human models), each tested against its classical baseline, with a 3D Bloch-sphere viewer.",
   "creators": [
     {
       "name": "Guru, Yeshwanth",
@@ -9,7 +9,7 @@
     }
   ],
   "license": "Apache-2.0",
-  "keywords": ["quantum cognition", "quantum-like models", "quantum probability", "belief filter",
+  "keywords": ["quantum robotics", "quantum sensing", "quantum computing", "quantum cognition", "quantum probability", "belief filter",
                "robotics", "human-robot interaction", "qiskit", "Bloch sphere"],
   "access_right": "open"
 }

@@ -10,6 +10,8 @@ flowchart LR
     accDescr: The core rules feed the quantum-like families, the COBRA belief filter and the decision layer; perception feeds the decision layer.
     C["Core<br/>Born and Lüders rules · Lindblad · likelihood · AIC/BIC"]:::op --> QL["Quantum-like families<br/>projections · interference · walks · Zeno"]:::hum
     C --> B["COBRA belief filter<br/>density matrix · rotated measurement · dephasing"]:::in
+    Q["Quantum computing for robots<br/>QUBO encodings · QAOA"]:::in --> R
+    S["Quantum sensing<br/>quantum limits · atom interferometer · Kalman filter"]:::in --> R
     C --> R["Decision layer<br/>value of information · calibration · conformal · empirical Bayes"]:::out
     QL --> R
     B --> R
@@ -47,6 +49,22 @@ Question order and the QQ equality, QLBN, walks, the trust qubit and Zeno percep
 Density-matrix belief, context-rotated generalised measurement, dephasing, and the two classical limits.
 :::
 
+:::{grid-item-card} {fas}`microchip` Quantum computing for robots
+:class-card: pillar-quantum
+:link: computing
+:link-type: doc
+
+QUBO encodings of robot problems and QAOA through Qiskit.
+:::
+
+:::{grid-item-card} {fas}`satellite-dish` Quantum sensing
+:class-card: pillar-quantum
+:link: sensing
+:link-type: doc
+
+Quantum limits, the atom interferometer and the dead-reckoning Kalman filter.
+:::
+
 :::{grid-item-card} {fas}`robot` Robot decision layer
 :class-card: pillar-inspired
 :link: robotics
@@ -78,6 +96,8 @@ Environments with simulated people, the state-vector simulator and the QUBO cont
 core
 quantum_like
 belief
+computing
+sensing
 robotics
 perception
 infrastructure

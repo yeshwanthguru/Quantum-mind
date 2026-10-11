@@ -21,7 +21,9 @@ What has been checked, how, and what has not. This page exists so that nobody ha
 |---|---|
 | No data from human-robot interaction studies | the robotics results (ask or act, question planning, hand-over, fusion) are simulations with illustrative parameters |
 | Simulated people often follow the same model the robot uses | results such as the hand-over cost comparison favour the order-aware policy by construction |
-| No runs on quantum hardware are included | hardware support is tested with simulators and fake back ends only |
+| No runs on quantum hardware are included | hardware support is tested with simulators and fake back ends only; the QAOA study uses an exact simulator |
+| The quantum-sensing study uses illustrative sensor numbers | the atom-interferometer noise comes from the quantum limit, its bias walk is an assumption, and no measured sensor data are used |
+| QAOA is compared on problems small enough to enumerate | nothing is learned about problems too large to solve exactly |
 | The ROS 2 node has not been run inside a ROS 2 installation in CI | its callbacks are tested with stand-in modules |
 | References were compiled by hand | the reference-check workflow (below) compares them with Crossref; see its report before relying on a citation detail |
 

@@ -17,16 +17,16 @@ Amplitude
   A (possibly complex) number $\psi_i$ whose squared magnitude $\lvert\psi_i\rvert^2$ is a probability. Amplitudes
   add before squaring, which is the source of interference.
 
-Amplitude estimation
-  A quantum algorithm that estimates a probability $a$ with error falling as $1/N$ in the number of
-  oracle calls, against $1/\sqrt N$ for Monte Carlo sampling.
-
 Anchoring model
   Classical baseline for order effects: the second answer is pulled towards the first.
 
 Ask or act
   The robot's decision rule: ask when the expected cost of acting, error cost times $(1 - p)$, is larger
   than the cost of asking, or when its models of the person disagree.
+
+Atom interferometer
+  A sensor that splits and recombines a cloud of cold atoms with laser pulses; it reads acceleration as a phase
+  $\varphi = k_{\mathrm{eff}} a T^2$ and is very sensitive and almost drift-free, but slow.
 
 Baseline
   The classical model a quantum-like model is compared with on the same
@@ -46,6 +46,14 @@ Clopper-Pearson interval
   Exact binomial confidence interval for a success rate; its lower end is a safe confidence for
   risky actions.
 
+COBRA
+  Context-rotated density-matrix belief filter: the previous sensor frame rotates the basis in which the
+  next frame is measured, so what a reading means depends on what came before it.
+
+Coherence
+  The off-diagonal part of a density matrix. COBRA reports its l1 value (the sum of the moduli of the
+  off-diagonal entries) as a diagnostic.
+
 Concurrence
   A measure of two-qubit entanglement between 0 (product state) and 1 (maximally entangled).
 
@@ -53,19 +61,19 @@ Conformal prediction
   A method that turns any classifier's scores into prediction sets containing the true label with a
   chosen probability, for exchangeable data.
 
-Contextuality
-  When no single joint probability distribution explains measurements made in different contexts.
-
 Decoherence, dephasing
   Loss of the off-diagonal terms of a density matrix; a quantum-like belief then behaves more and more
   like a classical one.
 
-Density matrix
-  $\rho$, a positive matrix with trace 1 that describes pure and mixed states.
-
 Dempster-Shafer theory
   Evidence theory in which mass can be assigned to "any hypothesis" (ignorance) as well as to single
   hypotheses.
+
+Density matrix
+  $\rho$, a positive matrix with trace 1 that describes pure and mixed states.
+
+Dephasing
+  Loss of coherence: the off-diagonal entries shrink while the diagonal is unchanged.
 
 ECE
   Expected calibration error: the bin-weighted average gap between accuracy and confidence.
@@ -75,6 +83,10 @@ Empirical Bayes
 
 Entanglement
   Correlation between qubits that no product of single-qubit states can describe.
+
+Generalised measurement
+  An update $\rho \to M\rho M^\dagger/\mathrm{tr}(M\rho M^\dagger)$ with a positive operator $M$; with a diagonal
+  $M$ it is Bayes' rule, with a rotated $M$ it reads the evidence in a different basis.
 
 Gymnasium
   The standard Python interface for reinforcement-learning environments (`reset`, `step`).
@@ -86,6 +98,10 @@ Incompatible questions
 Interference term
   The extra term $2\sqrt{\cdot}\cos\theta$ in a quantum-like probability that makes it differ from the
   classical law of total probability.
+
+Kalman filter
+  The optimal linear estimator of a state from noisy measurements; the multi-rate version here fuses sensors that report at
+  different rates.
 
 Kraus operator
   A matrix $K$ that updates a state as $\psi \mapsto K\psi/\lVert K\psi\rVert$; used for quantum-like cue fusion.
@@ -112,40 +128,34 @@ Partial pooling
 Projector
   A matrix $P$ with $P^2 = P = P^\dagger$; it represents the "yes" answer to a question.
 
-COBRA
-  Context-rotated density-matrix belief filter: the previous sensor frame rotates the basis in which the
-  next frame is measured, so what a reading means depends on what came before it.
-
-Coherence
-  The off-diagonal part of a density matrix. COBRA reports its l1 value (the sum of the moduli of the
-  off-diagonal entries) as a diagnostic.
-
-Dephasing
-  Loss of coherence: the off-diagonal entries shrink while the diagonal is unchanged.
-
-Generalised measurement
-  An update $\rho \to M\rho M^\dagger/\mathrm{tr}(M\rho M^\dagger)$ with a positive operator $M$; with a diagonal
-  $M$ it is Bayes' rule, with a rotated $M$ it reads the evidence in a different basis.
+QAOA
+  Quantum Approximate Optimisation Algorithm: alternating cost and mixer layers that prepare a state concentrated on good
+  solutions of a binary optimisation problem. Here it runs through Qiskit on an exact simulator.
 
 QQ equality
   A parameter-free prediction of every projective model of two questions: the probability of giving
   different answers is the same in both orders.
 
-Quantum-like
-  A model of human judgement that uses quantum probability; it assumes nothing quantum in the brain.
-
 Quantum Zeno effect
   Frequent observation slows the evolution of a quantum system; used to model bistable perception.
+
+Quantum-like
+  A model of human judgement that uses quantum probability; it assumes nothing quantum in the brain.
 
 Qubit
   A two-level quantum system, $\alpha\lvert 0\rangle + \beta\lvert 1\rangle$ with $\lvert\alpha\rvert^2 + \lvert\beta\rvert^2 = 1$.
 
 QUBO
-  Quadratic unconstrained binary optimisation: minimise $x^TQx$ over bit strings $x$.
+  Quadratic unconstrained binary optimisation: minimise $x^TQx$ over bit strings. Robot allocation, grasp selection and
+  scheduling are encoded this way with penalty terms.
 
 REINFORCE
   Policy-gradient method that increases the log-probability of actions that led to better than
   average returns.
+
+Standard quantum limit
+  The best phase resolution, $1/\sqrt{N}$ for $N$ independent probes; entangled probes can in principle reach the Heisenberg
+  limit $1/N$.
 
 Temperature scaling
   Recalibration of a classifier by dividing its logits by one fitted temperature $T$.

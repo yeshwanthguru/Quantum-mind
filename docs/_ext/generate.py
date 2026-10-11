@@ -23,6 +23,8 @@ READMES = {
     'docs/concepts.md': 'user_guide/concepts',
     'src/quantum_mind/quantum/README.md': 'user_guide/quantum',
     'src/quantum_mind/belief/README.md': 'user_guide/belief',
+    'src/quantum_mind/computing/README.md': 'user_guide/computing',
+    'src/quantum_mind/sensing/README.md': 'user_guide/sensing',
     'src/quantum_mind/problems/README.md': 'user_guide/problems',
     'src/quantum_mind/circuits/README.md': 'user_guide/circuits',
     'src/quantum_mind/viz/README.md': 'user_guide/viz',
@@ -47,6 +49,9 @@ API = [
     ('quantum_mind.applications.personalisation', 'Personalised human models'),
     ('quantum_mind.applications.handover', 'Trust-aware hand-over'), ('quantum_mind.applications.fusion', 'Multimodal fusion'),
     ('quantum_mind.belief.cobra', 'COBRA belief filter'),
+    ('quantum_mind.computing.problems', 'Robot problems as QUBOs'), ('quantum_mind.computing.solvers', 'QUBO solvers'),
+    ('quantum_mind.sensing.limits', 'Quantum sensing limits'), ('quantum_mind.sensing.sensors', 'Inertial sensor models'),
+    ('quantum_mind.sensing.dead_reckoning', 'Dead reckoning with a Kalman filter'),
     ('quantum_mind.envs.hri', 'Environments with simulated people'),
     ('quantum_mind.quantum.statevector', 'State-vector simulator'), ('quantum_mind.problems', 'QUBO container'),
     ('quantum_mind.circuits.builders', 'Circuit builders'), ('quantum_mind.circuits.backends', 'Running circuits'),
@@ -56,6 +61,7 @@ API = [
 ]
 API_GROUPS = [('Core', 'quantum_mind.core.'), ('Quantum-like families', 'quantum_mind.families.'),
               ('Applications', 'quantum_mind.applications.'),
+              ('Quantum computing for robots', 'quantum_mind.computing.'), ('Quantum sensing', 'quantum_mind.sensing.'),
               ('COBRA belief filter', 'quantum_mind.belief.'), ('Environments', 'quantum_mind.envs.'),
               ('Simulator', 'quantum_mind.quantum.'), ('Problems', 'quantum_mind.problems'),
               ('Circuits', 'quantum_mind.circuits.'), ('Bloch-sphere viewer', 'quantum_mind.viz.'), ('Data', 'quantum_mind.data')]

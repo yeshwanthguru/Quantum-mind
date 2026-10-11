@@ -5,6 +5,7 @@
 ## Pillar
 
 - [ ] Quantum-like (model of people)
+- [ ] Quantum computing for robots (`computing`) or quantum sensing (`sensing`)
 - [ ] Belief filter or robot decision layer
 - [ ] Viewer, circuits, core or infrastructure
 

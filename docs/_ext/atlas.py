@@ -193,6 +193,79 @@ PAGES['belief'] = ('COBRA belief filter',
 ])
 
 
+# ----------------------------------------------------------------------------------------- computing
+PAGES['computing'] = ('Quantum computing for robot algorithms',
+                      'Robot problems as binary optimisation, the classical baselines a quantum result must be reported '
+                      'against, and a thin adapter to Qiskit\'s QAOA.', [
+    M('Robot problems as QUBOs', ['quantum_mind.computing.multi_robot_allocation', 'quantum_mind.computing.grasp_selection',
+                                  'quantum_mind.computing.slot_scheduling', 'quantum_mind.computing.RobotProblem'],
+      'Multi-robot allocation, grasp selection and slot scheduling with their QUBO encodings, true objectives, '
+      'feasibility checks and decoders.',
+      '''flowchart LR
+    pr["robot problem<br/>costs · grasps · conflicts"]:::in --> q["QUBO encoding<br/>penalty terms"]:::op
+    pr --> obj["true objective<br/>feasibility · decode"]:::out
+    q --> sol["any solver"]:::op --> x["bit string"]:::out --> obj''',
+      None, 'Lucas, A. (2014). Ising formulations of many NP problems. Frontiers in Physics, 2, 5.', '15_quantum_computing_for_robots'),
+    M('Classical baselines for QUBOs', ['quantum_mind.computing.exhaustive', 'quantum_mind.computing.greedy_descent',
+                                        'quantum_mind.computing.simulated_annealing', 'quantum_mind.computing.random_sampling'],
+      'Exhaustive search, greedy descent with restarts, simulated annealing and random sampling with the same number of '
+      'shots: what a quantum result has to beat.',
+      '''flowchart LR
+    q["QUBO"]:::in --> ex["exhaustive<br/>(optimum)"]:::base & gd["greedy descent"]:::base & sa["simulated annealing"]:::base & rs["random sampling<br/>(null baseline)"]:::base''',
+      None, 'Kirkpatrick, S., Gelatt, C. D., & Vecchi, M. P. (1983). Optimization by simulated annealing. Science, 220, 671-680.', '15_quantum_computing_for_robots'),
+    M('QAOA adapter (Qiskit)', ['quantum_mind.computing.qaoa'],
+      'QAOA through Qiskit\'s QAOAAnsatz on an exact simulator: the problem\'s Ising Hamiltonian goes in, the best sampled '
+      'solution, the expected energy and the probability of the optimum come out.',
+      '''flowchart LR
+    q["QUBO"]:::in --> ising["Ising Hamiltonian"]:::op --> an["Qiskit QAOAAnsatz<br/>depth p"]:::op --> opt["classical optimiser<br/>COBYLA, restarts"]:::op
+    opt --> sv["exact statevector"]:::op --> out["best sample · P(optimal) · ratio"]:::out
+    out -.-> rs["random sampling, same shots"]:::base''',
+      'random sampling with the same shots; greedy descent; simulated annealing',
+      'Farhi, E., Goldstone, J., & Gutmann, S. (2014). A quantum approximate optimization algorithm. arXiv:1411.4028.', '15_quantum_computing_for_robots'),
+    M('Solver comparison', ['quantum_mind.computing.compare_solvers'],
+      'Run several solvers on one robot problem and report them in the robot\'s terms: feasibility, true objective and gap '
+      'to the exact optimum.',
+      '''flowchart LR
+    p["robot problem"]:::in --> s["solvers"]:::op --> r["feasible? · objective · gap"]:::out''',
+      None, None, '15_quantum_computing_for_robots'),
+])
+
+# ------------------------------------------------------------------------------------------- sensing
+PAGES['sensing'] = ('Quantum sensing for robots',
+                    'Quantum limits, accelerometer models and a multi-rate Kalman filter that fuses a slow, almost '
+                    'drift-free quantum sensor with a fast, drifting classical one.', [
+    M('Quantum sensing limits', ['quantum_mind.sensing.phase_sensitivity', 'quantum_mind.sensing.atom_interferometer_sensitivity'],
+      'The standard quantum limit and the Heisenberg limit of a phase measurement, and the acceleration sensitivity of a '
+      'light-pulse atom interferometer.',
+      '''flowchart LR
+    n["N atoms · repeats ν"]:::in --> sql["Δφ = 1/√(Nν)<br/>standard quantum limit"]:::op
+    n --> h["Δφ = 1/(N√ν)<br/>Heisenberg limit"]:::base
+    sql --> a["Δa = Δφ / (C k_eff T²)"]:::out''',
+      'the Heisenberg limit (needs entangled probes)',
+      'Kasevich, M., & Chu, S. (1992). Measurement of the gravitational acceleration of an atom with a light-pulse atom interferometer. Applied Physics B, 54, 321-332; Giovannetti, V., Lloyd, S., & Maccone, L. (2004). Quantum-enhanced measurements: beating the standard quantum limit. Science, 306, 1330-1336.', '16_quantum_sensing'),
+    M('Inertial sensor models', ['quantum_mind.sensing.Sensor', 'quantum_mind.sensing.mems_accelerometer',
+                                 'quantum_mind.sensing.atom_interferometer_accelerometer'],
+      'An accelerometer as sample rate, white noise and a drifting bias. A MEMS preset is fast and drifts; an atom-interferometer '
+      'preset is slow and almost drift-free, with its noise taken from the quantum limit. Values are illustrative.',
+      '''flowchart LR
+    a["true acceleration"]:::in --> m["MEMS: fast · noisy · drifting bias"]:::base --> z1["readings"]:::out
+    a --> q["atom interferometer: slow · quantum-limited · stable"]:::op --> z2["readings"]:::out''',
+      None, 'Kasevich, M., & Chu, S. (1992). Applied Physics B, 54, 321-332.', '16_quantum_sensing'),
+    M('Multi-rate Kalman dead reckoning', ['quantum_mind.sensing.simulate_dead_reckoning', 'quantum_mind.sensing.run_filter',
+                                           'quantum_mind.sensing.compare_sensor_suites'],
+      'A one-axis robot with an unknown acceleration, several accelerometers at different rates with drifting biases, and '
+      'optional position fixes, fused by a Kalman filter; whole sensor suites are compared on the same trajectories.',
+      '''flowchart LR
+    tr["simulated trajectory"]:::in --> s1["MEMS 100 Hz"]:::op --> kf["multi-rate Kalman filter<br/>state: p, v, a, biases"]:::op
+    tr --> s2["quantum 1 Hz"]:::op --> kf
+    fx["position fixes (optional)"]:::in --> kf
+    kf --> e["position error<br/>per sensor suite"]:::out''',
+      'each sensor alone; the fused suite against MEMS only (paired test)',
+      'Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. Journal of Basic Engineering, 82, 35-45.',
+      '16_quantum_sensing'),
+])
+
+
 # ------------------------------------------------------------------------------------------ robotics
 PAGES['robotics'] = ('Robot decision layer',
                      'Components that turn models of people and uncertain perception into decisions: ask or '
@@ -466,6 +539,15 @@ ORIGIN = {
     'Online belief': ('unique', None),
     'Gaussian Bayes filter': ('published', None),
     'Minimum-cost action': ('published', None),
+    # quantum computing for robots
+    'Robot problems as QUBOs': ('extended', 'robot objectives, feasibility checks and decoders on top of the published penalty encodings'),
+    'Classical baselines for QUBOs': ('published', None),
+    'QAOA adapter (Qiskit)': ('tool', None),
+    'Solver comparison': ('tool', None),
+    # quantum sensing for robots
+    'Quantum sensing limits': ('published', None),
+    'Inertial sensor models': ('published', None),
+    'Multi-rate Kalman dead reckoning': ('extended', 'several accelerometers with their own rates and bias walks in one filter, and a paired comparison of sensor suites'),
     # robot decision layer
     'Human-model ensemble': ('unique', None),
     'Ask or act': ('unique', None),
@@ -547,6 +629,15 @@ CATEGORY = {
     'Online belief': 'quantum-like',
     'Gaussian Bayes filter': 'classical',
     'Minimum-cost action': 'classical',
+    # quantum computing for robots
+    'Robot problems as QUBOs': 'mixed',
+    'Classical baselines for QUBOs': 'classical',
+    'QAOA adapter (Qiskit)': 'quantum',
+    'Solver comparison': 'mixed',
+    # quantum sensing for robots
+    'Quantum sensing limits': 'quantum',
+    'Inertial sensor models': 'mixed',
+    'Multi-rate Kalman dead reckoning': 'mixed',
     # robot decision layer
     'Human-model ensemble': 'mixed',
     'Ask or act': 'classical',
@@ -594,10 +685,10 @@ def category_counts():
     return counts
 
 
-ORDER = ['core', 'quantum_like', 'belief', 'robotics', 'perception', 'environments', 'infrastructure']
+ORDER = ['core', 'quantum_like', 'belief', 'computing', 'sensing', 'robotics', 'perception', 'environments', 'infrastructure']
 
 #: Mathematics page for each atlas page.
-MATH = {'core': 'core', 'quantum_like': 'quantum_like', 'belief': 'belief', 'robotics': 'robotics',
+MATH = {'core': 'core', 'quantum_like': 'quantum_like', 'belief': 'belief', 'computing': 'computing', 'sensing': 'sensing', 'robotics': 'robotics',
         'perception': 'perception', 'environments': 'infrastructure', 'infrastructure': 'infrastructure'}
 
 

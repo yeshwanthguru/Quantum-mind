@@ -10,11 +10,13 @@ the others, because each makes a different claim and needs a different test.
 | **Runs on** | Any computer (microseconds); optionally as a circuit | A quantum computer or a simulator of one | Any computer |
 | **The claim** | People's answers violate classical probability in ways quantum probability predicts | A circuit solves or learns the task (advantage is open and problem-specific) | The quantum idea gives a useful heuristic |
 | **How to test it** | Against classical cognitive models on human data: BIC, QQ equality, total-probability bounds | Against the exact answer and classical baselines; on hardware, against noise | Against classical heuristics with equal budgets |
-| **In this library** | `quantum_mind.families`, `quantum_mind.belief`, `quantum_mind.applications` | Only the simulator and circuit exports needed to show and run the quantum-like models | Not included |
+| **In this library** | `quantum_mind.families`, `quantum_mind.belief`, `quantum_mind.applications` | `quantum_mind.computing` (robot QUBOs, QAOA adapter), `quantum_mind.sensing` (quantum sensors), the simulator and circuit exports | Not included |
 
-Quantum computing algorithms (VQE, QAOA, Grover, quantum kernels) and quantum-inspired optimisers are
-provided and maintained by Qiskit, PennyLane and dedicated optimisation libraries, so this library does
-not duplicate them. It concentrates on the first column.
+Quantum robotics has three threads: **quantum computing for robot algorithms**, **quantum sensing for robots** and
+**quantum-probability models of the beliefs a robot holds about people**. This library covers all three: the second column
+through `quantum_mind.computing` (robot problems and a Qiskit QAOA adapter, never a re-implementation of Qiskit), quantum
+sensing through `quantum_mind.sensing` (simulated sensor models and their fusion with classical sensors), and the first column
+through the families, COBRA and the decision layer. Quantum-inspired optimisers are left to dedicated libraries.
 
 ## How the parts connect
 
@@ -48,5 +50,6 @@ flowchart LR
   always fit the classical baselines next to them.
 - A robot reading a **stream of sensor frames** whose meaning depends on context? Try `COBRA` next to the
   Gaussian Bayes filter, and look at the ablations before believing a gain.
-- Studying **quantum computation** on a task, or teaching it? Use Qiskit or PennyLane directly; use this
-  library's circuits to run a quantum-like model on hardware.
+- Asking whether a **quantum computer** could help a robot team? Use `quantum_mind.computing` to pose the problem, run the
+  classical baselines and the QAOA adapter, and compare them honestly; use Qiskit or PennyLane directly for the algorithms.
+- Asking whether a **quantum sensor** would help a robot navigate? Use `quantum_mind.sensing` with your sensor's numbers.

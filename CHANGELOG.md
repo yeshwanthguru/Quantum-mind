@@ -2,11 +2,21 @@
 
 ## 3.0.0 (unreleased)
 
-Version 3.0 narrows the library to what is specific to quantum cognition in robotics and adds its first
-original model.
+Version 3.0 organises the library around the three threads of quantum robotics (computing, sensing and cognition), narrows
+it to AI, ML, vision, robotics and embodied AI, and adds its first original model.
 
 ### Added
 
+- `quantum_mind.computing` (thread 1, quantum computing for robot algorithms): `multi_robot_allocation`, `grasp_selection` and
+  `slot_scheduling` as QUBOs with true objectives, feasibility checks and decoders; classical baselines (`exhaustive`,
+  `greedy_descent`, `simulated_annealing`, `random_sampling`); `qaoa`, a thin adapter to Qiskit's `QAOAAnsatz` on an exact simulator
+  (it does not re-implement QAOA); and `compare_solvers`. `benchmarks/robot_quantum_computing_benchmark.py`: on 30 random instances
+  greedy descent solves 29, random sampling with the same shots 24 and QAOA at depths 1 to 3 24, 26 and 26.
+- `quantum_mind.sensing` (thread 2, quantum sensing for robots): the standard quantum limit and the atom-interferometer acceleration
+  sensitivity, MEMS and atom-interferometer accelerometer models (illustrative values), and a multi-rate Kalman dead-reckoning study.
+  `benchmarks/quantum_sensing_benchmark.py`: fusing the quantum sensor cuts the position error about 34 times without fixes, the
+  benefit shrinks with a position fix and vanishes when the quantum sensor is as unstable as the MEMS one.
+- Tutorials 15 and 16, examples 18 and 19, math pages and atlas entries for both threads.
 - `quantum_mind.belief`: **COBRA**, a context-rotated density-matrix belief filter. Each sensor frame updates the
   belief with a generalised measurement `M = U(x_prev) diag(w(x)) U(x_prev)^dagger`, followed by partial
   dephasing, so what a reading means depends on the previous frame. With no rotation it is a Bayes filter, and
@@ -24,7 +34,7 @@ original model.
 General-purpose algorithms that Qiskit, PennyLane and optimisation libraries already provide were removed so
 that the library contains only quantum cognition for robotics:
 
-- `quantum_mind.quantum`: the variational classifier and regressor, quantum kernels, QAOA, VQE, Grover, the
+- `quantum_mind.quantum` (the algorithms; thread 1 now connects to Qiskit's QAOA instead): the variational classifier and regressor, quantum kernels, QAOA, VQE, Grover, the
   quantum Fourier transform, amplitude estimation, quantum walks, the variational policy, the quanvolutional
   filter and the ansatz helpers. The state-vector simulator (`Circuit`) stays, because the viewer and the circuit
   exports use it.
@@ -42,7 +52,7 @@ that the library contains only quantum cognition for robotics:
   `interference_circuit`, `chsh_circuit`), data (`PRISONERS_DILEMMA`, `TWO_STAGE_GAMBLE`, `LINDA`), examples,
   the judgement-families tutorial and atlas and math entries. Four families remain: order effects, quantum-like
   Bayesian networks, trust and belief dynamics, and bistable perception.
-- Examples and tutorials were renumbered (17 examples, 14 tutorials).
+- Examples and tutorials were renumbered, then extended (19 examples, 16 tutorials).
 
 ### Changed
 

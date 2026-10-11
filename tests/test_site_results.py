@@ -79,3 +79,24 @@ def test_cobra_rows():
         row = _row(prefix)
         for number in __import__('re').findall(r'\d\.\d{3}', row):
             assert number in text, number
+
+
+def test_computing_and_sensing_rows():
+    """The website's numbers for threads 1 and 2 appear in the committed benchmark results."""
+    import json
+    comp = json.loads((ROOT / 'benchmarks' / 'results' / 'robot_quantum_computing' / 'benchmark_raw.json').read_text())
+    solved = {}
+    for r in comp:
+        solved[r['solver']] = solved.get(r['solver'], 0) + int(r['optimal'])
+    row = _row('Robot allocation')
+    assert 'greedy descent 29' in row and solved['greedy descent'] == 29
+    assert 'random sampling with the same 1000 shots 24' in row and solved['random sampling (1000 shots)'] == 24
+    assert solved['simulated annealing'] == 16 and 'simulated annealing 16' in row
+    assert solved['QAOA p=1'] == 24 and solved['QAOA p=2'] == 26 and solved['QAOA p=3'] == 26
+    sens = json.loads((ROOT / 'benchmarks' / 'results' / 'quantum_sensing' / 'benchmark_raw.json').read_text())
+    row = _row('Quantum accelerometer')
+    by = {(r['fix'], r['suite']): r['rmse'][0] for r in sens['a']}
+    assert '%.1f m' % by[(None, 'fused (MEMS + quantum)')] in row and '%.1f m' % by[(None, 'MEMS only')] in row
+    assert '%.1f m' % by[(None, 'quantum only')] in row
+    assert '%.3f m' % by[(10.0, 'fused (MEMS + quantum)')] in row and '%.3f m' % by[(10.0, 'MEMS only')] in row
+    assert '%.0f m' % next(r['fused'][0] for r in sens['b'] if r['bias_fraction'] == 1.0) in row

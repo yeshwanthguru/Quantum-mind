@@ -1,13 +1,15 @@
 # User guide
 
-Quantum Mind is a library for **quantum-probability cognition in robotics**. It has three layers, each next to
-the classical model it has to beat, plus a Bloch-sphere viewer.
+Quantum Mind is a library for **quantum robotics** with a module for each of its three threads, each next to the classical model
+it has to beat, plus a Bloch-sphere viewer.
 
 ```{mermaid}
 flowchart TB
     core["quantum_mind.core<br/>Model · Param · fit · compare · recovery"]
     fam["quantum_mind.families<br/>4 quantum-like families"]
     bel["quantum_mind.belief<br/>COBRA belief filter"]
+    cmp["quantum_mind.computing<br/>robot QUBOs · QAOA adapter"]
+    sen["quantum_mind.sensing<br/>sensor models · Kalman fusion"]
     app["quantum_mind.applications<br/>robot decision layer"]
     circ["quantum_mind.circuits<br/>circuits + run()"]
     sim["quantum_mind.quantum<br/>state-vector simulator"]
@@ -15,6 +17,8 @@ flowchart TB
     hw[("Aer · IBM Quantum · Amazon Braket")]
     core --> fam --> app
     core --> bel --> app
+    cmp --> app
+    sen --> app
     fam --> circ --> hw
     sim --> viz
     circ --> viz
@@ -37,6 +41,22 @@ What separates quantum-like models from quantum computing, and how to test each.
 :link-type: doc
 
 Order effects, quantum-like Bayesian networks, trust and belief dynamics, and bistable perception.
+:::
+
+:::{grid-item-card} Quantum computing for robots
+:class-card: pillar-quantum
+:link: computing
+:link-type: doc
+
+Robot problems as QUBOs, classical baselines and a Qiskit QAOA adapter.
+:::
+
+:::{grid-item-card} Quantum sensing for robots
+:class-card: pillar-quantum
+:link: sensing
+:link-type: doc
+
+Quantum limits, accelerometer models and a multi-rate Kalman filter.
 :::
 
 :::{grid-item-card} COBRA belief filter
@@ -75,6 +95,8 @@ The exact state-vector simulator and the circuits of the quantum-like families.
 | Area | What exists | What does not (yet) |
 |---|---|---|
 | Quantum-like models | 4 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
+| Quantum computing for robots | three robot problems as QUBOs, classical baselines, a Qiskit QAOA adapter, solver comparison, benchmark | runs on quantum hardware; problems too large to enumerate |
+| Quantum sensing for robots | quantum limits, MEMS and atom-interferometer models, multi-rate Kalman filter, sensor-suite study | measured sensor data; hardware |
 | COBRA belief filter | context-rotated density-matrix filter, online mode, Bayes and incoherent limits, benchmark with paired tests | real-person data; reliable training (the context mechanism is found on some restarts only) |
 | Robotics | simulated populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, risk-aware decisions, calibration and conformal sets, orchestration gates, a question planner, trust-aware hand-over and allocation, multimodal fusion, Gymnasium environments, `HumanModelService`, a ROS 2 node | a run of the ROS 2 node inside a ROS 2 installation; data from human-robot studies |
 | Simulator and circuits | exact state-vector simulator with adjoint gradients; Qiskit export; circuits for the families; IBM submission through the Qiskit Runtime Sampler | noise-aware training; runs on hardware |
@@ -96,6 +118,8 @@ The exact state-vector simulator and the circuits of the quantum-like families.
 
 concepts
 extensions
+computing
+sensing
 families/index
 belief
 robotics

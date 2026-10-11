@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quantum-mind"
 version = "3.0.0"
-description = "Quantum-probability cognition for robots that work with people: quantum-like human models, the COBRA context-rotated belief filter and a cost-aware decision layer, each against classical baselines"
+description = "Quantum robotics in one library: quantum computing for robot algorithms (robot QUBOs, classical baselines, Qiskit QAOA adapter), quantum sensing for robots, and quantum-probability cognition (the COBRA belief filter), each against classical baselines"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
@@ -16,7 +16,8 @@ authors = [
 maintainers = [
   {name = "Yeshwanth Guru", email = "yeshwanth445@gmail.com"},
 ]
-keywords = ["quantum cognition", "quantum-like models", "quantum probability", "density matrix", "belief filter", "robotics",
+keywords = ["quantum robotics", "quantum sensing", "quantum computing", "QAOA", "quantum cognition", "quantum-like models",
+            "quantum probability", "density matrix", "belief filter", "robotics",
             "human-robot interaction", "trust", "decision making", "order effects", "qiskit", "Bloch sphere",
             "visualization", "cognitive modelling"]
 classifiers = [

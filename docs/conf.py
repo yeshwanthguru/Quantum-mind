@@ -111,8 +111,8 @@ html_show_sourcelink = False
 html_last_updated_fmt = '%d %B %Y'
 html_context = {
     'docs_url': SITE + 'docs/',
-    'site_description': ('Quantum Mind %s: quantum-probability cognition for robots that work with people: '
-                         'quantum-like human models, the COBRA belief filter and a cost-aware decision layer, each '
+    'site_description': ('Quantum Mind %s: quantum robotics in one library: quantum computing for robot algorithms, '
+                         'quantum sensing for robots and quantum-probability cognition (COBRA), each '
                          'compared with classical baselines.' % version),
     'github_user': 'yeshwanthguru',
     'github_repo': 'quantum-mind',

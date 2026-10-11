@@ -1,4 +1,10 @@
-"""quantum_mind: quantum-probability cognition for robots that work with people.
+"""quantum_mind: quantum robotics: computing, sensing and cognition, each against its classical baseline.
+
+* :mod:`quantum_mind.computing`: thread 1, quantum computing for robot algorithms: robot problems as QUBOs, classical
+  baselines and a Qiskit QAOA adapter.
+* :mod:`quantum_mind.sensing`: thread 2, quantum sensing for robots: quantum limits, accelerometer models and Kalman fusion.
+* Thread 3, quantum-probability cognition: :mod:`quantum_mind.belief`, :mod:`quantum_mind.families` and
+  :mod:`quantum_mind.applications` below.
 
 * :mod:`quantum_mind.core`: linear algebra for states and density matrices, the :class:`~quantum_mind.core.Model`
   base class, fitting, comparison and model recovery.

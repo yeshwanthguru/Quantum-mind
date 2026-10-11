@@ -7,11 +7,12 @@ html_theme.sidebar_secondary.remove: true
 ```{raw} html
 <div class="qm-hero">
 <img class="banner" src="_static/assets/banner.svg" alt="quantum-mind banner">
-<h1>Quantum-probability cognition for robots that work with people.</h1>
-<p class="lead"><strong>Quantum Mind</strong> is an open-source Python library that models how people judge, decide and
-trust, and how a robot should read them, with quantum probability: projections, interference, density matrices and
-generalised measurements. Every model sits next to the classical model it has to beat, and every belief ends in a
-cost-aware decision: hand over, wait, or ask.</p>
+<h1>Quantum robotics: computing, sensing and cognition, each against its classical baseline.</h1>
+<p class="lead"><strong>Quantum Mind</strong> is an open-source Python library for the three threads of quantum robotics: <strong>quantum
+computing</strong> for robot algorithms (robot problems as optimisation, with classical baselines and a Qiskit QAOA adapter),
+<strong>quantum sensing</strong> (quantum-limited sensor models and their fusion with classical sensors) and <strong>quantum-probability
+cognition</strong> (how people judge, decide and trust, and how a robot should read them). Every model sits next to the classical
+model it has to beat, and every belief ends in a cost-aware decision.</p>
 </div>
 ```
 
@@ -30,25 +31,39 @@ cost-aware decision: hand over, wait, or ask.</p>
 pip install "quantum-mind[all]"
 ```
 
-::::{grid} 1 2 2 4
+::::{grid} 1 2 2 3
 :gutter: 3
+
+:::{grid-item-card} 1 · Quantum computing for robots
+:class-card: pillar-quantum
+:link: user_guide/computing
+:link-type: doc
+
+Multi-robot allocation, grasp selection and slot scheduling as QUBOs, classical baselines and a thin Qiskit QAOA adapter.
+:::
+
+:::{grid-item-card} 2 · Quantum sensing for robots
+:class-card: pillar-quantum
+:link: user_guide/sensing
+:link-type: doc
+
+Quantum limits, atom-interferometer and MEMS accelerometer models, and a Kalman filter that fuses them.
+:::
+
+:::{grid-item-card} 3 · Quantum-probability cognition
+:class-card: pillar-like
+:link: user_guide/belief
+:link-type: doc
+
+COBRA, a context-rotated density-matrix belief filter, with quantum-like human models and the robot decision layer.
+:::
 
 :::{grid-item-card} Quantum-like human models
 :class-card: pillar-like
 :link: user_guide/families/index
 :link-type: doc
 
-How people judge, decide and trust, in quantum probability, each with classical baselines and a
-distinctive test. Four families, chosen for robots.
-:::
-
-:::{grid-item-card} COBRA belief filter
-:class-card: pillar-quantum
-:link: user_guide/belief
-:link-type: doc
-
-A density-matrix belief whose measurement basis is rotated by the previous sensor frame, so what a
-reading means depends on what came before it.
+Question order, quantum Bayesian networks, trust dynamics and bistable perception, each with classical baselines. Four families.
 :::
 
 :::{grid-item-card} Robot decision layer
@@ -56,8 +71,7 @@ reading means depends on what came before it.
 :link: user_guide/robotics
 :link-type: doc
 
-Ask or act, question planning, calibration and conformal sets, fusion, trust-aware hand-over and
-allocation, and a ROS 2 node.
+Ask or act, question planning, calibration and conformal sets, fusion, trust-aware hand-over and allocation, ROS 2.
 :::
 
 :::{grid-item-card} Bloch-sphere viewer
@@ -65,8 +79,7 @@ allocation, and a ROS 2 node.
 :link: user_guide/viz
 :link-type: doc
 
-Watch qubits move: gate-by-gate trajectories, animations, interactive HTML, live widgets and
-tomography on real back ends.
+Gate-by-gate trajectories, animations, interactive HTML, live widgets and tomography on real back ends.
 :::
 ::::
 
@@ -83,24 +96,32 @@ and the context of a measurement matter.
 Quantum robotics is a young field with at least three threads, and I think it helps to keep them apart: (1) **quantum
 computing for robot algorithms** (planning, optimisation, learning), which is promising on paper but has shown no
 practical advantage on real robot problems with today's noisy devices; (2) **quantum sensing for robots** (atomic and
-solid-state sensors for navigation, magnetometry, gravimetry), which is physical hardware beyond what a software library
-can offer; and (3) **quantum-probability models of the beliefs a robot holds about people** (context, order and trust),
-which run on ordinary computers and can be tested today. Quantum Mind is the third thread, and it keeps a bridge to the
-first: the circuits of its models run on simulators and on quantum hardware (Aer, IBM Quantum, Amazon Braket), so the same
-belief model can be executed on a quantum device if hardware makes that worthwhile. I claim no speed-up, and for the first
-thread I point people to Qiskit and PennyLane. So the library does not try to make robots faster with qubits. It asks one question and keeps
-asking it: does quantum probability describe human context better than the classical alternative, and does a robot
-decide better when it uses it? Every model sits next to the classical model it has to beat, with the ablation that
-isolates what is new.
+solid-state sensors for navigation, magnetometry, gravimetry), which is physical hardware; and (3) **quantum-probability
+models of the beliefs a robot holds about people** (context, order and trust), which run on ordinary computers and can be
+tested today.
 
-I removed the general-purpose quantum algorithms and optimisers (Qiskit, PennyLane and optimisation libraries do them
-better), and I limited the scope to AI, machine learning, vision, robotics and embodied AI. Models from the literature
-are implemented from their papers and cited; the {doc}`model atlas <atlas/index>` labels each as published, extended or
-unique, and the unique ones are my own designs.
+Quantum Mind covers all three, because I want to work on the whole umbrella, and it holds each thread to the same standard: a
+classical baseline, an ablation, and results that are allowed to say no. Thread 1 ({mod}`quantum_mind.computing`) poses robot
+problems as binary optimisation, supplies the classical baselines and a thin adapter to Qiskit's QAOA, and does not re-implement
+what Qiskit and PennyLane do better. Thread 2 ({mod}`quantum_mind.sensing`) models quantum-limited sensors and fuses a slow,
+stable quantum accelerometer with a fast, drifting classical one in simulation, and does not claim to build a sensor. Thread 3
+({mod}`quantum_mind.belief`) is the quantum-probability model of the beliefs a robot holds about people, the part I have developed
+furthest. The circuits of the thread-3 models also run on quantum hardware, which is the bridge between the threads. I claim no
+speed-up anywhere.
 
-I do not claim a quantum computational advantage or results with real people and robots, and COBRA's gain is modest and
-shown only on synthetic data. I want to run a pilot study with a real robot, make COBRA's training more reliable, and see
-others replicate the results. If a claim does not hold, please open an issue.
+In every thread I ask the same question: does the quantum version beat the classical one, and does the robot decide or move better
+with it? For beliefs about people that becomes: does quantum probability describe human context better than the classical
+alternative? Every model sits next to the classical model it has to beat, with the ablation that isolates what is new.
+
+I did not re-implement general-purpose quantum algorithms or optimisers (Qiskit, PennyLane and optimisation libraries do them
+better; thread 1 connects to Qiskit instead), and I limited the scope to AI, machine learning, vision, robotics and embodied AI.
+Models from the literature are implemented from their papers and cited; the {doc}`model atlas <atlas/index>` labels each as
+published, extended or unique, and the unique ones are my own designs.
+
+I do not claim a quantum computational advantage (QAOA does no better than random sampling on the problems I tested), quantum
+sensing hardware, or results with real people and robots, and COBRA's gain is modest and shown only on synthetic data. I want to
+run a pilot study with a real robot, make COBRA's training more reliable, run threads 1 and 2 on quantum hardware and measured
+sensor data, and see others replicate the results. If a claim does not hold, please open an issue.
 
 ## What is new in this library
 
@@ -163,7 +184,7 @@ Quantum-like cognition from the basics: projections, order effects, interference
 :link: tutorials/index
 :link-type: doc
 
-Fourteen step-by-step tutorials, from the introduction to the COBRA filter and a robot loop, with real outputs and figures.
+Sixteen step-by-step tutorials, from the introduction to the three threads and a robot loop, with real outputs and figures.
 :::
 
 :::{grid-item-card} {fas}`diagram-project` Model atlas
@@ -191,7 +212,7 @@ The layers, every model family, circuits, hardware and the viewer.
 :link: auto_examples/index
 :link-type: doc
 
-17 runnable scripts on quantum-like models, COBRA, robotics, perception and the viewer.
+19 runnable scripts on quantum-like models, COBRA, robotics, perception and the viewer.
 :::
 
 :::{grid-item-card} {fas}`laptop-code` Notebooks

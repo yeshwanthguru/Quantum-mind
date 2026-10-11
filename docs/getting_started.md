@@ -10,8 +10,8 @@ pip install "quantum-mind[all] @ git+https://github.com/yeshwanthguru/Quantum-mi
 
 | Extra | Adds | For |
 |---|---|---|
-| (core) | numpy, scipy | quantum-like families, COBRA belief filter, robot decision layer, state-vector simulator |
-| `[qiskit]` | qiskit, qiskit-aer, qiskit-ibm-runtime | circuits, Aer, IBM fake-backend noise, `circuit_trajectory` |
+| (core) | numpy, scipy | quantum-like families, COBRA, robot decision layer, quantum sensing models, robot QUBOs and classical solvers, simulator |
+| `[qiskit]` | qiskit, qiskit-aer, qiskit-ibm-runtime | QAOA adapter, circuits, Aer, IBM fake-backend noise, `circuit_trajectory` |
 | `[cloud]` | qiskit-ibm-runtime, amazon-braket-sdk | IBM Quantum and Amazon Braket hardware |
 | `[viz]` | matplotlib, plotly, ipywidgets, anywidget, seaborn | Bloch-sphere viewer, animations, live widget |
 | `[all]` | all of the above | |
@@ -37,6 +37,32 @@ counts = {'AB': np.array([212, 48, 61, 179]),   # A asked first: yes-yes, yes-no
 print(qq_test(counts))                           # parameter-free test of the quantum-like prediction
 for r in compare([QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel], counts):
     print(type(r.model).__name__, round(r.bic, 1))
+```
+:::
+
+:::{tab-item} Quantum computing for robots
+Can a quantum computer help a robot team? Pose the problem, run the classical baselines and QAOA, and compare.
+
+```python
+import numpy as np
+from quantum_mind.computing import multi_robot_allocation, compare_solvers
+
+problem = multi_robot_allocation(np.array([[1.0, 5.0, 3.0], [4.0, 2.0, 6.0], [3.0, 3.0, 1.0]]))
+for r in compare_solvers(problem):                         # needs qiskit for the QAOA row
+    print(r['solver'], r['feasible'], r['gap'])
+```
+:::
+
+:::{tab-item} Quantum sensing for robots
+Would a quantum accelerometer help dead reckoning? Fuse it with a MEMS sensor in simulation.
+
+```python
+from quantum_mind.sensing import mems_accelerometer, atom_interferometer_accelerometer, compare_sensor_suites
+
+mems, quantum = mems_accelerometer(), atom_interferometer_accelerometer()
+suites = {'MEMS only': [mems.name], 'fused': [mems.name, quantum.name]}
+for r in compare_sensor_suites([mems, quantum], suites, duration=120, seeds=range(3)):
+    print(r['suite'], r['rmse'])                            # position error in metres
 ```
 :::
 

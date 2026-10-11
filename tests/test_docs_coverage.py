@@ -14,10 +14,12 @@ import atlas  # noqa: E402
 MODEL_MODULES = (['quantum_mind.families.%s' % f for f in ('order_effects', 'qlbn', 'dynamics', 'perception')]
                  + ['quantum_mind.applications.%s' % a for a in ('robotics', 'intent', 'calibration', 'orchestration',
                                                                  'questioning', 'personalisation', 'handover', 'fusion', 'allocation')]
-                 + ['quantum_mind.belief', 'quantum_mind.envs', 'quantum_mind.quantum', 'quantum_mind.problems'])
+                 + ['quantum_mind.belief', 'quantum_mind.computing', 'quantum_mind.sensing', 'quantum_mind.envs',
+                    'quantum_mind.quantum', 'quantum_mind.problems'])
 
 #: Public classes that are results, settings or helpers rather than models.
-NOT_MODELS = {'Module', 'RoutingTask', 'X', 'W', 'XX', 'BeliefTrace', 'BayesNet', 'ProjectiveQuestionModel'}
+NOT_MODELS = {'Module', 'RoutingTask', 'X', 'W', 'XX', 'BeliefTrace', 'DeadReckoningData', 'SolverResult', 'BayesNet',
+              'ProjectiveQuestionModel'}
 
 
 def test_every_public_model_has_an_atlas_entry():

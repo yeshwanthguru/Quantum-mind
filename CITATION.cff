@@ -1,6 +1,6 @@
 cff-version: 1.5.0
 message: "If you use this software, please cite it as below, together with the original papers of the models used."
-title: "Quantum Mind: quantum-probability cognition for robots that work with people"
+title: "Quantum Mind: quantum robotics (computing, sensing and cognition) with classical baselines"
 version: 3.0.0
 date-released: 2026-10-07
 license: Apache-2.0
@@ -11,6 +11,8 @@ keywords:
   - human-robot interaction
   - decision making
   - qiskit
+  - quantum robotics
+  - quantum sensing
   - quantum probability
   - belief filter
   - Bloch sphere
