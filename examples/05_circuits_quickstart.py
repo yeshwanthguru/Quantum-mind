@@ -1,18 +1,17 @@
-"""Every family as a circuit
-=========================
+"""Quantum-like models as circuits
+===============================
 
-Every family as a quantum circuit: compare circuit output with the analytic model on the ideal
+The order-effect, Bayesian-network, walk and belief models as quantum circuits: compare circuit output with the analytic model on the ideal
 Aer simulator, on Aer with the FakeTorino (IBM Heron) noise model, and on the Braket local simulator.
 """
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_08.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_05.png'
 import numpy as np
 from quantum_mind.core import tvd
-from quantum_mind.circuits import (run, order_effects_circuit, interference_circuit, qlbn_circuit, walk_circuit, belief_circuit)
+from quantum_mind.circuits import (run, order_effects_circuit, qlbn_circuit, walk_circuit, belief_circuit)
 from quantum_mind.families.order_effects import QuantumOrderModel
-from quantum_mind.families.interference import InterferenceModel
 from quantum_mind.families.qlbn import BayesNet, quantum_like_marginal
 from quantum_mind.families.dynamics import QuantumWalk, OpenSystemBelief, final_yes
 
@@ -23,8 +22,6 @@ from quantum_mind.families.dynamics import QuantumWalk, OpenSystemBelief, final_
 ql = QuantumOrderModel(a=2.3543, b=0.9676, g=0.5846, ranks=(1, 2))
 cases = []
 qc, dec = order_effects_circuit(ql, 'AB', 'deferred'); cases.append(('order effects (AB)', qc, dec, ql.predict()['AB']))
-im = InterferenceModel(p1=0.69, p2=0.59, c=0.5, theta=2.2)
-qc, dec = interference_circuit(im.p1, im.p2, im.c, im.theta, 'unknown'); cases.append(('interference (unknown)', qc, dec, im.predict()['unknown']))
 net = BayesNet({'O': ['w', 'l'], 'P': ['y', 'n']}, {'P': ['O']}, {'O': {(): {'w': .5, 'l': .5}}, 'P': {('w',): {'y': .69, 'n': .31}, ('l',): {'y': .59, 'n': .41}}})
 qc, dec = qlbn_circuit(net, 'P', None, [0, 2.2]); m = quantum_like_marginal(net, 'P', None, [0, 2.2]); cases.append(('QLBN', qc, dec, np.array([m['y'], m['n']])))
 w = QuantumWalk(mu=3, sigma=3, n_states=16); qc, dec = walk_circuit(w, 1.0); cases.append(('quantum walk', qc, dec, w.predict({'a': ('single', 1.0)})['a']))

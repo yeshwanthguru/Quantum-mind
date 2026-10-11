@@ -6,7 +6,7 @@ the classical model it has to beat, plus a Bloch-sphere viewer.
 ```{mermaid}
 flowchart TB
     core["quantum_mind.core<br/>Model · Param · fit · compare · recovery"]
-    fam["quantum_mind.families<br/>11 quantum-like families"]
+    fam["quantum_mind.families<br/>4 quantum-like families"]
     bel["quantum_mind.belief<br/>COBRA belief filter"]
     app["quantum_mind.applications<br/>robot decision layer"]
     circ["quantum_mind.circuits<br/>circuits + run()"]
@@ -36,8 +36,7 @@ What separates quantum-like models from quantum computing, and how to test each.
 :link: families/index
 :link-type: doc
 
-Order effects, conjunctions, interference, Bayesian networks, dynamics, decisions, contextuality,
-similarity, memory and concepts.
+Order effects, quantum-like Bayesian networks, trust and belief dynamics, and bistable perception.
 :::
 
 :::{grid-item-card} COBRA belief filter
@@ -75,7 +74,7 @@ The exact state-vector simulator and the circuits of the quantum-like families.
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
-| Quantum-like models | 11 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
+| Quantum-like models | 4 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
 | COBRA belief filter | context-rotated density-matrix filter, online mode, Bayes and incoherent limits, benchmark with paired tests | real-person data; reliable training (the context mechanism is found on some restarts only) |
 | Robotics | simulated populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, risk-aware decisions, calibration and conformal sets, orchestration gates, a question planner, trust-aware hand-over and allocation, multimodal fusion, Gymnasium environments, `HumanModelService`, a ROS 2 node | a run of the ROS 2 node inside a ROS 2 installation; data from human-robot studies |
 | Simulator and circuits | exact state-vector simulator with adjoint gradients; Qiskit export; circuits for the families; IBM submission through the Qiskit Runtime Sampler | noise-aware training; runs on hardware |

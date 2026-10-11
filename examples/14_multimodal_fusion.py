@@ -9,7 +9,7 @@ compared on held-out simulated choices.
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_18.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_14.png'
 import numpy as np
 from quantum_mind.applications.fusion import (detector_likelihood, asr_likelihood, direction_likelihood, bayes_fusion,
                                               dempster_shafer_fusion, compare_fusion)

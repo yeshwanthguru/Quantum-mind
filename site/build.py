@@ -26,19 +26,17 @@ os.environ.setdefault('MPLBACKEND', 'Agg')
 RESULTS = [
     ('COBRA vs Bayes filter on a context-dependent intent task (simulated, 5 seeds)', 'context: cost 0.221 (COBRA) · 0.239 (Bayes filter) · 0.233 (MLP) · oracle 0.147 at 1000 training sequences; paired test significant in 2 of 5 seeds; with 60 sequences COBRA 0.347 against Bayes 0.280; under 1.5x test noise COBRA is best calibrated (cost 0.481 against 0.608)'),
     ('Control task with no context effect (simulated)', 'expected cost 0.204 (COBRA) · 0.189 (Bayes filter) at 1000 training sequences: COBRA is slightly worse where context does not matter'),
-    ('Individual differences (example 14)', 'a pooled fit selects the quantum-like model for a population that is half anchoring; '
+    ('Individual differences (example 11)', 'a pooled fit selects the quantum-like model for a population that is half anchoring; '
      'per-person fits recover all 12 people at about 3,000 answers each'),
-    ('Concept combination, "pet and fish" (simulated)', 'Fock-space model SSE 0.001 · weighted average 0.054 · '
-     'product 0.388'),
     ('Trust as a qubit', "P(trust) read from the Bloch vector equals the model's prediction (0.7247)"),
-    ('Trust-aware hand-over, 40 simulated sessions of 20 hand-overs (example 20)', 'mean session cost: order-aware 42.1 · '
+    ('Trust-aware hand-over, 40 simulated sessions of 20 hand-overs (example 16)', 'mean session cost: order-aware 42.1 · '
      'Markov-based 60.9 · always hand over 96.2 (the simulated people follow the open-system model, which favours the '
      'order-aware policy by construction)'),
-    ('Detector calibration, 5 classes (simulated, example 17)', 'ECE raw 0.192 · Platt 0.020 · temperature 0.017 · '
+    ('Detector calibration, 5 classes (simulated, example 13)', 'ECE raw 0.192 · Platt 0.020 · temperature 0.017 · '
      '<strong>isotonic 0.009</strong>; conformal sets reach 0.911 coverage at a 0.90 target'),
-    ('Multimodal fusion, held-out log loss (simulated, example 18)', 'quantum-like 0.759 · Bayes 0.793 · '
+    ('Multimodal fusion, held-out log loss (simulated, example 14)', 'quantum-like 0.759 · Bayes 0.793 · '
      'Dempster-Shafer 0.818 (the simulated people follow the quantum-like rule)'),
-    ('Bistable perception, dwell times at two check intervals (simulated, example 19)', 'BIC: quantum Zeno 2796.6 · '
+    ('Bistable perception, dwell times at two check intervals (simulated, example 15)', 'BIC: quantum Zeno 2796.6 · '
      'gamma renewal 3031.8 · Markov switching 3073.8'),]
 
 

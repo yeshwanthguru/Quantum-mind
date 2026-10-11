@@ -35,7 +35,7 @@ def test_mpl_style_and_tutorial_converter(tmp_path):
     mpl.rcdefaults()
     sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'tutorials'))
     from _convert import to_notebook, sources
-    assert len(sources()) >= 15
+    assert len(sources()) >= 14
     src = tmp_path / '99_x.md'
     src.write_text('# T\n\ntext\n\n```python\nx = 1\n```\n\nmore\n')
     nb = to_notebook(src)

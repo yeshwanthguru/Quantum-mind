@@ -36,8 +36,7 @@ AIC, BIC, model recovery.
 :link: quantum_like
 :link-type: doc
 
-Question order and the QQ equality, conjunction, interference, QLBN, walks, trust qubit, decision,
-contextuality, similarity, memory, concepts, Zeno perception.
+Question order and the QQ equality, QLBN, walks, the trust qubit and Zeno perception.
 :::
 
 :::{grid-item-card} {fas}`atom` COBRA belief filter

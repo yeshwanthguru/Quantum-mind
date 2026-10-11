@@ -36,7 +36,7 @@ jobs:
           for f in examples/0[1-8]_*.py examples/1*.py examples/2*.py; do
             echo "::group::$f"; python -W ignore "$f" > /dev/null; echo "::endgroup::"
           done
-          python -W ignore examples/09_cloud_run.py --dry-run > /dev/null
+          python -W ignore examples/06_cloud_run.py --dry-run > /dev/null
       - name: Hand-over package (tutorial 15; the PyBullet test is skipped without pybullet)
         run: |
           pip install -e tutorials/trust_handover_package

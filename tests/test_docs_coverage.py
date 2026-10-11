@@ -11,9 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'docs' / '_ext'))
 import atlas  # noqa: E402
 
-MODEL_MODULES = (['quantum_mind.families.%s' % f for f in ('order_effects', 'conjunction', 'interference', 'qlbn',
-                                                           'dynamics', 'decision', 'contextuality', 'similarity',
-                                                           'memory', 'concepts', 'perception')]
+MODEL_MODULES = (['quantum_mind.families.%s' % f for f in ('order_effects', 'qlbn', 'dynamics', 'perception')]
                  + ['quantum_mind.applications.%s' % a for a in ('robotics', 'intent', 'calibration', 'orchestration',
                                                                  'questioning', 'personalisation', 'handover', 'fusion', 'allocation')]
                  + ['quantum_mind.belief', 'quantum_mind.envs', 'quantum_mind.quantum', 'quantum_mind.problems'])
@@ -56,7 +54,7 @@ def test_every_tutorial_is_listed_and_checks_its_claims():
 def test_family_and_example_counts_in_the_docs():
     families = [p for p in (ROOT / 'src' / 'quantum_mind' / 'families').iterdir()
                 if p.is_dir() and (p / 'models.py').exists()]
-    words = {10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen'}
+    words = {3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six'}
     home = (ROOT / 'docs' / 'index.md').read_text()
     assert '%s families' % words[len(families)] in home
     n_examples = len(list((ROOT / 'examples').glob('[0-9][0-9]_*.py')))

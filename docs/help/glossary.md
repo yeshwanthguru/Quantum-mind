@@ -55,7 +55,6 @@ Conformal prediction
 
 Contextuality
   When no single joint probability distribution explains measurements made in different contexts.
-  Tested with CHSH or the Contextuality-by-Default criterion.
 
 Decoherence, dephasing
   Loss of the off-diagonal terms of a density matrix; a quantum-like belief then behaves more and more

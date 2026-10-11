@@ -57,42 +57,6 @@ and a two-sided normal $p$-value.
 - *Saturated* (`SaturatedOrderModel`): a free softmax distribution per order (6 parameters), the best
   possible fit.
 
-## Conjunction and disjunction fallacies
-
-State $\psi = e_1 \in \mathbb{R}^3$, events $A$, $B$ with vectors as above (rank 1 or 2). The conjunction is
-judged by evaluating the **more likely event first** (`QuantumConjunctionModel`):
-
-$$
-P(A \wedge B) = \begin{cases} \lVert P_B P_A\psi\rVert^2 & P(A) \ge P(B) \\ \lVert P_A P_B\psi\rVert^2 & \text{otherwise}\end{cases},
-\qquad
-P(A \vee B) = 1 - \lVert \bar P_{2}\,\bar P_{1}\,\psi \rVert^2
-$$
-
-in the same order. When the projectors do not commute, $P(A \wedge B) > \min\{P(A), P(B)\}$ is possible
-(the conjunction fallacy).
-
-**Baselines.** *Classical joint*: $P(A \wedge B) \le \min(P(A), P(B))$ always. *Averaging*:
-$P(A \wedge B) = w\min + (1 - w)\max$, $P(A \vee B) = w\max + (1 - w)\min$. *Probability theory plus
-noise*: every estimate is $(1 - 2d)\,p + d$, with noise $d$ for single events and $d + d_d$ for
-conjunctions and disjunctions.
-
-## Interference and the law of total probability
-
-A choice (act or not) when an earlier event is known to be $X$ ($p_1 = P(\text{act} \mid X)$), known to be
-$Y$ ($p_2$), or unknown. Classically $P(\text{act} \mid \text{unknown}) = c\,p_1 + (1 - c)\,p_2$. The
-quantum-like law adds interference terms (`InterferenceModel`):
-
-$$
-A = c\,p_1 + (1 - c)\,p_2 + 2\cos\theta\sqrt{c\,p_1(1 - c)\,p_2}, \qquad
-B = c\,q_1 + (1 - c)\,q_2 + 2\cos\theta\sqrt{c\,q_1(1 - c)\,q_2},\ \ q_i = 1 - p_i,
-$$
-
-$$
-P(\text{act} \mid \text{unknown}) = \frac{A}{A + B} .
-$$
-
-$\theta = \pi/2$ recovers the classical law; values outside $[\min(p_1, p_2), \max(p_1, p_2)]$ violate it.
-
 ## Quantum-like Bayesian networks
 
 A Bayesian network gives each full configuration $x$ the probability $P(x) = \prod_i P(x_i \mid \mathrm{pa}_i)$.
@@ -142,76 +106,6 @@ a failure; a query reads $p$ without changing it.
 
 The **question effect** is $P(\text{yes at } t \mid \text{asked at } t' < t) - P(\text{yes at } t \mid \text{not asked})$,
 marginalised over the intermediate answer; it is zero for the Markov belief.
-
-## Decisions under risk
-
-Lotteries $L = \{(x_i, p_i)\}$; power utility $u(x) = \operatorname{sign}(x)\lvert x\rvert^\alpha$;
-expected utility $U(L) = \sum_i p_i u(x_i)$; logit choice $P(1) = 1/(1 + e^{-\beta[U(L_1) - U(L_2)]})$
-(`ExpectedUtilityModel`).
-
-**Quantum decision theory** (`QDTModel`): $p(L_n) = f(L_n) + q(L_n)$ with $f$ the logit utility factor
-above and an attraction factor of size $q_0$, negative for the more uncertain prospect (larger outcome
-variance), $q_1 + q_2 = 0$, clipped so that both probabilities stay in $[0, 1]$. $q_0 = 0.25$ is the
-"quarter law" value.
-
-**Prospect theory** (`ProspectTheoryModel`): value $v(x) = x^\alpha$ for gains and $-\lambda(-x)^\alpha$ for
-losses, weighting $w(p) = p^g/(p^g + (1 - p)^g)^{1/g}$, $V(L) = \sum_i w(p_i)\,v(x_i)$, and logit choice.
-
-## Contextuality
-
-For $\pm1$ observables, $E_{ij} = \langle R_i R_j\rangle$.
-
-$$
-S_{\mathrm{CHSH}} = \lvert E_{11} + E_{12} + E_{21} - E_{22}\rvert \le 2 \ \text{(noncontextual)}, \qquad \le 2\sqrt2 \ \text{(quantum)}.
-$$
-
-For a cyclic system of rank $n$, Contextuality-by-Default declares the system contextual when
-
-$$
-s_{\mathrm{odd}}\bigl(\langle R_1R_2\rangle, \dots, \langle R_nR_1\rangle\bigr) - (n - 2) - \Delta > 0,
-\qquad \Delta = \sum_q \bigl\lvert \langle R_q^{c}\rangle - \langle R_q^{c'}\rangle \bigr\rvert ,
-$$
-
-where $s_{\mathrm{odd}}(v) = \max \sum_i \pm v_i$ over sign patterns with an odd number of minus signs. For a
-Bell pair measured at angles $a, b$ in the $x$-$z$ plane, $E(a, b) = \cos(a - b)$.
-
-## Asymmetric similarity
-
-**Quantum** (`QuantumSimilarityModel`): concepts are subspaces of $\mathbb{R}^3$ (each defined by two
-angles), the neutral state is $\psi = e_1$, and
-
-$$
-\mathrm{Sim}(A, B) = \lVert P_B P_A\psi\rVert^2 \neq \mathrm{Sim}(B, A) \ \text{in general}.
-$$
-
-**Geometric**: points $z_A$ in a plane, $\mathrm{Sim}(A, B) = e^{-c\lVert z_A - z_B\rVert}$ (symmetric).
-**Biased geometric**: $\mathrm{Sim}(A, B) = b_B\,e^{-c\lVert z_A - z_B\rVert}$ with a bias per concept
-(Nosofsky, 1991).
-
-## Episodic memory (overdistribution)
-
-For each probe type $k$ (target, related, unrelated), a memory state $\psi_k \in \mathbb{R}^3$ (two angles);
-verbatim $V$ and gist $G$ are rays $v, g$ at a shared angle $c$; "$V$ or $G$" is the plane
-$\operatorname{span}(v, g)$ (`QuantumEpisodicModel`):
-
-$$
-P(V) = (v^T\psi_k)^2, \quad P(G) = (g^T\psi_k)^2, \quad P(V \vee G) = \lVert P_{\mathrm{span}(v,g)}\psi_k\rVert^2,
-$$
-
-so the overdistribution $P(V) + P(G) - P(V \vee G)$ is positive unless $v \perp g$. The additive baseline
-sets $P(V \vee G) = P(V) + P(G)$.
-
-## Concept combination (Fock space)
-
-For single memberships $\mu_A, \mu_B$ (`FockSpaceConceptModel`):
-
-$$
-\mu(A \wedge B) = m^2\,\mu_A\mu_B + (1 - m^2)\Bigl[\tfrac{\mu_A + \mu_B}{2}
-+ \kappa\,\min\bigl(\sqrt{\mu_A\mu_B},\ \sqrt{(1 - \mu_A)(1 - \mu_B)}\bigr)\Bigr],
-\qquad m^2 \in (0, 1),\ \kappa \in [-1, 1].
-$$
-
-Baselines: product $\mu_A\mu_B$, minimum $\min(\mu_A, \mu_B)$, weighted average $w\mu_A + (1 - w)\mu_B$.
 
 ## Bistable perception (quantum Zeno)
 

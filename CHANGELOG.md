@@ -16,7 +16,7 @@ original model.
 - `benchmarks/context_intent_benchmark.py`: a synthetic intent task with a context effect and a control task
   without one, an oracle, logistic-regression and MLP baselines, an ablation without coherence, stress tests
   (noise, dropout) and a paired sign-flip test; the results are in `benchmarks/results/context_intent/`.
-- Tutorial 10 and example 21 for COBRA, a COBRA math page, atlas entries and figures
+- Tutorial 10 and example 17 for COBRA, a COBRA math page, atlas entries and figures
   (`docs/make_cobra_figures.py`).
 
 ### Removed (breaking)
@@ -36,7 +36,13 @@ that the library contains only quantum cognition for robotics:
 - Examples 13 to 18, 23, 26 to 31, 35, 37, the finance and consumer-choice examples, tutorials 10 to 14, the
   Foundations pages on general robotics, AI, machine learning, deep learning, reinforcement learning,
   perception, embodied AI, quantum computing and quantum-inspired algorithms, and the matching atlas entries,
-  math pages and website results. Examples and tutorials were renumbered (21 examples, 15 tutorials).
+  math pages and website results. - Scope narrowed to AI, machine learning, vision, robotics and embodied AI. The quantum-like families on
+  conjunction, interference, decision, similarity, memory, concepts and contextuality (cognitive-psychology and
+  economics topics) were removed with their circuits (`conjunction_circuit`, `similarity_circuit`,
+  `interference_circuit`, `chsh_circuit`), data (`PRISONERS_DILEMMA`, `TWO_STAGE_GAMBLE`, `LINDA`), examples,
+  the judgement-families tutorial and atlas and math entries. Four families remain: order effects, quantum-like
+  Bayesian networks, trust and belief dynamics, and bistable perception.
+- Examples and tutorials were renumbered (17 examples, 14 tutorials).
 
 ### Changed
 

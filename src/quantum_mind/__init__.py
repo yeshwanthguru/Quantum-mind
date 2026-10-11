@@ -2,7 +2,7 @@
 
 * :mod:`quantum_mind.core`: linear algebra for states and density matrices, the :class:`~quantum_mind.core.Model`
   base class, fitting, comparison and model recovery.
-* :mod:`quantum_mind.families`: quantum-like models of judgement, decision, trust and perception, eleven
+* :mod:`quantum_mind.families`: quantum-like models of question order, inference, trust and perception, four
   families with classical baselines.
 * :mod:`quantum_mind.belief`: COBRA, a density-matrix belief filter whose measurement basis is rotated by the
   previous sensor frame, with an online mode, the Bayes filter as a classical reference and a minimum-cost

@@ -12,15 +12,14 @@ Where the classical method wins, the tutorial says so.
 ```{mermaid}
 flowchart LR
     accTitle: Reading order of the tutorials
-    accDescr: The introduction leads to four tracks: models of people (2, 3, 13), the robot decision layer (4 to 7, then 12, 14 and the packaged hand-over use case 15), perception (8, 9) and the COBRA belief filter and viewer (10, 11).
+    accDescr: The introduction leads to four tracks: models of people (2, 3), the robot decision layer (4 to 7, then 12, 13 and the packaged hand-over use case 14), perception (8, 9) and the COBRA belief filter and viewer (10, 11).
     T1["1 · Introduction"]:::a --> T2["2 · Question order"]:::h --> T3["3 · Trust on a qubit"]:::h
     T1 --> T4["4 · Ask or act"]:::r --> T5["5 · Calibration"]:::r --> T6["6 · Orchestration"]:::r --> T7["7 · Question planner"]:::r
     T5 --> T8["8 · Fusion"]:::p --> T9["9 · Bistable perception"]:::p
     T1 --> T10["10 · COBRA belief filter"]:::q --> T11["11 · Bloch sphere"]:::q
-    T2 --> T13["13 · Judgement families"]:::h
     T7 --> T12["12 · End to end"]:::r
     T8 --> T12
-    T3 --> T12 --> T14["14 · ROS 2"]:::r --> T15["15 · Hand-over package"]:::r
+    T3 --> T12 --> T13["13 · ROS 2"]:::r --> T14["14 · Hand-over package"]:::r
     classDef a fill:#0b2a4a,stroke:#79c0ff,color:#e6edf3
     classDef h fill:#3d1414,stroke:#ff7b72,color:#e6edf3
     classDef r fill:#2a1b3d,stroke:#d2a8ff,color:#e6edf3
@@ -62,13 +61,6 @@ Fit the Clinton-Gore poll, run the QQ test, check model recovery.
 Trust on the Bloch sphere, the effect of asking, and a trust-aware hand-over policy.
 :::
 
-:::{grid-item-card} 13 · A tour of the judgement families
-:class-card: pillar-like
-:link: 13_judgement_families
-:link-type: doc
-
-Conjunction, interference, QLBN, decision, similarity, memory, concepts and contextuality.
-:::
 ::::
 
 ## Robot decision layer
@@ -116,17 +108,17 @@ Value of information with order-dependent answers.
 Calibration, fusion, questions and trust-aware hand-over in one robot loop.
 :::
 
-:::{grid-item-card} 14 · Running it on a robot (ROS 2)
+:::{grid-item-card} 13 · Running it on a robot (ROS 2)
 :class-card: pillar-inspired
-:link: 14_ros2_service
+:link: 13_ros2_service
 :link-type: doc
 
 The JSON service and the ROS 2 node, run without a ROS installation.
 :::
 
-:::{grid-item-card} 15 · A robot package: trust-aware hand-over
+:::{grid-item-card} 14 · A robot package: trust-aware hand-over
 :class-card: pillar-inspired
-:link: 15_trust_handover_package
+:link: 14_trust_handover_package
 :link-type: doc
 
 An installable package with a benchmark, a PyBullet arm simulation (GIF), a ROS 2 node and tests.
@@ -191,7 +183,6 @@ Trajectories, animations and tomography for circuits and for the trust qubit.
 10_context_belief_filter
 11_bloch_sphere
 12_end_to_end_robot
-13_judgement_families
-14_ros2_service
-15_trust_handover_package
+13_ros2_service
+14_trust_handover_package
 ```

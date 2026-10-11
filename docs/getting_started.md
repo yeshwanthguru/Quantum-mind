@@ -93,7 +93,7 @@ bloch_tomography(qc, 'aer:FakeTorino')             # Bloch vectors under IBM dev
 ## Choosing and testing a model
 
 1. **Check the phenomenon first.** Look for an order effect, a violation of total probability, or
-   asymmetric similarity. If there is none, a classical model is enough.
+   a change in belief caused by an intermediate judgement. If there is none, a classical model is enough.
 2. **Fit quantum-like models and classical baselines together** with {func}`~quantum_mind.core.fit.compare`
    and report all of them.
 3. **Use each family's distinctive test**: the QQ equality, total-probability bounds,

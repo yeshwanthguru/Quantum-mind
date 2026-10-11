@@ -3,9 +3,9 @@
 
 Run any quantum_mind circuit on IBM Quantum or Amazon Braket hardware.
 
-  python3 examples/09_cloud_run.py --backend ibm:least_busy --shots 4000
-  python3 examples/09_cloud_run.py --backend braket:arn:aws:braket:us-east-1::device/qpu/ionq/Forte-1 --shots 1000
-  python3 examples/09_cloud_run.py --dry-run          # local simulators only, no account needed
+  python3 examples/06_cloud_run.py --backend ibm:least_busy --shots 4000
+  python3 examples/06_cloud_run.py --backend braket:arn:aws:braket:us-east-1::device/qpu/ionq/Forte-1 --shots 1000
+  python3 examples/06_cloud_run.py --dry-run          # local simulators only, no account needed
 
 IBM needs a saved Qiskit Runtime account; Braket needs AWS credentials and is billed per task and
 shot. Results are printed with the analytic prediction; report hardware results as measured.
@@ -13,7 +13,7 @@ shot. Results are printed with the analytic prediction; report hardware results 
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_09.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_06.png'
 import argparse, json, datetime
 from quantum_mind.core import tvd
 from quantum_mind.circuits import run, order_effects_circuit

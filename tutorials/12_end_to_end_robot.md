@@ -154,6 +154,6 @@ the naive robot: recalibration and fusion pick the right object more often, ques
 remaining doubt, and the trust model avoids risky fast hand-overs. The comparison is not a fair test
 of the quantum-like parts on their own, because the simulated people follow the same models the robot
 uses; tutorials 3 and 7 isolate those. On a robot, each simulated sensor is replaced by the real one,
-and the loop stays the same (tutorial 14 shows the ROS 2 side).
+and the loop stays the same (tutorial 13 shows the ROS 2 side).
 
 References: the component tutorials (3, 5, 7, 8) and their references.

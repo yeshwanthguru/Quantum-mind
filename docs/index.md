@@ -39,7 +39,7 @@ pip install "quantum-mind[all]"
 :link-type: doc
 
 How people judge, decide and trust, in quantum probability, each with classical baselines and a
-distinctive test. Eleven families.
+distinctive test. Four families, chosen for robots.
 :::
 
 :::{grid-item-card} COBRA belief filter
@@ -131,7 +131,7 @@ Quantum-like cognition from the basics: projections, order effects, interference
 :link: tutorials/index
 :link-type: doc
 
-Fifteen step-by-step tutorials, from the introduction to the COBRA filter and a robot loop, with real outputs and figures.
+Fourteen step-by-step tutorials, from the introduction to the COBRA filter and a robot loop, with real outputs and figures.
 :::
 
 :::{grid-item-card} {fas}`diagram-project` Model atlas
@@ -159,7 +159,7 @@ The layers, every model family, circuits, hardware and the viewer.
 :link: auto_examples/index
 :link-type: doc
 
-21 runnable scripts on quantum-like models, COBRA, robotics, perception and the viewer.
+17 runnable scripts on quantum-like models, COBRA, robotics, perception and the viewer.
 :::
 
 :::{grid-item-card} {fas}`laptop-code` Notebooks

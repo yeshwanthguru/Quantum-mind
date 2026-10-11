@@ -109,25 +109,6 @@ PAGES['quantum_like'] = ('Quantum-like families',
     pA["P(A) · P(B) · correlation"]:::in --> J["fixed joint table"]:::base --> o1["same in both orders"]:::out
     w["anchoring weights wA, wB"]:::in --> AN["second answer pulled<br/>towards the first"]:::base --> o2["order effect"]:::out''',
       None, 'Hogarth, R. M., & Einhorn, H. J. (1992). Cognitive Psychology, 24, 1-55.', '02_question_order'),
-    M('Conjunction fallacy', ['quantum_mind.families.conjunction.models.QuantumConjunctionModel'],
-      '"Linda is a feminist bank teller" judged likelier than "bank teller": sequential projection '
-      'onto the likely event first can exceed the single probability.',
-      '''flowchart LR
-    psi["belief about Linda"]:::hum --> F["project on 'feminist'<br/>(likely)"]:::op --> BT["then on 'bank teller'"]:::op --> pc["P(F and BT)"]:::out
-    psi --> BT2["project on 'bank teller'"]:::op --> pb["P(BT)"]:::out
-    pc & pb --> cmp{"P(F∧BT) > P(BT)?"}:::out
-    base["classical joint · averaging · probability theory plus noise"]:::base -.-> cmp''',
-      'ClassicalJointModel, AveragingModel, PTNModel',
-      'Busemeyer, J. R., Pothos, E. M., Franco, R., & Trueblood, J. S. (2011). Psychological Review, 118(2), 193-218.'),
-    M('Interference and the disjunction effect', ['quantum_mind.families.interference.models.InterferenceModel'],
-      'Probability of a choice when an intermediate outcome is unknown differs from the average over '
-      'known outcomes: an interference term with a phase.',
-      '''flowchart LR
-    k1["outcome known: win"]:::in --> p1["P(play | win)"]:::op
-    k2["outcome known: lose"]:::in --> p2["P(play | lose)"]:::op
-    u["outcome unknown"]:::hum --> amp["amplitudes add<br/>+ 2√(..)cos θ"]:::op --> pu["P(play | unknown)"]:::out
-    p1 & p2 --> tot["law of total probability"]:::base -.-> pu''',
-      'ClassicalMixtureModel', 'Pothos, E. M., & Busemeyer, J. R. (2009). Proceedings of the Royal Society B, 276, 2171-2178.'),
     M('Quantum-like Bayesian network', ['quantum_mind.families.qlbn.models.QLBNModel'],
       'A Bayesian network whose unobserved nodes are summed as amplitudes, giving interference terms.',
       '''flowchart LR
@@ -156,47 +137,6 @@ PAGES['quantum_like'] = ('Quantum-like families',
       'MarkovBelief', 'Busemeyer, J. R., & Bruza, P. D. (2024). Quantum Models of Cognition and Decision (2nd ed.); '
       'Roeder, L., et al. (2023). A quantum model of trust calibration in human-AI interactions. Entropy, 25(9), 1362.',
       '03_trust_on_a_qubit'),
-    M('Quantum decision theory', ['quantum_mind.families.decision.models.QDTModel'],
-      'Choice probability = utility factor + attraction (interference) factor.',
-      '''flowchart LR
-    L["lotteries"]:::in --> U["utility factor f"]:::op
-    L --> AT["attraction factor q<br/>uncertainty aversion"]:::op
-    U & AT --> P["P(choice) = f + q"]:::out
-    EU["expected utility · prospect theory"]:::base -.-> P''',
-      'ExpectedUtilityModel, ProspectTheoryModel', 'Yukalov, V. I., & Sornette, D. (2011). Theory and Decision, 70, 283-328.'),
-    M('Contextuality tests', ['quantum_mind.families.contextuality.models.chsh',
-                              'quantum_mind.families.contextuality.models.cyclic_contextuality'],
-      'Is there one joint distribution behind all the measurements? CHSH and Contextuality-by-Default.',
-      '''flowchart LR
-    d[("paired measurements<br/>in 4 contexts")]:::in --> c["correlations"]:::op --> s["S statistic"]:::op
-    s --> b{"S > 2 (CHSH)<br/>or CbD criterion"}:::out
-    cl["classical bound"]:::base -.-> b''',
-      'classical (noncontextual) bounds', 'Dzhafarov, E. N., Kujala, J. V., & Cervantes, V. H. (2016). Lecture Notes in Computer Science, 9535, 12-23.'),
-    M('Asymmetric similarity', ['quantum_mind.families.similarity.models.QuantumSimilarityModel'],
-      'Similarity of A to B as projection between concept subspaces of different dimension; '
-      '"Korea is like China" ≠ "China is like Korea".',
-      '''flowchart LR
-    A["concept A subspace<br/>(small)"]:::in --> PA["project A onto B"]:::op --> sAB["sim(A, B)"]:::out
-    B["concept B subspace<br/>(large)"]:::in --> PB["project B onto A"]:::op --> sBA["sim(B, A)"]:::out
-    g["geometric · biased geometric"]:::base -.-> sAB''',
-      'GeometricModel, BiasedGeometricModel', 'Pothos, E. M., Busemeyer, J. R., & Trueblood, J. S. (2013). Psychological Review, 120(3), 679-696.'),
-    M('Episodic memory overdistribution', ['quantum_mind.families.memory.models.QuantumEpisodicModel'],
-      'Verbatim and gist traces as non-orthogonal subspaces; recall of "target or related" can exceed '
-      'the sum of its parts.',
-      '''flowchart LR
-    cue["memory probe"]:::hum --> V["verbatim subspace"]:::op & G["gist subspace"]:::op
-    V & G --> P["projection onto V ⊕ G"]:::op --> o["P(remember) · overdistribution"]:::out
-    add["additive verbatim + gist"]:::base -.-> o''',
-      'AdditiveMemoryModel', 'Brainerd, C. J., Wang, Z., & Reyna, V. F. (2013). Psychological Review, 120(1), 1-33.'),
-    M('Concept combination (Fock space)', ['quantum_mind.families.concepts.models.FockSpaceConceptModel'],
-      '"Pet fish" membership: a superposition of the two concepts plus their combination sector.',
-      '''flowchart LR
-    A["membership in A"]:::in --> F1["sector 1: (A + B)/√2<br/>with interference"]:::op
-    B["membership in B"]:::in --> F1
-    A & B --> F2["sector 2: A and B"]:::op
-    F1 & F2 --> mu["μ(A and B)<br/>overextension"]:::out
-    cl["product · minimum · weighted average"]:::base -.-> mu''',
-      'ProductConceptModel, MinConceptModel, WeightedAverageModel', 'Aerts, D. (2009). Journal of Mathematical Psychology, 53(5), 314-348.'),
     M('Bistable perception (quantum Zeno)', ['quantum_mind.families.perception.models.QuantumZenoBistableModel'],
       'A percept rotating between two interpretations, re-projected every Δt; dwell time ∝ Δt/sin²(gΔt).',
       '''flowchart LR
@@ -470,8 +410,8 @@ PAGES['infrastructure'] = ('Simulator, circuits and the viewer',
       'trust from Busemeyer & Bruza (2024) and Roeder et al. (2023).'),
     M('Circuits for the quantum-like families', ['quantum_mind.circuits.builders.order_effects_circuit',
                                                  'quantum_mind.circuits.builders.belief_circuit',
-                                                 'quantum_mind.circuits.builders.chsh_circuit'],
-      'Every quantum-like family as a Qiskit circuit whose measured frequencies reproduce the model.',
+                                                 'quantum_mind.circuits.builders.qlbn_circuit'],
+      'Each quantum-like family as a Qiskit circuit whose measured frequencies reproduce the model.',
       '''flowchart LR
     m["fitted model"]:::in --> u["subspace unitaries"]:::op --> fl["flag qubits record answers"]:::op --> qc["Qiskit circuit"]:::out''',
       None, None),
@@ -517,16 +457,9 @@ ORIGIN = {
     # quantum-like families
     'Question order: quantum-like model': ('extended', _ALL),
     'Question order: classical baselines': ('extended', _ALL),
-    'Conjunction fallacy': ('extended', _BOOT),
-    'Interference and the disjunction effect': ('extended', _ALL),
     'Quantum-like Bayesian network': ('extended', _ALL),
     'Belief dynamics: quantum and Markov walks': ('extended', _ALL),
     'Trust belief (open system)': ('extended', _ALL + '; used for robot hand-over decisions'),
-    'Quantum decision theory': ('extended', _ALL),
-    'Contextuality tests': ('published', None),
-    'Asymmetric similarity': ('extended', _BOOT),
-    'Episodic memory overdistribution': ('extended', _BOOT),
-    'Concept combination (Fock space)': ('extended', _BOOT),
     'Bistable perception (quantum Zeno)': ('extended', _ALL),
     # COBRA belief filter
     'Context-rotated belief filter (COBRA)': ('unique', None),
@@ -605,16 +538,9 @@ CATEGORY = {
     # quantum-like families
     'Question order: quantum-like model': 'quantum-like',
     'Question order: classical baselines': 'classical',
-    'Conjunction fallacy': 'quantum-like',
-    'Interference and the disjunction effect': 'quantum-like',
     'Quantum-like Bayesian network': 'quantum-like',
     'Belief dynamics: quantum and Markov walks': 'mixed',
     'Trust belief (open system)': 'quantum-like',
-    'Quantum decision theory': 'quantum-like',
-    'Contextuality tests': 'quantum-like',
-    'Asymmetric similarity': 'quantum-like',
-    'Episodic memory overdistribution': 'quantum-like',
-    'Concept combination (Fock space)': 'quantum-like',
     'Bistable perception (quantum Zeno)': 'quantum-like',
     # COBRA belief filter
     'Context-rotated belief filter (COBRA)': 'quantum-like',

@@ -60,16 +60,6 @@ def test_4d_model_with_zero_angle_is_order_free():
     assert np.allclose(p['AB'], p['BA'][[0, 2, 1, 3]])          # same joint table, cells relabelled
 
 
-def test_interference_law():
-    from quantum_mind.families.interference import InterferenceModel
-    p1, p2, c, th = 0.9, 0.8, 0.4, 2.2
-    A = c * p1 + (1 - c) * p2 + 2 * np.cos(th) * np.sqrt(c * p1 * (1 - c) * p2)
-    B = c * (1 - p1) + (1 - c) * (1 - p2) + 2 * np.cos(th) * np.sqrt(c * (1 - p1) * (1 - c) * (1 - p2))
-    assert InterferenceModel(p1=p1, p2=p2, c=c, theta=th).predict(None)['unknown'][0] == pytest.approx(A / (A + B))
-    classical = InterferenceModel(p1=p1, p2=p2, c=c, theta=np.pi / 2).predict(None)['unknown'][0]
-    assert classical == pytest.approx(c * p1 + (1 - c) * p2)
-
-
 def test_open_system_belief_step_and_query():
     from quantum_mind.families.dynamics import OpenSystemBelief, MarkovBelief, final_yes
     phi0, ap, an, gam = 1.3, 0.7, 1.1, 0.25
@@ -87,13 +77,6 @@ def test_open_system_belief_step_and_query():
     assert final_yes(m, (1, 0), (1,)) == pytest.approx(rho[0, 0])
     mk = MarkovBelief(p0=0.4, up=0.3, down=0.2)
     assert final_yes(mk, (1, 0), (1,)) == pytest.approx((0.4 + 0.6 * 0.3) * (1 - 0.2))
-
-
-def test_fock_space_concept_formula():
-    from quantum_mind.families.concepts import FockSpaceConceptModel
-    mA, mB, m2, k = 0.4, 0.6, 0.3, 0.5
-    expect = m2 * mA * mB + (1 - m2) * ((mA + mB) / 2 + k * min(np.sqrt(mA * mB), np.sqrt((1 - mA) * (1 - mB))))
-    assert FockSpaceConceptModel(m2=m2, kappa=k).predict({'x': (mA, mB)})['x'][0] == pytest.approx(expect)
 
 
 def test_zeno_mean_dwell_time():

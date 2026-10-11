@@ -7,13 +7,9 @@ model predicts, so circuit output and model can be compared directly (`quantum_m
 |---|---|---|---|
 | `projective_sequence_circuit(psi, projectors, order, form)` | any projective model, any dimension | ⌈log₂ d⌉ + 1 (dynamic) or + number of questions (deferred) | dynamic, deferred |
 | `order_effects_circuit(model, order, form)` | order effects | 2 + ancillas | dynamic, deferred |
-| `conjunction_circuit(model, form)` | conjunction | 2 + ancillas | dynamic, deferred |
-| `similarity_circuit(model, a, b, form)` | similarity | 2 + ancillas | dynamic, deferred |
-| `interference_circuit(p1, p2, c, theta, condition)` | interference | 2 | post-selection |
 | `qlbn_circuit(net, query, evidence, phases)` | QLBN | query + hidden registers | post-selection |
 | `walk_circuit(model, t)` | quantum walk | ⌈log₂ N⌉ | single time |
 | `belief_circuit(model, events, queries, form)` | open-system belief | 1 + ancillas | dynamic, deferred |
-| `chsh_circuit(a, b)` | contextuality | 2 | – |
 
 **Binary projective measurement.** A unitary maps the "yes" subspace onto the first r computational
 basis states, an ancilla is flipped for each of them (multi-controlled X), only the ancilla is

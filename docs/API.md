@@ -106,37 +106,6 @@ Question-order effects (see README.md in this folder).
 - **class `SaturatedOrderModel(**params)`**: Reference model with a free answer distribution per order.
   - `predict(self, design=None)`: Answer distribution for each order (softmax of the logits).
 
-## `quantum_mind.families.conjunction`
-
-Conjunction and disjunction judgements (see README.md in this folder).
-
-- **class `AveragingModel(**params)`**: Baseline: conjunctions and disjunctions are weighted averages of the event judgements.
-  - `predict(self, design=None)`: Judged probability for each judgement type.
-- **class `ClassicalJointModel(**params)`**: Classical baseline: one joint distribution, so no fallacies are possible.
-  - `predict(self, design=None)`: Judged probability for each judgement type.
-- `fallacy_rate(judgements)`: Check a set of judgements for the conjunction and disjunction fallacies.
-- **class `PTNModel(**params)`**: Probability theory plus noise (Costello and Watts, 2014).
-  - `predict(self, design=None)`: Judged probability for each judgement type.
-- **class `QuantumConjunctionModel(**params)`**: Quantum-like conjunction and disjunction judgements.
-  - `judgements(self)`: Predicted probability judgements.
-  - `predict(self, design=None)`: Judged probability (one-element vector) for each judgement type in the design.
-  - `projectors(self)`: Projectors of the two events.
-- `RANK_STRUCTURES` (constant)
-- `TYPES` (constant)
-
-## `quantum_mind.families.interference`
-
-Interference in decisions under uncertainty: disjunction effect (see README.md in this folder).
-
-- **class `ClassicalMixtureModel(**params)`**: Classical baseline: the unknown condition mixes the known ones (law of total probability).
-  - `predict(self, design=None)`: ``[P(act), P(not act)]`` for each condition.
-- `CONDITIONS` (constant)
-- `interference_phase(p1, p2, p_unknown, c=0.5)`: Phase that reproduces an observed P(act | unknown) with the unnormalised law.
-- **class `InterferenceModel(**params)`**: Quantum-like law of total probability with an interference term between the two paths.
-  - `p_unknown(self)`: Probability of acting when the event is unknown.
-  - `predict(self, design=None)`: ``[P(act), P(not act)]`` for each condition.
-- `total_probability_bounds(p1, p2)`: Classical range of P(act | unknown).
-
 ## `quantum_mind.families.qlbn`
 
 Quantum-like Bayesian networks (see README.md in this folder).
@@ -176,68 +145,6 @@ Belief dynamics: Markov, quantum and open-system models (see README.md in this f
   - `joint(self, t1, t2)`: Joint distribution of judgements at ``t1`` and ``t2``, with collapse at ``t1`` (Lüders rule).
   - `state_probs(self, t)`: Distribution over belief states at time ``t`` (Born rule).
 - `question_effect(model, events, last, intermediate)`: Effect of an intermediate question on a later answer.
-
-## `quantum_mind.families.decision`
-
-Risky choice: quantum decision theory and classical baselines (see README.md in this folder).
-
-- `expected_utility(lottery, alpha)`: Expected power utility of a lottery.
-- **class `ExpectedUtilityModel(**params)`**: Classical baseline: logit choice by expected utility.
-  - `predict(self, design=None)`: ``[P(choose 1), P(choose 2)]`` for each problem.
-- `outcome_variance(lottery)`: Variance of the outcomes of a lottery.
-- **class `ProspectTheoryModel(**params)`**: Classical baseline: prospect-theory value with logit choice.
-  - `predict(self, design=None)`: ``[P(choose 1), P(choose 2)]`` for each problem.
-  - `value(self, lottery)`: Prospect-theory value of a lottery.
-- **class `QDTModel(**params)`**: Quantum decision theory (Yukalov and Sornette).
-  - `predict(self, design=None)`: ``[P(choose 1), P(choose 2)]`` for each problem.
-
-## `quantum_mind.families.contextuality`
-
-Contextuality analysis: CHSH and Contextuality-by-Default for cyclic systems (see README.md).
-
-- `chsh(E11, E12, E21, E22)`: CHSH value.
-- `correlations_from_data(pairs)`: Expectations from raw +-1 observations.
-- `cyclic_contextuality(product_expectations, means_pairs)`: Contextuality-by-Default criterion for a cyclic system.
-- `qubit_chsh_correlations(a0=0.0, a1=1.5707963267948966, b0=0.7853981633974483, b1=-0.7853981633974483)`: Quantum correlations of a Bell pair.
-- `s_odd(values)`: Largest signed sum with an odd number of minus signs.
-
-## `quantum_mind.families.similarity`
-
-Similarity judgements and asymmetry (see README.md in this folder).
-
-- `asymmetry(pred, a, b)`: Asymmetry of a similarity judgement.
-- **class `BiasedGeometricModel(**params)`**: Classical baseline with asymmetry (Nosofsky, 1991): geometric similarity plus a bias per concept.
-  - `bias(self, name)`: Bias parameter of a concept.
-- `for_concepts(cls, concepts)`: Similarity-model subclass with parameters for exactly the given concepts.
-- **class `GeometricModel(**params)`**: Classical baseline: similarity decreases with distance in a psychological space (symmetric).
-  - `bias(self, name)`: Response bias toward a concept (always 1 in the symmetric model).
-  - `predict(self, design=None)`: Similarity of each ordered pair ``(A, B)``.
-- **class `QuantumSimilarityModel(**params)`**: Quantum similarity model (Pothos, Busemeyer and Trueblood, 2013).
-  - `predict(self, design=None)`: Similarity of each ordered pair ``(A, B)``.
-  - `projectors(self)`: Projector of each concept subspace.
-
-## `quantum_mind.families.memory`
-
-Episodic memory: overdistribution, quantum versus additive classical model (see README.md).
-
-- **class `AdditiveMemoryModel(**params)`**: Classical baseline: V and G are exclusive, so P(V or G) = P(V) + P(G).
-  - `predict(self, design=None)`: Predicted proportion for each ``(probe, question)``.
-  - `probe_probabilities(self, probe)`: Answer probabilities for one probe type (softmax over verbatim, gist, neither).
-- `overdistribution(values, probe)`: Overdistribution for one probe type.
-- **class `QuantumEpisodicModel(**params)`**: Quantum episodic memory model.
-  - `predict(self, design=None)`: Predicted proportion for each ``(probe, question)``.
-  - `probe_probabilities(self, probe)`: Answer probabilities for one probe type, from the projections of the memory state.
-
-## `quantum_mind.families.concepts`
-
-Concept combination (guppy effect): Aerts' Fock-space model versus classical rules (see README.md).
-
-- **class `FockSpaceConceptModel(**params)`**: Aerts' Fock-space model of concept combination.
-- `interference_bound(mA, mB)`: Largest possible size of the interference term.
-- **class `MinConceptModel(**params)`**: Fuzzy-set baseline: :math:`\min(\mu_A, \mu_B)` (no parameter).
-- `overextension(design, values)`: Overextension of each item.
-- **class `ProductConceptModel(**params)`**: Classical baseline: independent product :math:`\mu_A \mu_B` (no parameter).
-- **class `WeightedAverageModel(**params)`**: Baseline: :math:`w\,\mu_A + (1 - w)\,\mu_B`.
 
 ## `quantum_mind.families.perception`
 
@@ -501,15 +408,11 @@ The binary optimisation container used by trust-aware task allocation.
 Qiskit circuits for the model families, and a single :func:`run` for simulators and cloud hardware (see README.md in this folder). Needs the ``qiskit`` extra.
 
 - `belief_circuit(model, events, queries, form='dynamic')`: Circuit for an :class:`~quantum_mind.families.dynamics.OpenSystemBelief` over a sequence of events.
-- `chsh_circuit(a, b)`: Bell pair measured in the x-z plane.
-- `conjunction_circuit(model, form='dynamic')`: Circuit for a :class:`~quantum_mind.families.conjunction.QuantumConjunctionModel`.
-- `interference_circuit(p1, p2, c, theta, condition='unknown')`: Two-path interference circuit (normalised form of the interference model).
 - `n_qubits(d)`: Number of qubits needed for a dimension.
 - `order_effects_circuit(model, order='AB', form='dynamic')`: Circuit for a question-order model.
 - `projective_sequence_circuit(psi, projectors, order, form='dynamic')`: Circuit for a sequence of yes/no questions.
 - `qlbn_circuit(net, query, evidence=None, phases=None)`: Quantum-like Bayesian network inference as a circuit.
 - `run(qc, backend='aer', shots=10000, seed=7)`: Run a circuit and return counts.
-- `similarity_circuit(model, a, b, form='dynamic')`: Circuit for Sim(a, b) of a :class:`~quantum_mind.families.similarity.QuantumSimilarityModel`.
 - `subspace_unitary(P, n)`: Unitary that maps the range of a projector onto the first basis states.
 - `to_qasm3(qc)`: Export a circuit as OpenQASM 3 in Braket's gate names.
 - `walk_circuit(model, t)`: Quantum-walk circuit at time t.
@@ -560,7 +463,4 @@ Bloch-sphere visualisation: watch qubits evolve in 3D.
 Published aggregate data used in the examples and tests.
 
 - `CLINTON_GORE` (constant)
-- `LINDA` (constant)
-- `PRISONERS_DILEMMA` (constant)
 - `proportions_to_counts(props, n)`: Turn proportions into binary counts.
-- `TWO_STAGE_GAMBLE` (constant)

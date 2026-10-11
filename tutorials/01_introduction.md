@@ -115,7 +115,7 @@ plt.show()
 
 | Pillar | What it holds | Start with |
 |---|---|---|
-| Quantum-like | eleven families of models of judgement, decision, trust and perception | tutorials 2, 3, 9 |
+| Quantum-like | four families of models of order effects, inference, trust and perception | tutorials 2, 3, 9 |
 | Robot decision layer | ask or act, calibration, orchestration, question planning, fusion, hand-over | tutorials 4 to 8 |
 | COBRA belief filter | a density-matrix belief whose measurement basis is rotated by the previous sensor frame | tutorial 10 |
 | Viewer | Bloch spheres, trajectories and animations | tutorial 11 |

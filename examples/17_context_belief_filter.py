@@ -8,7 +8,7 @@ previous frame rotate the basis in which the next frame is read.
 The data are **simulated** and built to contain this context effect. The script prints the Bayes filter and
 COBRA side by side, the shift each gives to the same hand cue after opposite looks, and the decision cost.
 """
-# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_21.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_17.png'
 import numpy as np
 
 from quantum_mind.belief import COBRA, GaussianBayesFilter, min_cost_action

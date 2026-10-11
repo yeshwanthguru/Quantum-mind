@@ -83,7 +83,7 @@ mermaid_init_config = {'flowchart': {'curve': 'basis', 'nodeSpacing': 28, 'rankS
 sphinx_gallery_conf = {
     'examples_dirs': str(ROOT / 'examples'),
     'gallery_dirs': 'auto_examples',
-    'filename_pattern': r'^((?!09_cloud_run).)*$' if not FAST else r'^$',   # 11 needs command-line arguments
+    'filename_pattern': r'^((?!06_cloud_run).)*$' if not FAST else r'^$',   # 11 needs command-line arguments
     'ignore_pattern': r'__init__\.py',
     'within_subsection_order': 'FileNameSortKey',
     'default_thumb_file': str(DOCS / '_static' / 'thumbs' / 'q.png'),

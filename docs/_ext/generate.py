@@ -32,8 +32,7 @@ READMES = {
     'CONTRIBUTING.md': 'about/contributing',
     'SECURITY.md': 'about/security',
 }
-FAMILIES = ['order_effects', 'conjunction', 'interference', 'qlbn', 'dynamics', 'decision', 'contextuality',
-            'similarity', 'memory', 'concepts', 'perception']
+FAMILIES = ['order_effects', 'qlbn', 'dynamics', 'perception']
 for _f in FAMILIES:
     READMES['src/quantum_mind/families/%s/README.md' % _f] = 'user_guide/families/' + _f
 

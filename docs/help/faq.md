@@ -9,7 +9,7 @@ to IBM Quantum or Amazon Braket.
 
 **Does "quantum-like" mean the brain is quantum?**
 No. Quantum-like models borrow the mathematics of quantum probability because it describes certain
-patterns in human answers (order effects, conjunction fallacies). They make no claim about physics in
+patterns in human answers (order effects, context effects). They make no claim about physics in
 the brain. See [concepts](../user_guide/concepts.md).
 
 **Is there a quantum advantage?**
@@ -64,7 +64,7 @@ Tutorial 1 shows the format; each family's page gives its design.
 
 **How do I use it on a robot?**
 The decision functions are plain Python and middleware-free. `HumanModelService` wraps them with
-JSON-friendly messages, and `integrations/ros2` provides a ROS 2 node. See tutorials 12 and 14.
+JSON-friendly messages, and `integrations/ros2` provides a ROS 2 node. See tutorials 12 and 13.
 
 **How do I cite it?**
 Use the citation file (`CITATION.cff`) or the [citing page](../about/index.md).

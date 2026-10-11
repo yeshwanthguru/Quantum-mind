@@ -1,6 +1,5 @@
 import numpy as np
-from quantum_mind.core import fit
-from quantum_mind.data import CLINTON_GORE, TWO_STAGE_GAMBLE, proportions_to_counts
+from quantum_mind.data import CLINTON_GORE
 
 
 def test_order_effects_qq_and_nesting():
@@ -31,25 +30,6 @@ def test_order_effects_fit_clinton_gore_rates():
     assert best.cost < 1e-8
 
 
-def test_conjunction_fallacy_possible_and_classical_bound():
-    from quantum_mind.families.conjunction import QuantumConjunctionModel, ClassicalJointModel, fallacy_rate
-    j = QuantumConjunctionModel(a=1.910885, b=0.80936, g=0.12292, ranks=(1, 2)).predict()
-    assert fallacy_rate(j)['conjunction_fallacy']
-    rng = np.random.default_rng(2)
-    for _ in range(50):
-        c = ClassicalJointModel(pA=rng.uniform(), pB=rng.uniform(), rho=rng.uniform(-1, 1)).predict()
-        assert c['A&B'][0] <= min(c['A'][0], c['B'][0]) + 1e-12
-
-
-def test_interference_fits_two_stage_gamble_and_classical_cannot():
-    from quantum_mind.families.interference import InterferenceModel, ClassicalMixtureModel
-    counts = proportions_to_counts(TWO_STAGE_GAMBLE['conditions'], 1000)
-    q = fit(InterferenceModel, counts, restarts=20); c = fit(ClassicalMixtureModel, counts, restarts=20)
-    assert abs(q.model.predict()['unknown'][0] - 0.36) < 0.01
-    assert c.model.predict()['unknown'][0] > 0.45 and q.bic < c.bic
-    assert np.isclose(InterferenceModel(p1=0.7, p2=0.5, c=0.4, theta=np.pi / 2).predict()['unknown'][0], 0.4 * 0.7 + 0.6 * 0.5)
-
-
 def test_qlbn_reduces_to_classical_and_normalises():
     from quantum_mind.families.qlbn import BayesNet, classical_marginal, quantum_like_marginal
     net = BayesNet({'O': ['w', 'l'], 'P': ['y', 'n']}, {'P': ['O']},
@@ -75,30 +55,6 @@ def test_open_system_walk_probabilities():
     from quantum_mind.families.dynamics import OpenSystemWalk
     p = OpenSystemWalk(mu=2, sigma=2, lam=1.0, n_states=11).predict({'s': ('single', 1.0), 'j': ('joint', 0.3, 1.0)})
     assert np.isclose(p['s'].sum(), 1) and np.isclose(p['j'].sum(), 1)
-
-
-def test_decision_models():
-    from quantum_mind.families.decision import QDTModel, ExpectedUtilityModel, ProspectTheoryModel
-    probs = {'p': ([(30, 1.0)], [(45, 0.8), (0, 0.2)])}
-    eu = ExpectedUtilityModel(alpha=0.8, beta=0.1).predict(probs)['p']
-    qd = QDTModel(alpha=0.8, beta=0.1, q0=0.25).predict(probs)['p']
-    assert np.isclose(qd.sum(), 1) and qd[0] > eu[0]                         # attraction toward the sure option
-    assert np.isclose(QDTModel(alpha=0.8, beta=0.1, q0=0.0).predict(probs)['p'][0], eu[0])
-    assert np.isclose(ProspectTheoryModel().predict(probs)['p'].sum(), 1)
-
-
-def test_contextuality():
-    from quantum_mind.families.contextuality import chsh, qubit_chsh_correlations, cyclic_contextuality, s_odd
-    assert np.isclose(chsh(**qubit_chsh_correlations()), 2 * np.sqrt(2))
-    assert np.isclose(s_odd([1, 1, 1, 1]), 2)
-    assert not cyclic_contextuality([1, 1, 1, 1], [(0, 0)] * 4)['contextual']
-
-
-def test_similarity_asymmetry():
-    from quantum_mind.families.similarity import QuantumSimilarityModel, GeometricModel, asymmetry
-    pairs = [('K', 'C'), ('C', 'K')]
-    assert abs(asymmetry(QuantumSimilarityModel(concepts=['K', 'C'], ranks={'C': 2}).predict(pairs), 'K', 'C')) > 0.01
-    assert abs(asymmetry(GeometricModel(concepts=['K', 'C']).predict(pairs), 'K', 'C')) < 1e-12
 
 
 def test_robotics_application():

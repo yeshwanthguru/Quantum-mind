@@ -54,10 +54,10 @@ def test_docs_link_rewriting():
     import importlib.util
     spec = importlib.util.spec_from_file_location('generate', ROOT / 'docs' / '_ext' / 'generate.py')
     g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
-    md = g._rewrite('[api](API.md) [ex](../examples/21_context_belief_filter.py) [web](https://x.org) [a](#h) '
+    md = g._rewrite('[api](API.md) [ex](../examples/17_context_belief_filter.py) [web](https://x.org) [a](#h) '
                     '[q](../src/quantum_mind/quantum/README.md) [lic](../LICENSE) ![gif](assets/entanglement.gif)', 'docs/concepts.md')
-    assert '(../api/index.rst)' in md and '(../auto_examples/21_context_belief_filter.rst)' in md
+    assert '(../api/index.rst)' in md and '(../auto_examples/17_context_belief_filter.rst)' in md
     assert '(quantum.md)' in md and g.REPO + '/blob/main/LICENSE' in md
     assert '(../assets/entanglement.gif)' in md and '(https://x.org)' in md and '(#h)' in md
-    fam = g._rewrite('<img src="../../../../docs/assets/x.png">', 'src/quantum_mind/families/memory/README.md')
+    fam = g._rewrite('<img src="../../../../docs/assets/x.png">', 'src/quantum_mind/families/perception/README.md')
     assert 'src="../../_static/assets/x.png"' in fam

@@ -31,9 +31,8 @@ require('qiskit')
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit.library import UnitaryGate, StatePreparation, MCXGate
 
-__all__ = ['subspace_unitary', 'projective_sequence_circuit', 'order_effects_circuit', 'conjunction_circuit',
-           'similarity_circuit', 'interference_circuit', 'qlbn_circuit', 'walk_circuit', 'belief_circuit',
-           'chsh_circuit', 'n_qubits']
+__all__ = ['subspace_unitary', 'projective_sequence_circuit', 'order_effects_circuit', 'qlbn_circuit', 'walk_circuit',
+           'belief_circuit', 'n_qubits']
 
 
 def n_qubits(d):
@@ -170,98 +169,6 @@ def order_effects_circuit(model, order='AB', form='dynamic'):
     return qc, (lambda counts: _order_cells(dec(counts)))
 
 
-def conjunction_circuit(model, form='dynamic'):
-    """Circuit for a :class:`~quantum_mind.families.conjunction.QuantumConjunctionModel`.
-
-    The two events are asked in the model's order (more likely first).
-
-    Parameters
-    ----------
-    model : QuantumConjunctionModel
-    form : {'dynamic', 'deferred'}, optional
-
-    Returns
-    -------
-    circuit : qiskit.QuantumCircuit
-    decode : callable
-        ``decode(counts)`` -> ``{'A&B': ..., 'A|B': ...}``.
-    """
-    psi = np.array([1.0, 0, 0]); P = model.projectors(); j = model.judgements()
-    order = ('A', 'B') if j['A'] >= j['B'] else ('B', 'A')
-    qc, dec = projective_sequence_circuit(psi, P, order, form)
-    return qc, (lambda counts: (lambda p: {'A&B': p[(1, 1)], 'A|B': 1 - p[(0, 0)]})(dec(counts)))
-
-
-def similarity_circuit(model, a, b, form='dynamic'):
-    """Circuit for Sim(a, b) of a :class:`~quantum_mind.families.similarity.QuantumSimilarityModel`.
-
-    Parameters
-    ----------
-    model : QuantumSimilarityModel
-    a, b : str
-        Concepts.
-    form : {'dynamic', 'deferred'}, optional
-
-    Returns
-    -------
-    circuit : qiskit.QuantumCircuit
-    decode : callable
-        ``decode(counts)`` -> the similarity.
-    """
-    qc, dec = projective_sequence_circuit(np.array([1.0, 0, 0]), model.projectors(), (a, b), form)
-    return qc, (lambda counts: dec(counts)[(1, 1)])
-
-
-def interference_circuit(p1, p2, c, theta, condition='unknown'):
-    """Two-path interference circuit (normalised form of the interference model).
-
-    Qubit 0 is the path (event) and qubit 1 the action (``|0>`` = act). Known conditions prepare one path;
-    ``'unknown'`` superposes both paths with relative phase theta, erases the path with a Hadamard gate
-    and post-selects path = 0.
-
-    Parameters
-    ----------
-    p1, p2 : float
-        P(act) on each path.
-    c : float
-        Weight of path 1.
-    theta : float
-        Relative phase.
-    condition : {'known_1', 'known_2', 'unknown'}, optional
-
-    Returns
-    -------
-    circuit : qiskit.QuantumCircuit
-    decode : callable
-        ``decode(counts)`` -> ``[P(act), P(not act)]``.
-    """
-    qc = QuantumCircuit(2, 2)
-    if condition == 'known_1':
-        pass
-    elif condition == 'known_2':
-        qc.x(0)
-    else:
-        qc.ry(2 * np.arccos(np.sqrt(c)), 0); qc.p(theta, 0)
-    t1, t2 = 2 * np.arccos(np.sqrt(p1)), 2 * np.arccos(np.sqrt(p2))
-    qc.x(0); qc.cry(t1, 0, 1); qc.x(0); qc.cry(t2, 0, 1)
-    if condition == 'unknown':
-        qc.h(0)
-    qc.measure([0, 1], [0, 1])
-
-    def decode(counts):
-        act = nact = 0
-        for bits, k in counts.items():
-            b = bits.replace(' ', '')                 # bit string: action (clbit 1), path (clbit 0)
-            path, action = int(b[-1]), int(b[-2])
-            if condition == 'unknown' and path != 0:
-                continue
-            if action == 0: act += k
-            else: nact += k
-        tot = act + nact
-        return np.array([act / tot, nact / tot]) if tot else np.array([np.nan, np.nan])
-    return qc, decode
-
-
 def qlbn_circuit(net, query, evidence=None, phases=None):
     r"""Quantum-like Bayesian network inference as a circuit.
 
@@ -389,26 +296,3 @@ def belief_circuit(model, events, queries, form='dynamic'):
     return qc, decode
 
 
-def chsh_circuit(a, b):
-    """Bell pair measured in the x-z plane.
-
-    Parameters
-    ----------
-    a : float
-        Measurement angle of qubit 0.
-    b : float
-        Measurement angle of qubit 1.
-
-    Returns
-    -------
-    circuit : qiskit.QuantumCircuit
-    decode : callable
-        ``decode(counts)`` -> the correlation E(a, b).
-    """
-    qc = QuantumCircuit(2, 2)
-    qc.h(0); qc.cx(0, 1); qc.ry(-a, 0); qc.ry(-b, 1); qc.measure([0, 1], [0, 1])
-
-    def decode(counts):
-        tot = sum(counts.values())
-        return sum((1 if b_.count('1') % 2 == 0 else -1) * k for b_, k in counts.items()) / tot
-    return qc, decode

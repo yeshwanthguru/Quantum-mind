@@ -50,7 +50,7 @@
   <pre class="install"><code>pip install quantum-mind          # or "quantum-mind[all]" for Qiskit, plots and RL</code></pre>
   <div class="grid3 audience">
     <div class="card"><h3>Robotics and HRI</h3><p>A context-rotated belief filter, ask-or-act, question planning, calibrated perception, fusion and trust-aware hand-over, with a ROS 2 node.</p></div>
-    <div class="card"><h3>Cognitive science</h3><p>Eleven families of quantum-like models of judgement, each with classical baselines, fitting and recovery tools.</p></div>
+    <div class="card"><h3>Human-robot interaction</h3><p>Four families of quantum-like models (question order, inference, trust, perception), each with classical baselines, fitting and recovery tools.</p></div>
     <div class="card"><h3>Quantum physics</h3><p>Density matrices, generalised measurements, dephasing and a state-vector simulator with Qiskit export, shown on a Bloch sphere.</p></div>
   </div>
   <p class="note">Version {{VERSION}} · Apache-2.0 · Python 3.10–3.12 · {{TESTS}} tests in CI · Qiskit, IBM Quantum, Amazon Braket</p>
@@ -134,7 +134,7 @@ action = min_cost_action(p, cost)      # hand over, wait or ask</code></pre></di
   <a href="docs/concepts.html">Read the concepts page.</a></p>
   <div class="grid3">
     <div class="card like"><h3>1 · Quantum-like human models</h3><p>How <strong>people</strong> judge, decide and trust, in quantum probability, on ordinary computers.</p>
-      <ul><li>order effects, conjunction, interference</li><li>trust as an open quantum system</li><li>quantum-like Bayesian networks</li><li>decision theory, contextuality, similarity</li><li>per-person fitting and model comparison</li></ul>
+      <ul><li>question-order effects</li><li>trust as an open quantum system</li><li>quantum-like Bayesian networks</li><li>bistable perception</li><li>per-person fitting and model comparison</li></ul>
       <p class="tag" style="margin-top:10px">quantum_mind.families</p></div>
     <div class="card quantum"><h3>2 · COBRA belief filter</h3><p>A robot's belief about a person, as a density matrix that reads evidence in a context-dependent basis.</p>
       <ul><li>context-rotated generalised measurement</li><li>learned dephasing</li><li>online streaming filter</li><li>Bayes-filter and incoherent limits for ablation</li><li>coherence as a diagnostic</li></ul>

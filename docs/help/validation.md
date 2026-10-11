@@ -12,8 +12,8 @@ What has been checked, how, and what has not. This page exists so that nobody ha
 | Tutorials run and their stated claims hold | every tutorial is executed in CI; assertions check each claim made in the text |
 | Every public model has a block diagram | `tests/test_docs_coverage.py` checks the atlas against the package |
 | Circuits match their analytic models | tests compare circuit outputs with the model predictions |
-| Policy gradients are exact | gradient tests against finite differences |
-| Quantum-like models reproduce published aggregate effects | the Clinton-Gore order effect, Linda conjunction, Prisoner's Dilemma and two-stage gamble data in `quantum_mind.data` |
+| Simulator gradients are exact | gradient tests against finite differences |
+| Quantum-like models reproduce published aggregate effects | the Clinton-Gore order effect in `quantum_mind.data` |
 
 ## What is not validated
 

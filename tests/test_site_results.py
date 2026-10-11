@@ -56,7 +56,7 @@ def _run_example(name, capsys):
 
 
 def test_calibration_row(capsys):
-    out = _run_example('17_calibration_and_conformal.py', capsys)
+    out = _run_example('13_calibration_and_conformal.py', capsys)
     row = _row('Detector calibration')
     for line in out.splitlines():
         if 'ECE' in line:
@@ -65,7 +65,7 @@ def test_calibration_row(capsys):
 
 
 def test_zeno_row(capsys):
-    out = _run_example('19_bistable_perception_zeno.py', capsys)
+    out = _run_example('15_bistable_perception_zeno.py', capsys)
     row = _row('Bistable perception')
     for line in out.splitlines():
         if 'BIC' in line:

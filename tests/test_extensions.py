@@ -5,8 +5,17 @@ import pytest
 from quantum_mind import fit
 from quantum_mind.applications.robotics import HumanModelEnsemble
 from quantum_mind.core import bootstrap, OnlinePersonModel, information_gain, rank_conditions, model_posterior, tvd
-from quantum_mind.families.conjunction import QuantumConjunctionModel
+from quantum_mind.core import Model, Param
 from quantum_mind.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel
+
+
+class _Judgement(Model):
+    """A least-squares ('sse') model, to test the judgement-valued fitting path."""
+    PARAMS = [Param('a', 'prob', 0.4), Param('b', 'prob', 0.6)]
+    LOSS = 'sse'
+
+    def predict(self, design=None):
+        return {'x': np.array([self.a]), 'y': np.array([self.b]), 'z': np.array([self.a * self.b])}
 
 
 def test_bootstrap_interval_covers_the_generating_parameters():
@@ -23,10 +32,10 @@ def test_bootstrap_interval_covers_the_generating_parameters():
 
 
 def test_bootstrap_least_squares_model():
-    m = QuantumConjunctionModel()
+    m = _Judgement()
     pred = m.predict(None)
     data = {c: np.asarray(v, float) + 0.02 for c, v in pred.items()}
-    res = fit(QuantumConjunctionModel, data, restarts=2)
+    res = fit(_Judgement, data, restarts=2)
     boot = bootstrap(res, data, n_boot=10)
     assert boot.n_boot == 10 and set(boot.predictions) == set(data)
 
@@ -64,7 +73,7 @@ def test_online_model_batch_and_prior_from_fit():
 
 def test_online_model_rejects_least_squares_models():
     with pytest.raises(ValueError):
-        OnlinePersonModel(QuantumConjunctionModel)
+        OnlinePersonModel(_Judgement)
 
 
 def test_information_gain_bounds_and_identity():
@@ -97,27 +106,17 @@ def test_rank_conditions_and_model_posterior_find_the_generating_model():
 
 def _cases():
     """(model class, design, structural options, LOSS) for every family labelled as extended in the atlas."""
-    from quantum_mind.families.interference import InterferenceModel, ClassicalMixtureModel
     from quantum_mind.families.qlbn import BayesNet, ClassicalBNModel, for_network
     from quantum_mind.families.dynamics import QuantumWalk, MarkovWalk, OpenSystemBelief, MarkovBelief
-    from quantum_mind.families.decision import QDTModel, ExpectedUtilityModel
     from quantum_mind.families.perception import QuantumZenoBistableModel, MarkovSwitchingModel, GammaRenewalModel
-    from quantum_mind.families.memory import QuantumEpisodicModel
-    from quantum_mind.families.similarity import QuantumSimilarityModel
-    from quantum_mind.families.concepts import FockSpaceConceptModel
     net = BayesNet({'O': ['w', 'l'], 'P': ['y', 'n']}, {'P': ['O']},
                    {'O': {(): {'w': .5, 'l': .5}}, 'P': {('w',): {'y': .69, 'n': .31}, ('l',): {'y': .59, 'n': .41}}})
     bn = dict(net=net, query='P', conditions={'unknown': None, 'won': {'O': 'w'}})
-    gamble = {'p': ([(30, 1.0)], [(45, 0.8), (0, 0.2)])}
     return [(QuantumOrderModel4D, None, {}), (BayesOrderModel, None, {}), (AnchoringOrderModel, None, {}),
-            (InterferenceModel, None, {}), (ClassicalMixtureModel, None, {}),
             (for_network(net, 'P', bn['conditions']), None, bn), (ClassicalBNModel, None, bn),
             (QuantumWalk, None, {}), (MarkovWalk, None, {}), (OpenSystemBelief, None, {}), (MarkovBelief, None, {}),
-            (QDTModel, gamble, {}), (ExpectedUtilityModel, gamble, {}),
             (QuantumZenoBistableModel, None, {}), (MarkovSwitchingModel, None, {}), (GammaRenewalModel, None, {}),
-            (QuantumConjunctionModel, None, {}), (QuantumEpisodicModel, None, {}),
-            (QuantumSimilarityModel, [('K', 'C'), ('C', 'K')], {'concepts': ['K', 'C'], 'ranks': {'C': 2}}),
-            (FockSpaceConceptModel, {'x': (0.4, 0.6), 'y': (0.2, 0.7)}, {})]
+            ]
 
 
 @pytest.mark.parametrize('cls, design, opts', _cases(), ids=lambda v: getattr(v, '__name__', ''))

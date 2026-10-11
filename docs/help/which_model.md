@@ -9,15 +9,12 @@ flowchart TD
     S{"What is your problem?"}:::op
     S -->|"people's answers or judgements<br/>look inconsistent"| J{"What kind?"}:::op
     J -->|"answers depend on question order"| OE["order effects<br/>tutorial 2"]:::out
-    J -->|"P(A and B) > P(B)"| CJ["conjunction<br/>tutorial 13"]:::out
-    J -->|"choice when an outcome is unknown"| IF["interference · QLBN<br/>tutorial 13"]:::out
-    J -->|"risky choices"| DC["decision (QDT)<br/>tutorial 13"]:::out
-    J -->|"similarity, memory, concepts"| SM["similarity · memory · concepts<br/>tutorial 13"]:::out
+    J -->|"inference with hidden causes"| IF["quantum-like Bayesian network<br/>atlas: quantum-like"]:::out
     S -->|"a robot works with a person"| R{"What decision?"}:::op
     R -->|"ask or act now"| AA["ask_or_act · risk-aware<br/>tutorial 4"]:::out
     R -->|"which question to ask"| QP["QuestionPlanner<br/>tutorial 7"]:::out
     R -->|"hand an object over"| HO["TrustAwareHandover<br/>tutorial 3"]:::out
-    R -->|"whole loop on a robot"| E2E["end-to-end + ROS 2<br/>tutorials 12, 14"]:::out
+    R -->|"whole loop on a robot"| E2E["end-to-end + ROS 2<br/>tutorials 12, 13"]:::out
     S -->|"perception outputs"| P{"What do you need?"}:::op
     P -->|"trustworthy confidence"| CA["calibration · conformal<br/>tutorial 5"]:::out
     P -->|"combine camera, speech, gaze"| FU["fusion<br/>tutorial 8"]:::out
@@ -35,7 +32,7 @@ The same choices as a table:
 | Problem | Module | Classical baseline to report | Tutorial |
 |---|---|---|---|
 | Answers depend on question order | `families.order_effects` | Bayes, anchoring | [2](../tutorials/02_question_order.ipynb) |
-| Conjunction fallacy, disjunction effect, risky choice, similarity, memory, concepts | `families.*` | listed per family | [13](../tutorials/13_judgement_families.ipynb) |
+| Inference with hidden causes | `families.qlbn` | classical Bayesian network | atlas: quantum-like |
 | Trust that changes when asked | `families.dynamics.OpenSystemBelief` | `MarkovBelief` | [3](../tutorials/03_trust_on_a_qubit.ipynb) |
 | Act now or ask | `applications.robotics.ask_or_act` | expected-cost rule without model uncertainty | [4](../tutorials/04_ask_or_act.ipynb) |
 | Over-confident detector | `applications.calibration` | raw scores | [5](../tutorials/05_calibration.ipynb) |
@@ -45,5 +42,5 @@ The same choices as a table:
 | Dwell times of ambiguous stimuli | `families.perception` | Markov, gamma renewal | [9](../tutorials/09_bistable_perception.ipynb) |
 | Belief about intent from sensor frames whose meaning depends on context | `belief.COBRA` | `belief.GaussianBayesFilter`, incoherent limit | [10](../tutorials/10_context_belief_filter.ipynb) |
 | Train against simulated people | `envs` | any agent you bring; compare with a person-blind policy | atlas: environments |
-| Whole robot loop | all of the above | | [12](../tutorials/12_end_to_end_robot.ipynb), [14](../tutorials/14_ros2_service.ipynb) |
+| Whole robot loop | all of the above | | [12](../tutorials/12_end_to_end_robot.ipynb), [14](../tutorials/13_ros2_service.ipynb) |
 | Assign tasks among people working with a robot | `applications.allocation` | trust-blind allocation, brute force | atlas: infrastructure |

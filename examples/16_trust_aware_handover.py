@@ -10,7 +10,7 @@ construction).
 # sphinx_gallery_start_ignore
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(sys.argv[0]).resolve().parents[1] / "src"))  # run without installing
 # sphinx_gallery_end_ignore
-# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_20.png'
+# sphinx_gallery_thumbnail_path = '_static/thumbs/ex_16.png'
 import numpy as np
 from quantum_mind.applications.handover import TrustAwareHandover, simulate_handover_session
 from quantum_mind.families.dynamics import OpenSystemBelief, MarkovBelief

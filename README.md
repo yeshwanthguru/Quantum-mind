@@ -130,13 +130,12 @@ and on the [COBRA page](https://yeshwanthguru.github.io/Quantum-mind/docs/user_g
 <tr valign="top">
 <td>
 
-How **people** judge, decide and trust, in quantum probability, each with classical baselines.
+How **people** answer, trust and perceive, in quantum probability, each with classical baselines.
 
-- order effects · conjunction · interference
+- question-order effects
 - trust as an open quantum system
 - quantum-like Bayesian networks
-- decision theory · contextuality · similarity
-- memory · concepts · bistable perception
+- bistable perception (vision)
 - per-person fitting, comparison, recovery
 
 `quantum_mind.families`, `quantum_mind.core`
@@ -256,7 +255,7 @@ uncertainty to robot questioning, trust and ask-or-act decisions.
   (`benchmarks/hri_decision_benchmark.py`) and the COBRA benchmark above.
 * **Every new idea gets** a classical baseline, an ablation that isolates it, a control task where it should not
   help, and a paired test. Where the classical method wins the documentation says so.
-* **What is not validated.** All robotics results use simulated people or published survey aggregates. No study
+* **What is not validated.** All robotics results use simulated people or the published Clinton-Gore poll aggregate. No study
   with real people and a robot has been run; [`docs/help/validation.md`](docs/help/validation.md) lists the gaps
   and gives a pilot-study protocol. In several comparisons the simulated people follow the model the robot uses,
   which favours the order-aware method by construction; the tutorials say where.
@@ -272,8 +271,8 @@ API object, the classical baselines and the reference for every model, and label
 | Label | Entries | Meaning |
 |---|---|---|
 | Unique to Quantum Mind | 15 | designed in this library, building on the cited methods: COBRA and its online mode, the robot decision layer (ensemble, ask or act, question planner, trust-aware hand-over and allocation), the environments, the circuits for the quantum-like families |
-| Published model, extended | 16 | implemented as published, with capabilities the papers do not have (bootstrap intervals, a per-person posterior updated after every answer, informative-question design) |
-| Published method | 11 | implemented as published (Lüders rule, Lindblad evolution, fitting, calibration, the Bayes filter, ...) |
+| Published model, extended | 10 | implemented as published, with capabilities the papers do not have (bootstrap intervals, a per-person posterior updated after every answer, informative-question design) |
+| Published method | 10 | implemented as published (Lüders rule, Lindblad evolution, fitting, calibration, the Bayes filter, ...) |
 | Software tool | 6 | infrastructure |
 
 The extensions that apply to every people model are `bootstrap`, `OnlinePersonModel` and
@@ -286,7 +285,7 @@ against populations of simulated people).
 ```
 src/quantum_mind/
 ├── core/           Lüders rule, density matrices, Lindblad · Model/Param · fit, compare, recovery · bootstrap, online, design
-├── families/       order_effects · conjunction · interference · qlbn · dynamics · decision · contextuality · similarity · memory · concepts · perception
+├── families/       order_effects · qlbn · dynamics · perception
 ├── belief/         COBRA · OnlineBelief · GaussianBayesFilter · min_cost_action
 ├── applications/   robotics: question domains, trust, intent resolution, ensemble, ask_or_act · calibration · orchestration · questioning · handover · allocation · fusion
 ├── envs/           Gymnasium environments with simulated people
@@ -297,7 +296,7 @@ src/quantum_mind/
 ├── evaluation/     metrics, paired statistics, manifests, provenance
 └── data/           published aggregate data sets
 benchmarks/         COBRA context-intent benchmark · HRI decision benchmark
-examples/           21 scripts        tutorials/   15 tutorials + a packaged hand-over use case
+examples/           17 scripts        tutorials/   14 tutorials + a packaged hand-over use case
 docs/               Sphinx documentation, atlas, mathematics        notebooks/   2 Jupyter notebooks
 integrations/ros2/  ROS 2 node (quantum_mind_ros)        site/   project website (built by CI)
 ```
@@ -307,9 +306,9 @@ integrations/ros2/  ROS 2 node (quantum_mind_ros)        site/   project website
 The circuits of the quantum-like families run on simulators and, with credentials, on hardware:
 
 ```bash
-python3 examples/09_cloud_run.py --dry-run                                  # local, no account
-python3 examples/09_cloud_run.py --backend ibm:least_busy --shots 4000      # IBM Quantum
-python3 examples/09_cloud_run.py --backend braket:arn:aws:braket:us-east-1::device/qpu/ionq/Forte-1 --shots 1000
+python3 examples/06_cloud_run.py --dry-run                                  # local, no account
+python3 examples/06_cloud_run.py --backend ibm:least_busy --shots 4000      # IBM Quantum
+python3 examples/06_cloud_run.py --backend braket:arn:aws:braket:us-east-1::device/qpu/ionq/Forte-1 --shots 1000
 ```
 
 `run(circuit, backend)` accepts `aer`, `aer:<FakeBackend>`, `braket_local`, `braket_dm:<p>`, `ibm:<device>` and
@@ -323,7 +322,7 @@ results exactly as measured, with backend, date and job identifier.
 turns one robotics model into an installable package (`quantum-handover`): a robot arm decides before each
 hand-over whether to hand over, hand over slowly, ask or wait, using the quantum-like trust model. It has a
 benchmark against two populations of simulated people, a PyBullet simulation recorded as a GIF, a ROS 2 node, its
-own tests and a `requirements.txt`; tutorial 15 walks through it. Results are for simulated people only.
+own tests and a `requirements.txt`; tutorial 14 walks through it. Results are for simulated people only.
 
 <a id="status"></a>
 
@@ -331,7 +330,7 @@ own tests and a `requirements.txt`; tutorial 15 walks through it. Results are fo
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
-| Quantum-like models | 11 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
+| Quantum-like models | 4 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
 | COBRA belief filter | context-rotated density-matrix filter, online mode, Bayes and incoherent limits, benchmark with ablations and paired tests, figures | real-person data; reliable training (the context mechanism is found on some restarts only); analytic gradients |
 | Robotics | simulated populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, risk-aware decisions, calibration and conformal sets, orchestration gates, question planner, trust-aware hand-over and allocation, fusion, environments, `HumanModelService`, a ROS 2 node | a run of the ROS 2 node inside a ROS 2 installation (its callbacks are tested with stand-in modules); data from human-robot studies |
 | Simulator, circuits, viewer | exact simulator with adjoint gradients and Qiskit export, circuits of the families, trajectories, animations, interactive HTML, live widget, tomography, concurrence, Q-sphere | runs on hardware |
@@ -358,20 +357,17 @@ python3 docs/make_cobra_figures.py                # redraw the COBRA figures
 ## Limitations
 
 - Fitting aggregate counts assumes a homogeneous population. Individual differences can hide or mimic
-  quantum-like structure: in example 14 a pooled fit picks the quantum-like model for a population that is half
+  quantum-like structure: in example 11 a pooled fit picks the quantum-like model for a population that is half
   anchoring, and per-person comparison needs about 3,000 answers per person to tell the models apart.
-- Several quantum-like models have been challenged by further tests, for example the Grand Reciprocity equations
-  and conjunction-fallacy tests. The family READMEs list these.
+- Several quantum-like models have been challenged by further tests; the family READMEs list these.
 - COBRA's advantage is shown on **synthetic data built to contain a context effect**. With little training data it
   loses to the Bayes filter, training can miss the mechanism, and its coherence is a weak error signal.
 - Hardware noise distorts circuits by a few percent of total variation for small circuits, and more for deep ones.
 
 ## Data
 
-`quantum_mind.data` contains the only human data in the package, all of it published aggregates: the Clinton–Gore
-order effect (Moore, 2002), the Prisoner's Dilemma disjunction effect (Shafir and Tversky, 1992), the two-stage
-gamble (Tversky and Shafir, 1992) and the Linda problem (Tversky and Kahneman, 1983). Every other data set in the
-examples is simulated and labelled as such.
+`quantum_mind.data` contains the only human data in the package, a published aggregate: the Clinton–Gore order
+effect (Moore, 2002). Every other data set in the examples is simulated and labelled as such.
 
 ## Citing and licence
 

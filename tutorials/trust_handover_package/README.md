@@ -79,7 +79,7 @@ What this shows:
 
 What it does not show: how real people behave. Note also one property of the quantum-like trust
 model: every success and failure turns the trust state by a fixed angle, so right after a "yes" has made
-trust certain, a success lowers it and a following failure can raise it slightly (tutorial 15, section 4). Which population real people resemble is the question
+trust certain, a success lowers it and a following failure can raise it slightly (tutorial 14, section 4). Which population real people resemble is the question
 a user study has to answer; the population parameters here are illustrative, not fitted to data.
 
 ## Requirements

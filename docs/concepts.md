@@ -9,7 +9,7 @@ the others, because each makes a different claim and needs a different test.
 | **Mathematics** | Quantum probability: state vectors and density matrices, projectors, generalised measurements, interference, open-system dynamics | Gate-model circuits: unitaries, measurement, parameterised ansatz | Classical algorithms that borrow a quantum idea |
 | **Runs on** | Any computer (microseconds); optionally as a circuit | A quantum computer or a simulator of one | Any computer |
 | **The claim** | People's answers violate classical probability in ways quantum probability predicts | A circuit solves or learns the task (advantage is open and problem-specific) | The quantum idea gives a useful heuristic |
-| **How to test it** | Against classical cognitive models on human data: BIC, QQ equality, total-probability bounds, contextuality criteria | Against the exact answer and classical baselines; on hardware, against noise | Against classical heuristics with equal budgets |
+| **How to test it** | Against classical cognitive models on human data: BIC, QQ equality, total-probability bounds | Against the exact answer and classical baselines; on hardware, against noise | Against classical heuristics with equal budgets |
 | **In this library** | `quantum_mind.families`, `quantum_mind.belief`, `quantum_mind.applications` | Only the simulator and circuit exports needed to show and run the quantum-like models | Not included |
 
 Quantum computing algorithms (VQE, QAOA, Grover, quantum kernels) and quantum-inspired optimisers are
@@ -21,7 +21,7 @@ not duplicate them. It concentrates on the first column.
 ```mermaid
 flowchart LR
     subgraph QL[Quantum-like cognition]
-      F[11 model families<br/>order, conjunction, interference,<br/>QLBN, dynamics, QDT,<br/>contextuality, similarity, memory]
+      F[4 model families<br/>order effects, QLBN,<br/>trust dynamics, bistable perception]
       B[COBRA belief filter<br/>context-rotated measurement]
       R[robot decision layer<br/>questioning, trust, ensemble, ask or act]
     end
@@ -44,7 +44,7 @@ flowchart LR
 
 ## Choosing
 
-- Modelling **people** (answers, choices, trust, similarity)? Start with the quantum-like families and
+- Modelling **people** (answers, trust, perception) for a robot? Start with the quantum-like families and
   always fit the classical baselines next to them.
 - A robot reading a **stream of sensor frames** whose meaning depends on context? Try `COBRA` next to the
   Gaussian Bayes filter, and look at the ablations before believing a gain.

@@ -4,5 +4,4 @@ Each subpackage has a README.md describing the phenomenon, the models, the class
 circuit and the references. :data:`FAMILIES` lists them.
 """
 #: Names of the family subpackages.
-FAMILIES = ['order_effects', 'conjunction', 'interference', 'qlbn', 'dynamics', 'decision', 'contextuality', 'similarity',
-            'memory', 'concepts', 'perception']
+FAMILIES = ['order_effects', 'qlbn', 'dynamics', 'perception']
