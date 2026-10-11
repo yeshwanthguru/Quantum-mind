@@ -121,10 +121,6 @@ Coherence
   The off-diagonal part of a density matrix. COBRA reports its l1 value (the sum of the moduli of the
   off-diagonal entries) as a diagnostic.
 
-Density matrix
-  A Hermitian, positive semidefinite matrix of unit trace that describes a belief which may be a mixture;
-  its diagonal gives the probabilities of the hypotheses.
-
 Dephasing
   Loss of coherence: the off-diagonal entries shrink while the diagonal is unchanged.
 
