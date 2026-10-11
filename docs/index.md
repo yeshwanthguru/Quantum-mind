@@ -80,9 +80,15 @@ changes the answer to the next question, and asking someone whether they trust a
 filters assume the evidence arrives in independent pieces; quantum probability was built for the case where the order
 and the context of a measurement matter.
 
-"Quantum robotics" usually means using quantum computers to speed up robot algorithms. I think the nearer and more
-testable meeting point is the mathematics of quantum probability applied to the robot's **beliefs about people**:
-context, order and trust. So the library does not try to make robots faster with qubits. It asks one question and keeps
+Quantum robotics is a young field with at least three threads, and I think it helps to keep them apart: (1) **quantum
+computing for robot algorithms** (planning, optimisation, learning), which is promising on paper but has shown no
+practical advantage on real robot problems with today's noisy devices; (2) **quantum sensing for robots** (atomic and
+solid-state sensors for navigation, magnetometry, gravimetry), which is physical hardware beyond what a software library
+can offer; and (3) **quantum-probability models of the beliefs a robot holds about people** (context, order and trust),
+which run on ordinary computers and can be tested today. Quantum Mind is the third thread, and it keeps a bridge to the
+first: the circuits of its models run on simulators and on quantum hardware (Aer, IBM Quantum, Amazon Braket), so the same
+belief model can be executed on a quantum device if hardware makes that worthwhile. I claim no speed-up, and for the first
+thread I point people to Qiskit and PennyLane. So the library does not try to make robots faster with qubits. It asks one question and keeps
 asking it: does quantum probability describe human context better than the classical alternative, and does a robot
 decide better when it uses it? Every model sits next to the classical model it has to beat, with the ablation that
 isolates what is new.

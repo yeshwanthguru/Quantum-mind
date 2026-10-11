@@ -64,10 +64,17 @@
   question changes the answer to the next question, and asking someone whether they trust a robot changes their trust.
   Classical filters assume the evidence arrives in independent pieces; quantum probability was built for the case where
   the order and the context of a measurement matter.</p>
-  <p>&ldquo;Quantum robotics&rdquo; usually means using quantum computers to speed up robot algorithms. I think the
-  nearer and more testable meeting point is the mathematics of quantum probability applied to the robot's
-  <strong>beliefs about people</strong>: context, order and trust. So the library does not try to make robots faster
-  with qubits. It asks one question and keeps asking it: does quantum probability describe human context better than the
+  <p>Quantum robotics is a young field with at least three threads, and I think it helps to keep them apart:
+  (1) <strong>quantum computing for robot algorithms</strong> (planning, optimisation, learning), promising on paper but
+  with no practical advantage shown on real robot problems with today's noisy devices; (2)
+  <strong>quantum sensing for robots</strong> (atomic and solid-state sensors for navigation, magnetometry, gravimetry),
+  which is physical hardware beyond what a software library can offer; and (3)
+  <strong>quantum-probability models of the beliefs a robot holds about people</strong> (context, order and trust),
+  which run on ordinary computers and can be tested today.</p>
+  <p>Quantum Mind is the third thread, and it keeps a bridge to the first: the circuits of its models run on simulators
+  and on quantum hardware (Aer, IBM Quantum, Amazon Braket), so the same belief model can be executed on a quantum
+  device if hardware makes that worthwhile. I claim no speed-up, and for the first thread I point people to Qiskit and
+  PennyLane. So the library does not try to make robots faster with qubits. It asks one question and keeps asking it: does quantum probability describe human context better than the
   classical alternative, and does a robot decide better when it uses it? Every model sits next to the classical model it
   has to beat.</p>
   <p>I removed the general-purpose quantum algorithms and optimisers, because Qiskit, PennyLane and optimisation

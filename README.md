@@ -51,10 +51,19 @@ means, a question changes the answer to the next question, and asking someone wh
 their trust. Classical filters assume the evidence arrives in independent pieces. Quantum probability was built
 for exactly the case where the order and the context of a measurement matter.
 
-"Quantum robotics" usually means using quantum computers to speed up robot algorithms. I think the nearer and more
-testable meeting point of quantum physics and robotics is the mathematics of quantum probability applied to the
-robot's **beliefs about people**: context, order and trust. So this library does not try to make robots faster
-with qubits. It asks one question and keeps asking it: *does quantum probability describe human context better
+Quantum robotics is a young field with at least three threads, and I think it helps to keep them apart:
+
+1. **Quantum computing for robot algorithms**: planning, optimisation and learning on quantum hardware. It is
+   promising on paper, but no practical advantage has been shown on real robot problems with today's noisy devices.
+2. **Quantum sensing for robots**: atomic and solid-state sensors for navigation, magnetometry and gravimetry. That is
+   physical hardware, beyond what a software library can offer.
+3. **Quantum-probability models of the beliefs a robot holds about people**: context, order and trust. These run on
+   ordinary computers today and can be tested today.
+
+Quantum Mind is the third thread, and it keeps a bridge to the first: the circuits of its models run on simulators
+and on quantum hardware (Aer, IBM Quantum, Amazon Braket), so the same belief model can be executed on a quantum
+device if and when hardware makes that worthwhile. I deliberately claim no speed-up. For the first thread I point
+people to Qiskit and PennyLane, which do it better. So this library does not try to make robots faster with qubits. It asks one question and keeps asking it: *does quantum probability describe human context better
 than the classical alternative, and does a robot decide better when it uses it?* Every model is therefore built
 next to the classical model it has to beat, with the ablation that isolates what is new.
 
