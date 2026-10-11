@@ -1,6 +1,49 @@
 # Changelog
 
-## Unreleased
+## 3.0.0 (unreleased)
+
+Version 3.0 narrows the library to what is specific to quantum cognition in robotics and adds its first
+original model.
+
+### Added
+
+- `quantum_mind.belief`: **COBRA**, a context-rotated density-matrix belief filter. Each sensor frame updates the
+  belief with a generalised measurement `M = U(x_prev) diag(w(x)) U(x_prev)^dagger`, followed by partial
+  dephasing, so what a reading means depends on the previous frame. With no rotation it is a Bayes filter, and
+  with full dephasing it is a classical incoherent context filter; the tests check both limits exactly. Also
+  `OnlineBelief` (one frame at a time, as on a robot), `GaussianBayesFilter` (the classical reference) and
+  `min_cost_action` (belief and cost matrix to action, with an "ask" row to hedge).
+- `benchmarks/context_intent_benchmark.py`: a synthetic intent task with a context effect and a control task
+  without one, an oracle, logistic-regression and MLP baselines, an ablation without coherence, stress tests
+  (noise, dropout) and a paired sign-flip test; the results are in `benchmarks/results/context_intent/`.
+- Tutorial 10 and example 21 for COBRA, a COBRA math page, atlas entries and figures
+  (`docs/make_cobra_figures.py`).
+
+### Removed (breaking)
+
+General-purpose algorithms that Qiskit, PennyLane and optimisation libraries already provide were removed so
+that the library contains only quantum cognition for robotics:
+
+- `quantum_mind.quantum`: the variational classifier and regressor, quantum kernels, QAOA, VQE, Grover, the
+  quantum Fourier transform, amplitude estimation, quantum walks, the variational policy, the quanvolutional
+  filter and the ansatz helpers. The state-vector simulator (`Circuit`) stays, because the viewer and the circuit
+  exports use it.
+- `quantum_mind.inspired` (QIEA, QPSO, simulated quantum annealing, the MPS classifier, tensor-train layers,
+  quantum-inspired reinforcement learning and exploration, the quantum language model).
+- `quantum_mind.problems`: the max-cut, knapsack, portfolio and generic task-allocation builders and
+  `from_ising`. The `Qubo` container stays for trust-aware task allocation.
+- `quantum_mind.families.game_theory` (quantum games) and `quantum_mind.envs.GridWorldEnv`.
+- Examples 13 to 18, 23, 26 to 31, 35, 37, the finance and consumer-choice examples, tutorials 10 to 14, the
+  Foundations pages on general robotics, AI, machine learning, deep learning, reinforcement learning,
+  perception, embodied AI, quantum computing and quantum-inspired algorithms, and the matching atlas entries,
+  math pages and website results. Examples and tutorials were renumbered (21 examples, 15 tutorials).
+
+### Changed
+
+- The package description, README, website and documentation are rewritten around three layers: quantum-like
+  human models, the COBRA belief filter and the robot decision layer.
+
+### Also in this release (previously unreleased)
 
 - Every people model gains three tools that the source papers do not provide:
   `quantum_mind.core.bootstrap` (parameter and predictive intervals),
@@ -20,7 +63,7 @@
   references after merging duplicates and resolving short citations), judges each Crossref match by
   first author and year, and builds `references.bib` from confirmed matches, marking the rest as
   unverified.
-- `tutorials/trust_handover_package` (`quantum-handover` 0.1.0) and tutorial 19: the trust-aware
+- `tutorials/trust_handover_package` (`quantum-handover` 0.1.0) and tutorial 15: the trust-aware
   hand-over as an installable package, with populations of simulated people, a benchmark (each trust
   model wins on the people who behave like it; the quantum-like policy loses 5.7 when wrong against
   17.1 for the Markov policy), a PyBullet simulation of a KUKA arm recorded as a GIF, a ROS 2 node over
@@ -43,9 +86,6 @@
 - `OnlinePersonModel` moves particles by Metropolis-Hastings after resampling (resample-move); the first
   version used a kernel jitter whose 95% intervals covered the truth in only about a third of
   simulated people. It accepts a full prior covariance (`prior_cov`).
-- Example 37: a robot that adapts to each person (simulated people). In it, agents trained against one
-  simulated person or a population scored the same on new people; the population option is reported
-  as a safeguard, not a gain.
 
 ## 2.0.1 (7 October 2026)
 

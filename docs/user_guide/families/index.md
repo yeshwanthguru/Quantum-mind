@@ -14,7 +14,6 @@ references.
 | [decision](decision.md) | Risky choice | `QDTModel` | expected utility, prospect theory |
 | [contextuality](contextuality.md) | Is there one joint distribution? | CHSH, Contextuality-by-Default | classical bounds |
 | [similarity](similarity.md) | Asymmetric similarity | `QuantumSimilarityModel` | biased geometric, geometric |
-| [game theory](game_theory.md) | Strategic choice with shared quantum resources | `EWLGame` | classical Nash equilibria |
 | [memory](memory.md) | Episodic overdistribution | `QuantumEpisodicModel` | additive (verbatim plus gist) |
 | [concepts](concepts.md) | Overextension in concept combination | `FockSpaceConceptModel` | product, minimum, weighted average |
 | [perception](perception.md) | Bistable perception (dwell times of ambiguous figures) | `QuantumZenoBistableModel` | Markov switching, gamma renewal |
@@ -30,7 +29,6 @@ dynamics
 decision
 contextuality
 similarity
-game_theory
 memory
 concepts
 perception

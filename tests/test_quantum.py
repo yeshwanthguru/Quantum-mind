@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 from quantum_mind.quantum import Circuit, W, X, XX
 
 

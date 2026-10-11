@@ -7,11 +7,11 @@ html_theme.sidebar_secondary.remove: true
 ```{raw} html
 <div class="qm-hero">
 <img class="banner" src="_static/assets/banner.svg" alt="quantum-mind banner">
-<h1>Quantum-like, quantum and quantum-inspired models, compared on the same problems.</h1>
-<p class="lead"><strong>Quantum Mind</strong> is an open-source Python library for robots and AI agents that work with
-people. It models how people judge, decide and trust with quantum probability, always next to the classical
-models it has to beat; runs quantum machine learning and algorithms as Qiskit circuits; provides
-quantum-inspired optimisers and learners; and shows every qubit moving on a 3D Bloch sphere.</p>
+<h1>Quantum-probability cognition for robots that work with people.</h1>
+<p class="lead"><strong>Quantum Mind</strong> is an open-source Python library that models how people judge, decide and
+trust, and how a robot should read them, with quantum probability: projections, interference, density matrices and
+generalised measurements. Every model sits next to the classical model it has to beat, and every belief ends in a
+cost-aware decision: hand over, wait, or ask.</p>
 </div>
 ```
 
@@ -33,31 +33,31 @@ pip install "quantum-mind[all]"
 ::::{grid} 1 2 2 4
 :gutter: 3
 
-:::{grid-item-card} Quantum-like
+:::{grid-item-card} Quantum-like human models
 :class-card: pillar-like
 :link: user_guide/families/index
 :link-type: doc
 
-Models of human judgement, decision and trust in quantum probability, each with classical
-baselines and a distinctive test. Twelve families.
+How people judge, decide and trust, in quantum probability, each with classical baselines and a
+distinctive test. Eleven families.
 :::
 
-:::{grid-item-card} Quantum
+:::{grid-item-card} COBRA belief filter
 :class-card: pillar-quantum
-:link: user_guide/quantum
+:link: user_guide/belief
 :link-type: doc
 
-Gate-model machine learning and algorithms: classifiers, kernels, QAOA, VQE, Grover, QFT,
-amplitude estimation and quantum walks.
+A density-matrix belief whose measurement basis is rotated by the previous sensor frame, so what a
+reading means depends on what came before it.
 :::
 
-:::{grid-item-card} Quantum-inspired
+:::{grid-item-card} Robot decision layer
 :class-card: pillar-inspired
-:link: user_guide/inspired
+:link: user_guide/robotics
 :link-type: doc
 
-Classical algorithms that borrow quantum ideas: QIEA, QPSO, simulated quantum annealing, tensor
-networks, reinforcement learning and ranking.
+Ask or act, question planning, calibration and conformal sets, fusion, trust-aware hand-over and
+allocation, and a ROS 2 node.
 :::
 
 :::{grid-item-card} Bloch-sphere viewer
@@ -69,6 +69,24 @@ Watch qubits move: gate-by-gate trajectories, animations, interactive HTML, live
 tomography on real back ends.
 :::
 ::::
+
+## What is new in this library
+
+Classical filters treat evidence as arriving in neutral, independent pieces. People and robots do not: a look
+changes what a hand movement means, a question changes the answer to the next one, and asking about trust
+changes trust. The quantum-probability formalism represents exactly this, and Quantum Mind turns it into
+tested code:
+
+* **COBRA**, a belief filter whose generalised measurement is rotated by the previous frame, with the Bayes
+  filter and an incoherent filter as built-in limits so the effect of context and the effect of coherence can be
+  separated. On a synthetic task with a context effect it beats classical filters given enough data, and it
+  ties them where context does not matter; the benchmark, the ablations and the cases where it loses are
+  reported in full.
+* **Trust as an open quantum system**, an **order-aware** hand-over policy and a **value-of-information
+  question planner** whose answers depend on the order of the questions.
+* A decision layer that never reports a belief without a cost, a calibration check and a classical baseline.
+
+It runs on ordinary computers and claims no quantum computational advantage.
 
 ## See the qubits
 
@@ -90,111 +108,6 @@ save_html(animate_bloch(circuit_trajectory(qc, steps=15)), 'bell.html')
 The [two-qubit playground](https://yeshwanthguru.github.io/Quantum-mind/#playground-section)
 runs the same simulation in the browser.
 
-## Learn the foundations
-
-New to some of these fields? Each tab is a short start; the full pages explain the terms from the
-basics, with diagrams, runnable examples and references.
-
-::::{tab-set}
-
-:::{tab-item} Robotics
-:sync: robotics
-
-A robot **senses**, **decides** and **acts**, in a loop, in real time. Kinematics maps joint angles to
-positions, controllers turn errors into motor commands, filters keep a belief about the robot's state,
-planners choose actions, and middleware such as ROS 2 connects the parts. Robots that work with people
-also need models of what people want and how much they trust the robot.
-
-{bdg-primary}`kinematics` {bdg-primary}`control` {bdg-primary}`state estimation` {bdg-primary}`planning` {bdg-primary}`HRI` {bdg-primary}`ROS 2`
-
-[Read: Robotics](learn/robotics.md) · [Tutorial: when to ask for help](tutorials/04_ask_or_act.ipynb)
-:::
-
-:::{tab-item} AI
-:sync: ai
-
-Artificial intelligence designs **agents** that choose actions to reach goals: search, reasoning with
-probability, decision theory and the value of information. Machine learning, deep learning and
-reinforcement learning are ways to build parts of an agent from data.
-
-{bdg-secondary}`agents` {bdg-secondary}`Bayes' rule` {bdg-secondary}`expected utility` {bdg-secondary}`value of information` {bdg-secondary}`LLMs and VLMs`
-
-[Read: Artificial intelligence](learn/ai.md) · [Tutorial: planning which question to ask](tutorials/07_question_planner.ipynb)
-:::
-
-:::{tab-item} Machine learning
-:sync: ml
-
-Fit a model's parameters to data and judge it on data it has not seen. Likelihood, model comparison by
-AIC and BIC, partial pooling across people, calibration of confidence and kernel methods, all of which
-the library uses.
-
-{bdg-info}`likelihood` {bdg-info}`BIC` {bdg-info}`partial pooling` {bdg-info}`calibration` {bdg-info}`conformal sets` {bdg-info}`kernels`
-
-[Read: Machine learning](learn/machine_learning.md) · [Tutorial: calibration](tutorials/05_calibration.ipynb)
-:::
-
-:::{tab-item} Deep learning
-:sync: dl
-
-Neural networks with many layers learn features from raw data, trained by backpropagation. Their
-softmax confidences are often over-confident, and large networks must be compressed for robots. The
-library recalibrates their outputs, fuses them, and offers tensor-train compression and quanvolution.
-
-{bdg-warning}`neural networks` {bdg-warning}`backpropagation` {bdg-warning}`CNNs` {bdg-warning}`transformers` {bdg-warning}`compression`
-
-[Read: Deep learning](learn/deep_learning.md) · [Tutorial: tensor trains](tutorials/12_tensor_train.ipynb)
-:::
-
-:::{tab-item} Reinforcement learning
-:sync: rl
-
-Learn what to do from reward: Markov decision processes, value functions, Q-learning, exploration and
-policy gradients. The library ships Gymnasium environments with simulated people, amplitude
-exploration and a variational quantum policy.
-
-{bdg-success}`MDP` {bdg-success}`Q-learning` {bdg-success}`exploration` {bdg-success}`REINFORCE` {bdg-success}`Gymnasium`
-
-[Read: Reinforcement learning](learn/reinforcement_learning.md) · [Tutorial: RL with simulated people](tutorials/10_rl_environments.ipynb)
-:::
-
-:::{tab-item} Perception
-:sync: perception
-
-Turn camera, microphone and gaze signals into objects, words and intentions, each with a trustworthy
-confidence, and fuse several uncertain sources. Includes multistable perception and the quantum Zeno
-model.
-
-{bdg-danger}`detection` {bdg-danger}`calibration` {bdg-danger}`sensor fusion` {bdg-danger}`Dempster-Shafer` {bdg-danger}`bistable perception`
-
-[Read: Perception and vision](learn/perception.md) · [Tutorial: fusing vision, speech and gaze](tutorials/08_fusion.ipynb)
-:::
-
-:::{tab-item} Embodied AI
-:sync: embodied
-
-Agents with bodies that perceive and act in the world, trained in simulation and transferred to real
-robots, increasingly driven by foundation models. When people are in the loop, the agent's own
-questions change the person; that is where quantum-like models of people come in.
-
-{bdg-primary-line}`embodiment` {bdg-primary-line}`sim-to-real` {bdg-primary-line}`VLA models` {bdg-primary-line}`behaviour trees` {bdg-primary-line}`interaction`
-
-[Read: Embodied AI](learn/embodied_ai.md) · [Tutorial: trust on a qubit](tutorials/03_trust_on_a_qubit.ipynb)
-:::
-
-:::{tab-item} Quantum
-:sync: quantum
-
-Quantum computing (qubits, gates, entanglement, variational algorithms), quantum-like cognition (the
-mathematics of quantum probability applied to human judgement) and quantum-inspired algorithms
-(classical heuristics that borrow quantum ideas).
-
-{bdg-secondary-line}`qubits` {bdg-secondary-line}`QAOA` {bdg-secondary-line}`order effects` {bdg-secondary-line}`QQ test` {bdg-secondary-line}`tensor networks`
-
-[Quantum computing](learn/quantum_computing.md) · [Quantum-like cognition](learn/quantum_cognition.md) · [Quantum-inspired algorithms](learn/quantum_inspired.md)
-:::
-::::
-
 ## Where to go next
 
 ::::{grid} 1 2 3 3
@@ -207,18 +120,18 @@ mathematics of quantum probability applied to human judgement) and quantum-inspi
 Install, then fit, compare and simulate in a few lines.
 :::
 
-:::{grid-item-card} {fas}`graduation-cap` Foundations
+:::{grid-item-card} {fas}`graduation-cap` Background
 :link: learn/index
 :link-type: doc
 
-Robotics, AI, machine learning, deep learning, RL, perception, embodied AI and quantum, from the basics.
+Quantum-like cognition from the basics: projections, order effects, interference.
 :::
 
 :::{grid-item-card} {fas}`person-chalkboard` Tutorials
 :link: tutorials/index
 :link-type: doc
 
-Nineteen step-by-step tutorials, from the introduction to every model, with real outputs and figures.
+Fifteen step-by-step tutorials, from the introduction to the COBRA filter and a robot loop, with real outputs and figures.
 :::
 
 :::{grid-item-card} {fas}`diagram-project` Model atlas
@@ -232,21 +145,21 @@ A block diagram for every model: inputs, internals, outputs, baselines and refer
 :link: math/index
 :link-type: doc
 
-The equations of every model, as the code computes them, from the Born rule to QAOA.
+The equations of every model, as the code computes them, from the Born rule to COBRA.
 :::
 
 :::{grid-item-card} {fas}`book` User guide
 :link: user_guide/index
 :link-type: doc
 
-The three pillars, every model family, circuits, hardware and the viewer.
+The layers, every model family, circuits, hardware and the viewer.
 :::
 
 :::{grid-item-card} {fas}`images` Example gallery
 :link: auto_examples/index
 :link-type: doc
 
-37 runnable scripts across surveys, finance, medicine, robotics, perception, learning, physics and networks.
+21 runnable scripts on quantum-like models, COBRA, robotics, perception and the viewer.
 :::
 
 :::{grid-item-card} {fas}`laptop-code` Notebooks

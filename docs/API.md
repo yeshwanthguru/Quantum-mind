@@ -216,32 +216,6 @@ Similarity judgements and asymmetry (see README.md in this folder).
   - `predict(self, design=None)`: Similarity of each ordered pair ``(A, B)``.
   - `projectors(self)`: Projector of each concept subspace.
 
-## `quantum_mind.families.game_theory`
-
-Quantum games (EWL protocol) with the classical game as baseline (see README.md in this folder).
-
-- `C` (constant)
-- `CHICKEN` (constant)
-- `classical_nash_equilibria(payoffs=array([[[3., 3.],
-        [0., 5.]],
-
-       [[5., 0.],
-        [1., 1.]]]), tol=1e-12)`: Nash equilibria of the classical 2 x 2 game.
-- `D` (constant)
-- **class `EWLGame(payoffs=array([[[3., 3.],
-        [0., 5.]],
-
-       [[5., 0.],
-        [1., 1.]]]), gamma=1.5707963267948966)`**: Two-player quantum game (EWL protocol).
-  - `best_response(self, U_other, player='A', grid=61, phases=True, three_parameter=False)`: Best response to a fixed strategy, by grid search.
-  - `is_nash(self, UA, UB, **kw)`: Check whether a strategy pair is a Nash equilibrium on the grid.
-  - `outcome_probabilities(self, UA, UB)`: Probabilities of the four outcomes.
-  - `payoff(self, UA, UB)`: Expected payoffs.
-- `PRISONERS_DILEMMA` (constant)
-- `Q` (constant)
-- `STAG_HUNT` (constant)
-- `strategy(theta, phi=0.0)`: EWL two-parameter strategy.
-
 ## `quantum_mind.families.memory`
 
 Episodic memory: overdistribution, quantum versus additive classical model (see README.md).
@@ -447,17 +421,28 @@ Multimodal fusion for robots: from detector scores, speech and gaze to one belie
 - `direction_likelihood(direction, targets, hypotheses, kappa=5.0, floor=0.001)`: Likelihood over hypotheses from a gaze or pointing direction (von Mises-Fisher).
 - `fit_incompatibility(resolver_cls, intents, cue_likelihoods, trials, prior=None, bounds=(0.0, 1.5707963267948966))`: Fit the incompatibility angle of each cue of a quantum-like resolver from logged choices.
 
+## `quantum_mind.belief`
+
+Belief filters that keep a robot's belief about a person as a density matrix.
+
+- **class `BeliefTrace(probs: 'np.ndarray', coherence: 'np.ndarray', rho: 'np.ndarray') -> None`**: Per-frame outputs of a COBRA forward pass.
+- **class `COBRA(n_hyp=3, n_features=3, *, beta=2.0, steps=100, batch=160, lr=0.1, l2=0.0001, restarts=4, seed=0)`**: Context-rotated density-matrix belief filter (see the module docstring for the equations).
+  - `coherence(self, x)`: l1 coherence of the final belief (0 for a classical belief), shape (N,).
+  - `fit(self, x, y)`: Train on sequences ``x`` of shape (N, T, n_features) and integer labels ``y`` of shape (N,).
+  - `predict_proba(self, x)`: Hypothesis probabilities after the last frame, shape (N, d).
+  - `start(self)`: Begin an :class:`OnlineBelief` for streaming use.
+  - `trace(self, x)`: Probabilities, coherence and density matrix after every frame (a :class:`BeliefTrace`).
+- **class `GaussianBayesFilter(n_hyp=3)`**: Commutative naive-Bayes filter with independent Gaussian features per hypothesis.
+  - `fit(self, x, y)`:
+  - `predict_proba(self, x)`:
+- `min_cost_action(probs, cost)`: Action with minimum expected cost under a belief.
+- **class `OnlineBelief(model, rho, prev)`**: A COBRA belief updated one frame at a time, as a robot would run it.
+  - `update(self, frame)`: Fold one sensor frame into the belief and return the new probabilities.
+
 ## `quantum_mind.quantum`
 
-Quantum models: quantum machine learning and quantum algorithms (gate-model circuits).
+Quantum state-vector simulator used by the Bloch-sphere viewer and the circuit exports.
 
-- `adjacency(edges, n=None, directed=False, weights=None)`: Adjacency matrix from an edge list.
-- **class `AEResult(estimate: 'float', exact: 'float', oracle_calls: 'int', powers: 'list', hits: 'list', shots: 'int') -> None`**: Result of :meth:`AmplitudeEstimation.run`.
-- **class `AmplitudeEstimation(probabilities, payoff)`**: Maximum-likelihood amplitude estimation of an expected payoff.
-  - `good_probability(self, m)`: Probability of measuring the ancilla in :math:`|1\rangle` after :math:`Q^m A`.
-  - `run(self, powers=(0, 1, 2, 4, 8, 16), shots=100, rng=None)`: Sample measurements at several powers and return the maximum-likelihood estimate.
-  - `to_qiskit(self, m=0, measure=True)`: Qiskit circuit for :math:`Q^m A`.
-- `angle_encoding(n_features, n_qubits=None, scale=1.0, circ=None)`: Angle encoding: RY(scale * x_j) on qubit j.
 - `apply_matrix(state, M, qubits, n)`: Apply a k-qubit matrix to a batch of states.
 - **class `Circuit(n)`**: Parameterised quantum circuit with a batched simulator.
   - `compose(self, other)`: Append the gates of another circuit.
@@ -482,183 +467,10 @@ Quantum models: quantum machine learning and quantum algorithms (gate-model circ
   - `x(self, q)`: Pauli X on qubit ``q``.
   - `y(self, q)`: Pauli Y on qubit ``q``.
   - `z(self, q)`: Pauli Z on qubit ``q``.
-- `ctqw_probabilities(A, t, start=None)`: Occupation probabilities of a continuous-time quantum walk.
-- `degree_centrality(A)`: Normalised degree centrality.
 - `expectation_z(psi, q, n)`: Expectation of Pauli Z on one qubit.
-- `extract_patches(images, size=2, stride=2)`: Cut images into square patches.
-- `find_period(n, r, offset=0, shots=None, rng=None)`: Recover a period with the QFT.
-- `grover(n, marked, iterations=None)`: Grover search.
-- **class `GroverResult(probabilities: 'np.ndarray', iterations: 'int', marked: 'list', success: 'float', circuit: 'Circuit' = None, n: 'int' = 0) -> None`**: Result of :func:`grover`.
-  - `to_qiskit(self, measure=True, style='gates')`: Qiskit circuit of the search.
-- **class `Hamiltonian(terms)`**: Sum of weighted Pauli strings.
-  - `expectation(self, psi)`: Energy expectation of a batch of states.
-  - `ground_energy(self)`: Exact ground-state energy (dense diagonalisation).
-- `hardware_efficient(n_qubits, layers=2, start=0, circ=None, entangle='ring', rotations=('ry', 'rz'), entangler='cz')`: Hardware-efficient ansatz.
-- `monte_carlo_estimate(probabilities, payoff, samples, rng=None)`: Classical Monte Carlo baseline.
-- `pagerank(A, damping=0.85, tol=1e-12, max_iter=1000)`: Classical PageRank by power iteration.
-- `parameter_shift(f, w, shift=1.5707963267948966)`: Exact gradient by the parameter-shift rule.
-- `pauli_matrix(label)`: Matrix of a Pauli string.
-- `periodic_state(n, r, offset=0)`: Uniform superposition over a periodic set of basis states.
-- **class `QAOA(qubo, p=2, restarts=6, maxiter=300, seed=0)`**: Quantum Approximate Optimisation Algorithm (Farhi, Goldstone and Gutmann, 2014).
-  - `expectation(self, w)`: Expected QUBO energy of the QAOA state.
-  - `run(self)`: Optimise the angles and sample the result.
-  - `to_qiskit(self, result, measure=True)`: Qiskit circuit with optimised angles bound.
-- **class `QAOAResult(x: 'np.ndarray', energy: 'float', expectation: 'float', probabilities: 'np.ndarray', gammas: 'np.ndarray', betas: 'np.ndarray', circuit: 'Circuit' = None, optimum: 'float' = None, p_optimal: 'float' = 0.0, weights: 'np.ndarray' = None) -> None`**: Result of :meth:`QAOA.run`.
-- `qft_circuit(n, inverse=False, swaps=True)`: Circuit for the QFT or its inverse.
-- `qft_matrix(n)`: The QFT as a matrix.
-- `quantum_walk_centrality(A, start=None, tol=1e-09)`: Quantum-walk centrality: infinite-time average of the occupation probabilities.
-- **class `QuantumKernel(reps=2, scale=1.0)`**: Fidelity quantum kernel with the ZZ feature map (Havlíček et al., 2019).
-  - `fit(self, X)`: Fit the feature scaling and build the feature map.
-  - `states(self, X)`: Feature-map states.
-  - `to_qiskit(self, x1, x2)`: Compute-uncompute circuit whose all-zeros probability is ``k(x1, x2)``.
-- **class `QuantumKernelAnomalyDetector(kernel='quantum', reps=1, scale=0.5, gamma=0.5, quantile=0.95)`**: Kernel anomaly detector (distance to the mean in feature space).
-  - `fit(self, X)`: Learn the normal data.
-  - `predict(self, X)`: Anomaly labels.
-  - `score_samples(self, X)`: Anomaly score of each sample (higher is more anomalous).
-- **class `QuantumKernelClassifier(reps=2, scale=1.0, ridge=0.01)`**: Kernel ridge classifier on the quantum kernel (one-versus-rest, targets +-1).
-  - `decision_function(self, X)`: Scores per class (one-versus-rest).
-  - `fit(self, X, y)`: Solve the kernel ridge system.
-  - `predict(self, X)`: Class with the highest score for each sample.
-  - `score(self, X, y)`: Accuracy on ``(X, y)``.
-- **class `QuantumKernelClustering(n_clusters=2, kernel='quantum', reps=1, scale=0.5, gamma=0.5, restarts=10, seed=0)`**: Spectral clustering on a kernel.
-  - `fit_predict(self, X)`: Cluster the samples.
-- **class `QuanvolutionFilter(size=2, stride=2, layers=1, seed=0)`**: Fixed random quantum circuit applied to every image patch.
-  - `to_qiskit(self, patch, measure=True)`: Qiskit circuit for one patch.
-  - `transform(self, images)`: Apply the filter.
-- **class `RandomConvFilter(size=2, stride=2, channels=None, seed=0)`**: Classical baseline: random linear filters on the same patches, followed by :math:`\tanh`.
-  - `transform(self, images)`: Apply the filters.
-- `rbf_kernel(X1, X2=None, gamma=1.0)`: Classical Gaussian (RBF) kernel, the baseline for the quantum kernel.
-- `reinforce(policy, env, episodes, features, gamma=0.99, batch=5, seed=0)`: Train a policy with REINFORCE on an environment with the Gymnasium interface.
-- `reuploading_classifier_circuit(n_features, n_qubits, layers, reupload=True)`: Data re-uploading classifier circuit (Pérez-Salinas et al., Quantum 4, 226, 2020).
-- **class `VariationalClassifier(layers=3, n_qubits=None, reupload=True, l2=0.001, maxiter=200, seed=0)`**: Variational quantum classifier with data re-uploading.
-  - `fit(self, X, y)`: Train the classifier.
-  - `predict(self, X)`: Most probable class for each sample.
-  - `predict_proba(self, X)`: Class probabilities.
-  - `score(self, X, y)`: Accuracy.
-  - `to_qiskit(self, x, measure=True)`: Circuit for one input sample, with the trained weights bound.
-- **class `VariationalPolicy(n_features, n_actions, layers=2, n_qubits=None, scale=1.0, lr=0.1, seed=0)`**: Softmax-free quantum policy: Born-rule action probabilities of a re-uploading circuit.
-  - `act(self, state)`: Sample an action.
-  - `probabilities(self, states)`: Action probabilities.
-  - `to_qiskit(self, state, measure=True)`: Qiskit circuit of the policy for one state.
-  - `update(self, states, actions, advantages)`: One policy-gradient step on a batch of (state, action, advantage).
-- **class `VariationalRegressor(layers=3, n_qubits=None, reupload=True, l2=0.001, maxiter=200, seed=0)`**: Variational (data re-uploading) regressor.
-  - `fit(self, X, y)`: Train the regressor.
-  - `predict(self, X)`: Predicted values.
-  - `score(self, X, y)`: Coefficient of determination :math:`R^2`.
-  - `to_qiskit(self, x, measure=True)`: Circuit for one input with the trained weights bound; ``<Z_0>`` gives the prediction.
-- **class `VQE(hamiltonian, layers=2, restarts=4, maxiter=400, seed=0, rotations=('ry', 'rz'), entangle='linear', entangler='cx')`**: Variational Quantum Eigensolver (Peruzzo et al., Nature Communications 5, 4213, 2014).
-  - `energy(self, w)`: Energy of the ansatz state.
-  - `run(self)`: Optimise from several random starts.
-  - `to_qiskit(self, measure=True)`: Qiskit circuit of the optimised ansatz.
 - **class `W(k: 'int', scale: 'float' = 1.0) -> None`**: Trainable weight as a gate angle.
 - **class `X(j: 'int', scale: 'float' = 1.0, shift: 'float' = 0.0) -> None`**: Input feature as a gate angle.
 - **class `XX(i: 'int', j: 'int', a: 'float' = 3.141592653589793, scale: 'float' = 1.0) -> None`**: Product feature used by ZZ feature maps.
-- `zz_feature_map(n_features, reps=2, circ=None)`: Second-order Pauli-Z feature map (Havlíček et al., Nature 567, 209-212, 2019).
-
-## `quantum_mind.inspired`
-
-Quantum-inspired models: classical algorithms that borrow quantum ideas. No quantum computer is used.
-
-- **class `AmplitudeExploration(n_states, n_actions, k=2.0, max_step=0.3, floor=0.02, seed=0)`**: Quantum-inspired exploration by action amplitudes (Born-rule sampling, TD-driven rotation).
-  - `choose(self, q, s, agent)`: Sample an action with probability :math:`|\psi_a|^2`.
-  - `end_episode(self)`: Nothing to decay: exploration fades as amplitudes concentrate.
-  - `update(self, s, a, td_error, q=None)`: Rotate the chosen action's amplitude by ``clip(k * advantage, ±max_step)``.
-- `apply_mlp(layers, X, activation=<ufunc 'tanh'>)`: Forward pass of a (possibly compressed) multilayer perceptron.
-- **class `Boltzmann(temperature=0.5, decay=0.99, min_temperature=0.01, seed=0)`**: Softmax (Boltzmann) exploration with a decaying temperature.
-  - `choose(self, q, s, agent)`: Sample from the softmax of the action values.
-  - `end_episode(self)`: Decay the temperature.
-- `compress_layers(layers, max_rank=8, d=3, min_size=256)`: Compress the weight matrices of a multilayer perceptron.
-- **class `EpsilonGreedy(epsilon=0.3, decay=0.99, min_epsilon=0.01, seed=0)`**: Random action with probability epsilon, otherwise greedy; epsilon decays per episode.
-  - `choose(self, q, s, agent)`: Choose an action from the value row ``q`` of state ``s``.
-  - `end_episode(self)`: Decay epsilon.
-  - `update(self, s, a, td_error, q=None)`: No exploration state to update.
-- `factorise(n, d)`: Split an integer into ``d`` factors that are as equal as possible.
-- **class `GridWorld(size=6, walls=frozenset({(2, 3), (1, 1), (3, 1), (4, 4)}), step_reward=0.0, max_steps=200)`**: Deterministic grid world.
-  - `reset(self)`: Return to the start cell.
-  - `shortest_path(self)`: Length of the shortest path from start to goal (breadth-first search).
-  - `step(self, a)`: Take one action.
-- **class `MPSClassifier(bond=6, local_dim=2, epochs=60, lr=0.02, batch=32, seed=0, method='adam', sweeps=6, steps=40, sweep_lr=0.05, cutoff=1e-10)`**: Matrix product state classifier.
-  - `fit(self, X, y)`: Train the classifier.
-  - `predict(self, X)`: Most probable class for each sample.
-  - `predict_proba(self, X)`: Class probabilities (softmax of the MPS scores).
-  - `score(self, X, y)`: Accuracy.
-- **class `OptimResult(x: 'np.ndarray', value: 'float', history: 'list' = <factory>, evaluations: 'int' = 0) -> None`**: Result of an optimiser.
-- **class `QIEA(problem, n=None, pop=20, generations=300, rotation='lookup', delta=0.031415926535897934, migrate_every=20, groups=4, seed=0)`**: Quantum-inspired evolutionary algorithm for binary minimisation.
-  - `run(self)`: Run the evolutionary search.
-- **class `QLearning(n_states, n_actions, alpha=0.1, gamma=0.95, epsilon=0.2, decay=0.995, seed=0)`**: Classical baseline: tabular Q-learning with decaying epsilon-greedy exploration.
-  - `act(self, s)`: Epsilon-greedy action (ties broken at random).
-  - `greedy(self, s)`: Greedy action.
-  - `update(self, s, a, r, s2, done)`: Q-learning update; epsilon decays at the end of each episode.
-- **class `QPSO(f, lower, upper, particles=30, iterations=300, beta0=1.0, beta1=0.5, seed=0)`**: Quantum-behaved particle swarm optimisation for continuous minimisation on a box.
-  - `run(self)`: Run the swarm.
-- **class `QuantumInspiredQLearning(n_states, n_actions, alpha=0.2, gamma=0.95, k=2.0, max_step=0.3, floor=0.02, seed=0)`**: Quantum-inspired reinforcement learning agent (Dong et al., 2008, with a bounded rotation).
-  - `act(self, s)`: Choose an action by "measuring" the state's action amplitudes (Born rule).
-  - `greedy(self, s)`: Most probable action in a state.
-  - `update(self, s, a, r, s2, done)`: Learn from one transition.
-- **class `QuantumLanguageModel(window=3, smoothing=0.2, uniform=0.01, iters=60)`**: Quantum language model for ranking documents against a query.
-  - `fit(self, documents)`: Estimate a density matrix for every document.
-  - `query_density(self, query)`: Density matrix of a query (terms outside the vocabulary are ignored).
-  - `rank(self, query)`: Rank the documents.
-  - `scores(self, query)`: Score every document.
-- **class `QueryLikelihoodModel(mu=50.0)`**: Classical baseline: unigram query likelihood with Dirichlet smoothing.
-  - `fit(self, documents)`: Count terms in every document and in the collection.
-  - `rank(self, query)`: Rank the documents.
-  - `scores(self, query)`: Log-likelihood of the query under each smoothed document model.
-- `run_episodes(agent, env, episodes, state_fn=None, max_steps=1000, seed=0)`: Train an agent on a Gymnasium-style environment.
-- `simulated_annealing(qubo, sweeps=400, T0=2.0, T1=0.01, seed=0)`: Classical simulated annealing baseline (single-spin Metropolis on the same Ising model).
-- **class `SQA(qubo, replicas=16, sweeps=400, T=0.05, gamma0=3.0, gamma1=0.001, seed=0)`**: Simulated quantum annealing (path-integral Monte Carlo) for a QUBO.
-  - `run(self)`: Run the annealing schedule.
-- **class `StateIndexer(capacity)`**: Map hashable observations (tuples, rounded arrays) to table rows on first sight.
-- **class `TabularAgent(n_states, n_actions, explorer, alpha=0.2, gamma=0.95)`**: Q-learning agent with a pluggable exploration strategy.
-  - `act(self, s)`: Choose an action in state s.
-  - `greedy(self, s)`: Greedy action.
-  - `update(self, s, a, r, s2, done)`: Q-learning update, then the explorer's update.
-- `tokenize(text)`: Split text into lower-case word tokens.
-- `train(agent, env, episodes=300)`: Run training episodes.
-- **class `TTMatrix(cores)`**: A matrix in tensor-train (MPO) format.
-  - `matvec(self, X)`: Multiply a batch of vectors without forming the dense matrix.
-  - `relative_error(self, W)`: Frobenius relative error against a dense matrix.
-  - `to_dense(self)`: Reconstruct the dense matrix.
-- **class `UCB(c=0.5, seed=0)`**: Upper-confidence-bound exploration: :math:`\arg\max_a Q(s,a) + c\sqrt{\ln N(s) / N(s,a)}`.
-  - `choose(self, q, s, agent)`: Untried actions first, then the highest upper bound.
-  - `end_episode(self)`: Nothing to decay.
-
-## `quantum_mind.inspired.exploration`
-
-Exploration strategies for tabular reinforcement learning, quantum-inspired and classical.
-
-- **class `AmplitudeExploration(n_states, n_actions, k=2.0, max_step=0.3, floor=0.02, seed=0)`**: Quantum-inspired exploration by action amplitudes (Born-rule sampling, TD-driven rotation).
-  - `choose(self, q, s, agent)`: Sample an action with probability :math:`|\psi_a|^2`.
-  - `end_episode(self)`: Nothing to decay: exploration fades as amplitudes concentrate.
-  - `update(self, s, a, td_error, q=None)`: Rotate the chosen action's amplitude by ``clip(k * advantage, ±max_step)``.
-- **class `Boltzmann(temperature=0.5, decay=0.99, min_temperature=0.01, seed=0)`**: Softmax (Boltzmann) exploration with a decaying temperature.
-  - `choose(self, q, s, agent)`: Sample from the softmax of the action values.
-  - `end_episode(self)`: Decay the temperature.
-- **class `EpsilonGreedy(epsilon=0.3, decay=0.99, min_epsilon=0.01, seed=0)`**: Random action with probability epsilon, otherwise greedy; epsilon decays per episode.
-  - `choose(self, q, s, agent)`: Choose an action from the value row ``q`` of state ``s``.
-  - `end_episode(self)`: Decay epsilon.
-  - `update(self, s, a, td_error, q=None)`: No exploration state to update.
-- `run_episodes(agent, env, episodes, state_fn=None, max_steps=1000, seed=0)`: Train an agent on a Gymnasium-style environment.
-- **class `StateIndexer(capacity)`**: Map hashable observations (tuples, rounded arrays) to table rows on first sight.
-- **class `TabularAgent(n_states, n_actions, explorer, alpha=0.2, gamma=0.95)`**: Q-learning agent with a pluggable exploration strategy.
-  - `act(self, s)`: Choose an action in state s.
-  - `greedy(self, s)`: Greedy action.
-  - `update(self, s, a, r, s2, done)`: Q-learning update, then the explorer's update.
-- **class `UCB(c=0.5, seed=0)`**: Upper-confidence-bound exploration: :math:`\arg\max_a Q(s,a) + c\sqrt{\ln N(s) / N(s,a)}`.
-  - `choose(self, q, s, agent)`: Untried actions first, then the highest upper bound.
-  - `end_episode(self)`: Nothing to decay.
-
-## `quantum_mind.inspired.tensor_layers`
-
-Tensor-train (matrix product operator) compression of neural-network layers.
-
-- `apply_mlp(layers, X, activation=<ufunc 'tanh'>)`: Forward pass of a (possibly compressed) multilayer perceptron.
-- `compress_layers(layers, max_rank=8, d=3, min_size=256)`: Compress the weight matrices of a multilayer perceptron.
-- `factorise(n, d)`: Split an integer into ``d`` factors that are as equal as possible.
-- **class `TTMatrix(cores)`**: A matrix in tensor-train (MPO) format.
-  - `matvec(self, X)`: Multiply a batch of vectors without forming the dense matrix.
-  - `relative_error(self, W)`: Frobenius relative error against a dense matrix.
-  - `to_dense(self)`: Reconstruct the dense matrix.
 
 ## `quantum_mind.envs`
 
@@ -667,9 +479,6 @@ Reinforcement-learning environments with simulated people (Gymnasium API).
 - **class `ClarificationEnv(model=None, ask_cost=0.3, success_reward=1.0, error_cost=5.0, max_questions=6, people=None)`**: Resolve an ambiguous request by asking questions, then act.
   - `reset(self, seed=None, options=None)`: Start an episode with a new hidden intent.
   - `step(self, action)`: Ask a question or act.
-- **class `GridWorldEnv(**kwargs)`**: The grid world of :class:`quantum_mind.inspired.rl.GridWorld` with the Gymnasium interface.
-  - `reset(self, seed=None, options=None)`: Return to the start cell.
-  - `step(self, action)`: Move one cell.
 - `register_envs()`: Register the environments with Gymnasium.
 - `sample_people(source, n, rng=None)`: Draw simulated people whose parameters reflect what is known, and not known, about real people.
 - **class `TrustHandoverEnv(model=None, n_steps=20, fail_cost=10.0, slow_cost=1.0, ask_cost=0.5, wait_cost=0.3, slow_factor=0.5, people=None)`**: Hand objects to a simulated person whose trust follows the trust qubit.
@@ -678,19 +487,14 @@ Reinforcement-learning environments with simulated people (Gymnasium API).
 
 ## `quantum_mind.problems`
 
-Binary optimisation problems shared by the quantum and quantum-inspired solvers.
+The binary optimisation container used by trust-aware task allocation.
 
-- `from_ising(h, J, c=0.0)`: QUBO with the same energies as an Ising model.
-- `knapsack(values, weights, capacity, penalty=None)`: 0-1 knapsack: maximise value subject to total weight <= capacity.
-- `maxcut(edges, n=None, weights=None)`: Maximum cut of a graph, written as a minimisation (energy = minus the cut weight).
-- `portfolio(mu, cov, budget, risk=0.5, penalty=None)`: Portfolio selection with a cardinality budget.
 - **class `Qubo(Q: 'np.ndarray', offset: 'float' = 0.0, labels: 'list' = <factory>, name: 'str' = 'QUBO') -> None`**: Quadratic unconstrained binary optimisation problem.
   - `all_energies(self)`: Energies of all :math:`2^n` bit strings.
   - `brute_force(self)`: Exact minimum by enumeration (small n).
   - `energy(self, x)`: Energy of bit strings.
   - `normalised(self)`: Upper-triangular form with the same energies.
   - `to_ising(self)`: Equivalent Ising model with spins :math:`s = 1 - 2x \in \{+1, -1\}`.
-- `task_allocation(costs, penalty=None)`: Assignment of tasks to agents; every task goes to exactly one agent.
 
 ## `quantum_mind.circuits`
 

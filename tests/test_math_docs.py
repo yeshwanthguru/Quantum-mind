@@ -222,63 +222,6 @@ def test_quantum_fusion_reduces_to_bayes_at_zero_angle():
     assert np.allclose(q.posterior(['x', 'y']), bayes) and np.allclose(q.posterior(['y', 'x']), bayes)
 
 
-# --------------------------------------------------------------------------- learning (math/learning.md)
-def test_tensor_train_storage_formula():
-    from quantum_mind.inspired.tensor_layers import TTMatrix
-    W = np.random.default_rng(0).normal(size=(64, 256))
-    tt = TTMatrix.from_dense(W, (4, 4, 4), (8, 8, 4), max_rank=5)
-    r = [1] + tt.ranks + [1]
-    assert tt.n_params == sum(r[k] * m * n * r[k + 1] for k, (m, n) in enumerate(zip((4, 4, 4), (8, 8, 4))))
-
-
-def test_policy_probabilities_are_readout_marginals():
-    from quantum_mind.quantum.policy import VariationalPolicy
-    pi = VariationalPolicy(n_features=3, n_actions=3, layers=1, seed=2)
-    s = np.array([[0.2, -0.5, 0.9]])
-    P = pi.circuit.probabilities(pi.weights, s * pi.scale)[0]
-    idx = np.arange(len(P)) & 3                       # two read-out qubits
-    M = np.array([P[idx == a].sum() for a in range(3)])
-    assert np.allclose(pi.probabilities(s)[0], M / M.sum())
-
-
-def test_amplitude_exploration_rotation():
-    from quantum_mind.inspired.exploration import AmplitudeExploration
-    ex = AmplitudeExploration(1, 3, k=1.0, max_step=0.3, floor=0.0)
-    q = np.array([1.0, 0.0, 0.0])
-    psi = ex.amp[0].copy()
-    ex.update(0, 0, 0.0, q)
-    adv = q[0] - (psi ** 2) @ q
-    phi = np.arcsin(psi[0]) + np.clip(adv, -0.3, 0.3)
-    assert ex.amp[0][0] == pytest.approx(np.sin(phi))
-
-
-# ------------------------------------------------------------------- quantum and inspired (math/*.md)
-def test_grover_success_probability():
-    from quantum_mind.quantum import grover
-    n, marked = 5, [3, 17]
-    res = grover(n, marked, iterations=2)
-    theta = np.arcsin(np.sqrt(len(marked) / 2 ** n))
-    assert res.success == pytest.approx(np.sin(5 * theta) ** 2, abs=1e-9)
-
-
-def test_task_allocation_energy():
-    from quantum_mind.problems import task_allocation
-    C = np.array([[2.0, 7.0], [6.0, 3.0]])
-    q = task_allocation(C, penalty=20.0)
-    rng = np.random.default_rng(0)
-    for _ in range(10):
-        x = rng.integers(0, 2, 4)
-        X = x.reshape(2, 2)
-        expect = (C * X).sum() + 20.0 * ((X.sum(0) - 1) ** 2).sum()
-        assert q.energy(x) == pytest.approx(expect)
-
-
-def test_sqa_coupling_formula():
-    P, T, G = 16, 0.05, 1.5
-    Jp = -0.5 * P * T * np.log(np.tanh(G / (P * T)))
-    assert Jp > 0 and -0.5 * P * T * np.log(np.tanh(0.1 / (P * T))) > Jp      # grows as the field falls
-
-
 def test_extension_formulas():
     """Online reweighting, ESS, information-gain bound and model posterior as on docs/math/core.md."""
     from quantum_mind.core import OnlinePersonModel, information_gain, model_posterior
@@ -295,3 +238,76 @@ def test_extension_formulas():
     w = np.array([0.2, 0.3, 0.5])
     expected = w * np.exp(ll - ll.max())
     assert np.allclose(model_posterior(models, y, prior=w), expected / expected.sum())
+
+
+# --------------------------------------------------------------------------- belief (math/belief.md)
+def _random_cobra(seed=0, d=3, m=3):
+    from quantum_mind.belief import COBRA
+    model = COBRA(d, m, restarts=1, steps=1, seed=seed)
+    model.theta = model.theta + 0.3 * np.random.default_rng(seed + 5).standard_normal(model.theta.size)
+    return model
+
+
+def test_cobra_keeps_a_valid_density_matrix():
+    model = _random_cobra()
+    x = np.random.default_rng(1).normal(size=(20, 5, 3))
+    rho = model.trace(x).rho
+    assert np.allclose(np.einsum('ntii->nt', rho).real, 1.0)
+    assert np.allclose(rho, rho.conj().transpose(0, 1, 3, 2), atol=1e-10)
+    assert np.linalg.eigvalsh(rho).min() > -1e-9
+
+
+def test_cobra_without_rotation_is_the_bayes_filter():
+    model = _random_cobra(seed=2)
+    p = model._unpack(model.theta)
+    p['gens'][...] = 0.0                                       # H_k = 0
+    x = np.random.default_rng(3).normal(size=(15, 4, 3))
+    prior = np.exp(p['prior'] - p['prior'].max())
+    logpost = np.log(prior / prior.sum()) + (x @ p['W'].T + p['b']).sum(axis=1)
+    bayes = np.exp(logpost - logpost.max(axis=1, keepdims=True))
+    bayes /= bayes.sum(axis=1, keepdims=True)
+    assert np.allclose(model.predict_proba(x), bayes, atol=1e-8)
+    assert np.allclose(model.predict_proba(x[:, ::-1]), bayes, atol=1e-8)       # order cannot matter
+
+
+def test_cobra_full_dephasing_gives_a_diagonal_belief():
+    model = _random_cobra(seed=4)
+    model._unpack(model.theta)['gamma'][...] = 40.0              # g -> 1
+    x = np.random.default_rng(5).normal(size=(10, 4, 3))
+    assert model.coherence(x).max() < 1e-9
+
+
+def test_cobra_is_order_sensitive_with_rotation():
+    model = _random_cobra(seed=6)
+    x = np.random.default_rng(7).normal(size=(10, 4, 3))
+    assert np.abs(model.predict_proba(x) - model.predict_proba(x[:, ::-1])).max() > 1e-3
+
+
+def test_cobra_online_filter_matches_the_batch_filter():
+    model = _random_cobra(seed=8)
+    x = np.random.default_rng(9).normal(size=(1, 6, 3))
+    belief = model.start()
+    for t in range(6):
+        p = belief.update(x[0, t])
+    assert np.allclose(p, model.predict_proba(x)[0], atol=1e-10)
+    assert belief.frames == 6
+
+
+def test_min_cost_action_hedges_when_the_belief_is_spread_out():
+    from quantum_mind.belief import min_cost_action
+    cost = np.array([[0, 6, 10], [1.5, 0, 0], [0.8, 0.8, 0.8]])
+    assert min_cost_action([0.97, 0.02, 0.01], cost)[0] == 0
+    assert min_cost_action([0.7, 0.2, 0.1], cost)[0] == 2
+
+
+def test_trust_aware_allocation_energy():
+    from quantum_mind.applications.allocation import trust_aware_allocation
+    C = np.array([[2.0, 7.0], [6.0, 3.0]])
+    tau, r, F, lam, A = np.array([0.9, 0.3]), np.array([1.0, 0.2]), 8.0, 0.5, 20.0
+    q = trust_aware_allocation(C, trust=tau, reliance=r, fail_cost=F, workload=lam, penalty=A)
+    rng = np.random.default_rng(0)
+    for _ in range(10):
+        x = rng.integers(0, 2, 4)
+        X = x.reshape(2, 2)
+        expect = ((C + F * r[None, :] * (1 - tau)[:, None]) * X).sum() + lam * (X.sum(1) ** 2).sum() + A * ((X.sum(0) - 1) ** 2).sum()
+        assert q.energy(x) == pytest.approx(expect)

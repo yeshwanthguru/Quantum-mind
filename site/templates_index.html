@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quantum Mind: models of people for robots that work with them</title>
-<meta name="description" content="Open-source Python library: quantum-like models of human judgement, decision and trust with classical baselines, quantum machine learning and algorithms as Qiskit circuits, quantum-inspired optimisers, and a 3D Bloch-sphere viewer. Built for robots that work with people.">
+<title>Quantum Mind: quantum-probability cognition for robots that work with people</title>
+<meta name="description" content="Open-source Python library for quantum-probability cognition in robotics: quantum-like models of how people judge and trust, COBRA (a context-rotated density-matrix belief filter) and a cost-aware ask-or-act decision layer, each tested against classical baselines.">
 <meta property="og:title" content="Quantum Mind">
-<meta property="og:description" content="Quantum-like, quantum and quantum-inspired models in one open-source library, with a live 3D Bloch-sphere playground. Apache-2.0.">
+<meta property="og:description" content="Quantum-probability cognition for robots that work with people: human models, a context-rotated belief filter and a decision layer, each against classical baselines. Apache-2.0.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{SITE}}">
 <meta property="og:image" content="{{SITE}}assets/social-card.png">
@@ -19,7 +19,7 @@
 <header class="top"><div class="wrap">
   <a class="brand" href="#"><img src="assets/logo.svg" alt="" width="26" height="26"> Quantum Mind</a>
   <nav>
-    <a href="#new">New in 2.0</a><a href="#robotics">Robotics</a><a href="#pillars">Models</a><a href="#playground-section">Playground</a>
+    <a href="#new">New in 3.0</a><a href="#cobra">COBRA</a><a href="#robotics">Robotics</a><a href="#pillars">Layers</a><a href="#playground-section">Playground</a>
     <a href="#results">Results</a><a href="docs/learn/index.html">Learn</a><a href="docs/tutorials/index.html">Tutorials</a><a href="docs/">Docs</a>
   </nav>
   <a class="gh" href="{{REPO}}">GitHub</a>
@@ -27,13 +27,13 @@
 
 <main>
 <section class="hero"><div class="wrap">
-  <img src="assets/banner.svg" alt="quantum-mind banner: quantum-like, quantum, quantum-inspired, 3D Bloch viewer" width="1200" height="300">
-  <h1>Models of people for robots that work with them.</h1>
-  <p>A robot's questions change people's answers, and asking about trust changes trust. <strong>Quantum Mind</strong> is an
-  open-source Python library that models these effects with quantum probability, always next to the classical models
-  it has to beat, and turns them into decisions: when to ask, which question to ask, how to fuse what the robot sees
-  and hears, and how to hand an object over. It also runs quantum machine learning and algorithms as Qiskit circuits,
-  offers quantum-inspired optimisers, and shows every qubit on a 3D Bloch sphere.</p>
+  <img src="assets/banner.svg" alt="quantum-mind banner" width="1200" height="300">
+  <h1>Quantum-probability cognition for robots that work with people.</h1>
+  <p>A robot's questions change people's answers, a look changes what a hand movement means, and asking about trust
+  changes trust. Classical filters assume the evidence arrives in neutral, independent pieces. <strong>Quantum Mind</strong>
+  is an open-source Python library that models these context and order effects with quantum probability,
+  <em>always next to the classical model it has to beat</em>, and turns the belief into a cost-aware decision:
+  hand over, wait, or ask. It runs on ordinary computers and makes no claim of quantum computational advantage.</p>
   <p class="badges">
     <a href="https://pypi.org/project/quantum-mind/"><img src="https://img.shields.io/pypi/v/quantum-mind?label=PyPI&amp;color=d2a8ff" alt="PyPI version" height="20"></a>
     <a href="https://pypistats.org/packages/quantum-mind"><img src="https://img.shields.io/pypi/dm/quantum-mind?label=downloads%2Fmonth&amp;color=7ee787" alt="PyPI downloads per month" height="20"></a>
@@ -49,24 +49,42 @@
   </div>
   <pre class="install"><code>pip install quantum-mind          # or "quantum-mind[all]" for Qiskit, plots and RL</code></pre>
   <div class="grid3 audience">
-    <div class="card"><h3>Robotics and HRI</h3><p>Ask-or-act, question planning, calibrated perception, fusion and trust-aware hand-over, with a ROS 2 node.</p></div>
-    <div class="card"><h3>Cognitive science</h3><p>Twelve families of quantum-like models of judgement, each with classical baselines, fitting and recovery tools.</p></div>
-    <div class="card"><h3>Quantum computing</h3><p>QML and algorithms on a fast simulator with exact gradients, exported to Qiskit, IBM Quantum and Braket.</p></div>
+    <div class="card"><h3>Robotics and HRI</h3><p>A context-rotated belief filter, ask-or-act, question planning, calibrated perception, fusion and trust-aware hand-over, with a ROS 2 node.</p></div>
+    <div class="card"><h3>Cognitive science</h3><p>Eleven families of quantum-like models of judgement, each with classical baselines, fitting and recovery tools.</p></div>
+    <div class="card"><h3>Quantum physics</h3><p>Density matrices, generalised measurements, dephasing and a state-vector simulator with Qiskit export, shown on a Bloch sphere.</p></div>
   </div>
   <p class="note">Version {{VERSION}} · Apache-2.0 · Python 3.10–3.12 · {{TESTS}} tests in CI · Qiskit, IBM Quantum, Amazon Braket</p>
 </div></section>
 
 <section id="new"><div class="wrap">
-  <h2>New in 2.0</h2>
-  <p class="lead">A decision layer for robots, perception and learning modules, and documentation that explains every
-  model from the basics. Every result is checked against a classical baseline.</p>
+  <h2>New in 3.0</h2>
+  <p class="lead">Version 3.0 narrows the library to what is specific to quantum cognition in robotics. General-purpose
+  quantum algorithms (VQE, QAOA, Grover, quantum kernels) and quantum-inspired optimisers are left to Qiskit,
+  PennyLane and dedicated optimisation libraries. The new core is COBRA.</p>
   <div class="grid3">
-    <a class="card" href="docs/tutorials/04_ask_or_act.html"><h3>Robot decision layer</h3><p>Ask or act with hazard levels, calibration and conformal sets, an orchestration gate with a meta-learned prior, a value-of-information question planner, partial pooling and trust-aware hand-over.</p></a>
+    <a class="card" href="docs/user_guide/belief.html"><h3>COBRA belief filter</h3><p>A density-matrix belief whose measurement basis is rotated by the previous frame, with an online mode for robots and two built-in classical limits for ablation.</p></a>
+    <a class="card" href="docs/tutorials/04_ask_or_act.html"><h3>Robot decision layer</h3><p>Ask or act with hazard levels, calibration and conformal sets, an orchestration gate, a value-of-information question planner and trust-aware hand-over.</p></a>
     <a class="card" href="docs/tutorials/08_fusion.html"><h3>Perception</h3><p>Detector, speech and gaze adapters; Bayesian, Dempster-Shafer and quantum-like fusion; a quantum Zeno model of bistable perception.</p></a>
-    <a class="card" href="docs/tutorials/10_rl_environments.html"><h3>Learning</h3><p>Gymnasium environments with simulated people, amplitude exploration, a variational quantum policy, tensor-train layers and quanvolution.</p></a>
-    <a class="card" href="docs/learn/index.html"><h3>Foundations</h3><p>Robotics, AI, machine learning, deep learning, RL, perception, embodied AI and quantum, from the basics.</p></a>
-    <a class="card" href="docs/tutorials/index.html"><h3>19 tutorials</h3><p>From the introduction to an end-to-end robot loop, ROS 2 and a packaged robot use case, executed on every build, with their claims checked.</p></a>
     <a class="card" href="docs/atlas/index.html"><h3>Model atlas and maths</h3><p>A block diagram for every model and the equations as the code computes them, tested against the code.</p></a>
+    <a class="card" href="docs/help/validation.html"><h3>Honest validation</h3><p>Paired tests, ablations and a control task where the new idea is not expected to help. Synthetic data is labelled as such.</p></a>
+    <a class="card" href="docs/tutorials/index.html"><h3>14 tutorials</h3><p>From the introduction to an end-to-end robot loop, ROS 2 and a packaged robot use case, executed on every build.</p></a>
+  </div>
+</div></section>
+
+<section id="cobra"><div class="wrap">
+  <h2>COBRA: context-rotated belief</h2>
+  <p class="lead">The same hand cue means <em>hand over</em> after a look at the robot and <em>retrieve</em> after a look away.
+  A Bayes filter adds the same evidence either way. COBRA keeps the belief as a density matrix and lets the previous
+  frame rotate the basis in which the next reading is measured.</p>
+  <div class="grid2">
+    <div><pre><code>from quantum_mind.belief import COBRA, min_cost_action
+
+model = COBRA(n_hyp=3, n_features=3).fit(frames, intent)
+belief = model.start()                 # online, one frame at a time
+for frame in sensor_stream:
+    p = belief.update(frame)           # P(handover, retrieve, withdraw)
+action = min_cost_action(p, cost)      # hand over, wait or ask</code></pre></div>
+    <div class="card"><h3>What the benchmark says</h3><p>On a synthetic task built to contain this kind of context effect, COBRA beats a Bayes filter, logistic regression and an MLP once it has enough training data, and ties the Bayes filter where context does not matter. With little data it loses, training sometimes misses the mechanism, and the coherence signal is a weak error flag. <a href="docs/user_guide/belief.html">Full results and figures</a>.</p></div>
   </div>
 </div></section>
 
@@ -111,19 +129,19 @@
 </div></section>
 
 <section id="pillars"><div class="wrap">
-  <h2>Three kinds of “quantum”, kept apart</h2>
-  <p class="lead">Each makes a different claim and needs a different test. The library has all three, shares one problem
-  format between them, and reports a classical baseline every time. <a href="docs/user_guide/concepts.html">Read the concepts page.</a></p>
+  <h2>Three layers, each tested against its classical limit</h2>
+  <p class="lead">Every layer reports a classical baseline and says where the classical method wins.
+  <a href="docs/concepts.html">Read the concepts page.</a></p>
   <div class="grid3">
-    <div class="card like"><h3>Quantum-like</h3><p>Models of <strong>human</strong> judgement, decision and trust in quantum probability, on ordinary computers.</p>
-      <ul><li>order effects, conjunction, interference</li><li>quantum-like Bayesian networks</li><li>quantum, Markov and open-system dynamics</li><li>quantum decision theory, contextuality, similarity</li><li>per-person fitting and model comparison</li></ul>
-      <p class="tag" style="margin-top:10px">quantum_mind.families · quantum_mind.applications</p></div>
-    <div class="card quantum"><h3>Quantum</h3><p><strong>Gate-model</strong> machine learning and algorithms, trained on a fast simulator with exact gradients and exported to Qiskit.</p>
-      <ul><li>variational and quantum-kernel classifiers</li><li>QAOA for any QUBO</li><li>VQE for Pauli Hamiltonians</li><li>Grover search (hardware-sized circuits)</li><li>Aer, IBM Quantum, Amazon Braket</li></ul>
-      <p class="tag" style="margin-top:10px">quantum_mind.quantum · quantum_mind.circuits</p></div>
-    <div class="card inspired"><h3>Quantum-inspired</h3><p><strong>Classical</strong> algorithms that borrow a quantum idea. No quantum computer needed.</p>
-      <ul><li>quantum-inspired evolutionary algorithm (Han and Kim)</li><li>quantum-behaved particle swarm</li><li>simulated quantum annealing</li><li>tensor-network classifier (DMRG sweeps)</li><li>classical simulated-annealing baseline</li></ul>
-      <p class="tag" style="margin-top:10px">quantum_mind.inspired · quantum_mind.problems</p></div>
+    <div class="card like"><h3>1 · Quantum-like human models</h3><p>How <strong>people</strong> judge, decide and trust, in quantum probability, on ordinary computers.</p>
+      <ul><li>order effects, conjunction, interference</li><li>trust as an open quantum system</li><li>quantum-like Bayesian networks</li><li>decision theory, contextuality, similarity</li><li>per-person fitting and model comparison</li></ul>
+      <p class="tag" style="margin-top:10px">quantum_mind.families</p></div>
+    <div class="card quantum"><h3>2 · COBRA belief filter</h3><p>A robot's belief about a person, as a density matrix that reads evidence in a context-dependent basis.</p>
+      <ul><li>context-rotated generalised measurement</li><li>learned dephasing</li><li>online streaming filter</li><li>Bayes-filter and incoherent limits for ablation</li><li>coherence as a diagnostic</li></ul>
+      <p class="tag" style="margin-top:10px">quantum_mind.belief</p></div>
+    <div class="card inspired"><h3>3 · Decision layer</h3><p>From belief to action under cost, with calibrated uncertainty.</p>
+      <ul><li>ask or act, with hazard levels</li><li>question planner (value of information)</li><li>trust-aware hand-over and allocation</li><li>calibration and conformal sets, fusion</li><li>ROS 2 node</li></ul>
+      <p class="tag" style="margin-top:10px">quantum_mind.applications</p></div>
   </div>
 </div></section>
 
@@ -170,7 +188,7 @@ svc.query({'order': 'AB', 'ask_cost': 1.0, 'error_cost': 3.0})
   </table></div>
   <h3 style="margin-top:28px">What is and is not claimed</h3>
   <ul>
-    <li>No quantum advantage is claimed. On the example classification task a classical model with quadratic features is the most accurate.</li>
+    <li>No quantum advantage is claimed. COBRA is a classical simulation of the quantum-probability formalism; its gain over classical filters is shown only on synthetic data built to contain a context effect.</li>
     <li>No hardware results are included yet. IBM and Braket submission code is tested against local stand-ins (a fake IBM device, the Braket local simulator).</li>
     <li>All data in the examples are simulated or published aggregates, and labelled as such. No study with real people and a robot has been run yet; the <a href="docs/help/validation.html">validation page</a> lists what is checked and gives a protocol for a pilot.</li>
     <li>In several robotics comparisons the simulated people follow the same model the robot uses, which favours the order-aware method by construction; the tutorials say where.</li>
@@ -189,14 +207,14 @@ from quantum_mind.families.order_effects import (
 print(qq_test(counts))
 compare([QuantumOrderModel4D, BayesOrderModel,
          AnchoringOrderModel], counts)</code></pre></div>
-    <div><pre><code># quantum and quantum-inspired on one problem
-from quantum_mind.problems import task_allocation
-from quantum_mind.quantum import QAOA
-from quantum_mind.inspired import SQA, QIEA, simulated_annealing
+    <div><pre><code># a robot's belief about what a person wants
+import numpy as np
+from quantum_mind.belief import COBRA, GaussianBayesFilter
 
-q = task_allocation(costs)
-q.brute_force(), QAOA(q, p=3).run().energy
-SQA(q).run().value, simulated_annealing(q).value
+model = COBRA(3, 3).fit(frames, intent)          # frames: (N, T, 3)
+classical = GaussianBayesFilter(3).fit(frames, intent)
+model.predict_proba(new)    # context-aware belief
+classical.predict_proba(new)
 
 # watch a circuit on Bloch spheres
 from quantum_mind.viz import circuit_trajectory, animate_bloch
@@ -204,11 +222,11 @@ animate_bloch(circuit_trajectory(qc))</code></pre></div>
   </div>
   <div class="grid3" style="margin-top:18px">
     <a class="card" href="docs/getting_started.html"><h3>Getting started</h3><p>Install, then fit, compare and simulate in a few lines.</p></a>
-    <a class="card" href="docs/tutorials/index.html"><h3>Tutorials</h3><p>18 step-by-step tutorials with real outputs and figures.</p></a>
-    <a class="card" href="docs/learn/index.html"><h3>Foundations</h3><p>The background fields explained from the basics.</p></a>
+    <a class="card" href="docs/tutorials/index.html"><h3>Tutorials</h3><p>14 step-by-step tutorials with real outputs and figures.</p></a>
+    <a class="card" href="docs/learn/index.html"><h3>Quantum-like cognition</h3><p>The background: quantum probability applied to human judgement.</p></a>
     <a class="card" href="docs/atlas/index.html"><h3>Model atlas</h3><p>A block diagram for every model, with baselines and references.</p></a>
     <a class="card" href="docs/math/index.html"><h3>Mathematics</h3><p>The equations of every model, as the code computes them.</p></a>
-    <a class="card" href="docs/auto_examples/index.html"><h3>{{N_EXAMPLES}} examples</h3><p>Robotics, perception, learning, medicine, finance, physics, scheduling, surveys.</p></a>
+    <a class="card" href="docs/auto_examples/index.html"><h3>{{N_EXAMPLES}} examples</h3><p>Robot questioning, trust, hand-over, fusion, perception, calibration and the Bloch viewer.</p></a>
     <a class="card" href="docs/help/which_model.html"><h3>Which model?</h3><p>From your problem to the right module, plus a glossary and FAQ.</p></a>
     <a class="card" href="docs/api/index.html"><h3>API reference</h3><p>Every public class and function with parameters and examples.</p></a>
     <a class="card" href="docs/about/changelog.html"><h3>Changelog and citing</h3><p>What changed in each release, and how to cite the library.</p></a>

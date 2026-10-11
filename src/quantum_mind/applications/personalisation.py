@@ -1,7 +1,7 @@
 r"""Personalised human models: start from the population, adapt to each person.
 
 Fitting one model to everyone's answers assumes that people are alike; fitting each person separately
-needs thousands of answers (see example 22). Partial pooling sits in between: the population's spread
+needs thousands of answers (see example 14). Partial pooling sits in between: the population's spread
 of parameters becomes a prior, and each person's parameters are the maximum a posteriori (MAP) estimate
 
 .. math:: \hat x_i = \arg\min_x\; -\log L_i(x) + \tfrac12 (x - \mu)^T \Sigma^{-1} (x - \mu),

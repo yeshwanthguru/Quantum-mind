@@ -6,8 +6,8 @@ give the equations.
 ```{glossary}
 Adjoint method
   A way to compute the gradient of a circuit's output with respect to every angle in about three
-  simulations, by running the circuit forward and a co-state backward. Used to train all variational
-  models in the library.
+  simulations, by running the circuit forward and a co-state backward. Used by the simulator to
+  train circuits with many angles.
 
 AIC, BIC
   Akaike and Bayesian information criteria: $2k - 2\log L$ and $k\log n - 2\log L$. Lower is better;
@@ -29,7 +29,7 @@ Ask or act
   than the cost of asking, or when its models of the person disagree.
 
 Baseline
-  The classical model a quantum-like, quantum or quantum-inspired model is compared with on the same
+  The classical model a quantum-like model is compared with on the same
   data. Every model in the library has at least one.
 
 Bloch sphere
@@ -100,17 +100,11 @@ Lüders rule
 MAP estimate
   Maximum a posteriori: the parameters that maximise likelihood times prior.
 
-Matrix product state (MPS), tensor train (TT)
-  A large tensor written as a chain of small tensors whose sizes are the bond dimensions (ranks).
-
 Model recovery
   Simulating data from each candidate model and checking that model comparison picks the true one.
 
 Order effect
   The answer to a question depends on which question was asked before it.
-
-Parameter-shift rule
-  Exact gradient of a circuit from two evaluations with an angle shifted by $\pm\pi/2$; used on hardware.
 
 Partial pooling
   Estimating each person's parameters with a prior learnt from the population, so estimates are shrunk
@@ -119,16 +113,28 @@ Partial pooling
 Projector
   A matrix $P$ with $P^2 = P = P^\dagger$; it represents the "yes" answer to a question.
 
-QAOA
-  Quantum Approximate Optimisation Algorithm: alternating cost and mixer layers for binary
-  optimisation problems.
+COBRA
+  Context-rotated density-matrix belief filter: the previous sensor frame rotates the basis in which the
+  next frame is measured, so what a reading means depends on what came before it.
+
+Coherence
+  The off-diagonal part of a density matrix. COBRA reports its l1 value (the sum of the moduli of the
+  off-diagonal entries) as a diagnostic.
+
+Density matrix
+  A Hermitian, positive semidefinite matrix of unit trace that describes a belief which may be a mixture;
+  its diagonal gives the probabilities of the hypotheses.
+
+Dephasing
+  Loss of coherence: the off-diagonal entries shrink while the diagonal is unchanged.
+
+Generalised measurement
+  An update $\rho \to M\rho M^\dagger/\mathrm{tr}(M\rho M^\dagger)$ with a positive operator $M$; with a diagonal
+  $M$ it is Bayes' rule, with a rotated $M$ it reads the evidence in a different basis.
 
 QQ equality
   A parameter-free prediction of every projective model of two questions: the probability of giving
   different answers is the same in both orders.
-
-Quantum-inspired
-  A classical algorithm that borrows an idea from quantum mechanics; it runs on ordinary computers.
 
 Quantum-like
   A model of human judgement that uses quantum probability; it assumes nothing quantum in the brain.

@@ -188,20 +188,6 @@ $$
 **Biased geometric**: $\mathrm{Sim}(A, B) = b_B\,e^{-c\lVert z_A - z_B\rVert}$ with a bias per concept
 (Nosofsky, 1991).
 
-## Quantum games (EWL)
-
-Each player has a qubit ($\lvert 0\rangle$ = cooperate). With $D = i\sigma_y$,
-
-$$
-J = \exp\bigl(i\tfrac{\gamma}{2}\,D\otimes D\bigr), \qquad
-\lvert\psi_f\rangle = J^\dagger (U_A \otimes U_B)\, J\, \lvert 00\rangle, \qquad
-U(\theta, \phi) = \begin{pmatrix} e^{i\phi}\cos\frac\theta2 & \sin\frac\theta2 \\ -\sin\frac\theta2 & e^{-i\phi}\cos\frac\theta2\end{pmatrix}.
-$$
-
-The expected payoff of player $A$ is $\sum_{xy} \$_A(x, y)\,\lvert\langle xy\vert\psi_f\rangle\rvert^2$. $\gamma = 0$
-is the classical game; at $\gamma = \pi/2$ in the Prisoner's Dilemma, $(Q, Q)$ with $Q = U(0, \pi/2)$ is a
-Nash equilibrium of the two-parameter strategy set.
-
 ## Episodic memory (overdistribution)
 
 For each probe type $k$ (target, related, unrelated), a memory state $\psi_k \in \mathbb{R}^3$ (two angles);

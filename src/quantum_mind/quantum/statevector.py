@@ -4,7 +4,7 @@ Qubit q is bit q of the basis-state index (Qiskit ordering). Gate angles are *ex
 number, :class:`W` (trainable weight k), :class:`X` (feature j of each sample, scaled and shifted),
 :class:`XX` (a product feature) or a constant.
 
-Circuits are simulated for a whole batch of samples at once, which makes training variational models
+Circuits are simulated for a whole batch of samples at once, which makes training parameterised circuits
 fast without a quantum SDK. Gradients are exact and cheap (:meth:`Circuit.value_and_grad`, adjoint
 method). :meth:`Circuit.to_qiskit` produces the same circuit for Aer, IBM Quantum or Amazon Braket
 (via :func:`quantum_mind.circuits.run`).
@@ -423,7 +423,7 @@ class Circuit:
 
         The circuit is run forward once, then backwards once with the inverse gates, so the cost is
         about three simulations whatever the number of weights. Samples are processed in chunks
-        (memory ``O(chunk * 2**n)``). Weights shared by several gates (for example QAOA angles) are
+        (memory ``O(chunk * 2**n)``). Weights shared by several gates (for example a repeated rotation angle) are
         handled.
 
         Parameters

@@ -11,7 +11,7 @@ the models used, which each user-guide page lists.
 ```bibtex
 @software{guru_quantum_mind,
   author  = {Guru, Yeshwanth},
-  title   = {Quantum Mind: quantum-like, quantum and quantum-inspired models with classical baselines},
+  title   = {Quantum Mind: quantum-probability cognition for robots that work with people},
   version = {__VERSION__},
   url     = {https://github.com/yeshwanthguru/Quantum-mind},
   license = {Apache-2.0}

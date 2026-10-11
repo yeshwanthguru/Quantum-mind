@@ -1,5 +1,4 @@
 """Environments with simulated people and the plotting style helpers."""
-import numpy as np
 import pytest
 
 from quantum_mind.envs import ClarificationEnv, TrustHandoverEnv, register_envs

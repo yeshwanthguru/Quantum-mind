@@ -20,7 +20,6 @@ BG = '#0d1117'
 PILLARS = {                       # file name: (label, arrow colour, sphere colour)
     'ql': ('Quantum-like', '#ff7b72', '#58a6ff'),
     'q': ('Quantum', '#79c0ff', '#58a6ff'),
-    'qi': ('Quantum-inspired', '#d2a8ff', '#a371f7'),
     'viz': ('Bloch viewer', '#7ee787', '#3fb950'),
     'robot': ('Robotics', '#ffa657', '#58a6ff'),
 }

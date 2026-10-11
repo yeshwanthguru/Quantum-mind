@@ -24,46 +24,22 @@ sys.path.insert(0, str(ROOT / 'src'))
 os.environ.setdefault('MPLBACKEND', 'Agg')
 
 RESULTS = [
-    ('Triage classification, test accuracy, mean ± sd over 10 seeds (simulated)',
-     '<strong>classical logistic regression on quadratic features 0.926 ± 0.016</strong> · tensor network (MPS) 0.915 ± 0.015 · '
-     'variational quantum classifier 0.870 ± 0.033 · linear logistic regression 0.814 ± 0.041 · quantum kernel 0.781 ± 0.040'),
-    ('Multi-robot task allocation (3 × 3)', 'QAOA, simulated quantum annealing, QIEA and simulated annealing all reach the optimum; '
-     'QAOA P(optimal) 0.04 ideal and 0.03 under IBM device noise, against 0.002 uniform'),
-    ('Portfolio, 3 of 8 assets (simulated)', 'QAOA (p = 2), SQA, QIEA and simulated annealing all optimal'),
-    ('VQE, 4-spin transverse-field Ising chain', 'error below 1e-8 against exact diagonalisation'),
-    ('Grover, 9 of 32 schedules valid', 'P(valid) 0.99 after one iteration (random 0.28)'),
-    ('Individual differences (example 22)', 'a pooled fit selects the quantum-like model for a population that is half anchoring; '
+    ('COBRA vs Bayes filter on a context-dependent intent task (simulated, 5 seeds)', 'COBRA_ROW'),
+    ('Control task with no context effect (simulated)', 'CONTROL_ROW'),
+    ('Individual differences (example 14)', 'a pooled fit selects the quantum-like model for a population that is half anchoring; '
      'per-person fits recover all 12 people at about 3,000 answers each'),
-    ('Amplitude estimation of an expected payoff (6,800 oracle calls)', 'RMSE 0.0014 against 0.0049 for Monte Carlo '
-     'with the same number of samples (ideal simulator)'),
-    ('Robot navigation, 6 × 6 grid (shortest path 10)', 'quantum-inspired QRL 10.0 steps per episode after training, '
-     'Q-learning 10.6; QRL is slower in the first episodes'),
-    ('Anomaly detection (simulated)', '<strong>RBF kernel AUC 1.000</strong> · quantum kernel AUC 0.905 (angle encoding is '
-     'periodic, so far-out points wrap around)'),
     ('Concept combination, "pet and fish" (simulated)', 'Fock-space model SSE 0.001 · weighted average 0.054 · '
      'product 0.388'),
     ('Trust as a qubit', "P(trust) read from the Bloch vector equals the model's prediction (0.7247)"),
-    ('Trust-aware hand-over, 40 simulated sessions of 20 hand-overs (example 36)', 'mean session cost: order-aware 42.1 · '
+    ('Trust-aware hand-over, 40 simulated sessions of 20 hand-overs (example 20)', 'mean session cost: order-aware 42.1 · '
      'Markov-based 60.9 · always hand over 96.2 (the simulated people follow the open-system model, which favours the '
      'order-aware policy by construction)'),
-    ('Trust-aware task allocation and adaptive conformal sets (simulated, example 37)',
-     'expected cost under the true trust: <strong>trust-aware plan 4.91</strong> · trust-blind plan 16.27; adaptive '
-     'conformal miss rate 0.147 at a 0.150 target while the robot learns a new person; agents trained against one '
-     'simulated person or a population of them scored the same on new people (-5.47), so the population is a '
-     'safeguard here, not a gain'),
-    ('Detector calibration, 5 classes (simulated, example 32)', 'ECE raw 0.192 · Platt 0.020 · temperature 0.017 · '
+    ('Detector calibration, 5 classes (simulated, example 17)', 'ECE raw 0.192 · Platt 0.020 · temperature 0.017 · '
      '<strong>isotonic 0.009</strong>; conformal sets reach 0.911 coverage at a 0.90 target'),
-    ('Multimodal fusion, held-out log loss (simulated, example 33)', 'quantum-like 0.759 · Bayes 0.793 · '
+    ('Multimodal fusion, held-out log loss (simulated, example 18)', 'quantum-like 0.759 · Bayes 0.793 · '
      'Dempster-Shafer 0.818 (the simulated people follow the quantum-like rule)'),
-    ('Bistable perception, dwell times at two check intervals (simulated, example 34)', 'BIC: quantum Zeno 2796.6 · '
-     'gamma renewal 3031.8 · Markov switching 3073.8'),
-    ('CartPole with REINFORCE, 250 episodes (tutorial 11)', '<strong>linear softmax policy learns faster</strong> than the '
-     'variational quantum policy'),
-    ('Quanvolution on 8 × 8 digits (tutorial 13)', '<strong>raw pixels and a random classical filter are more '
-     'accurate</strong> than the quanvolutional features'),
-    ('Tensor-train compression of a trained layer (tutorial 12)', 'large memory savings, but accuracy drops sharply '
-     'without retraining, and the dense product is faster on a CPU'),
-]
+    ('Bistable perception, dwell times at two check intervals (simulated, example 19)', 'BIC: quantum Zeno 2796.6 · '
+     'gamma renewal 3031.8 · Markov switching 3073.8'),]
 
 
 def version():

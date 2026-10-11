@@ -11,13 +11,12 @@ Contributions of models, baselines, circuits, data sets and examples are welcome
 3. **Circuits must match their model.** A new circuit needs a test that compares its output with the
    analytic prediction (statevector-exact where possible).
 4. **One interface.** Quantum-like models subclass `quantum_mind.core.Model`, declare `PARAMS`, `LOSS` and
-   `predict(design)`. Classifiers follow `fit / predict / predict_proba / score`; optimisers take a
-   `quantum_mind.problems.Qubo` (or an objective) and return a result with `x`, `value` (or `energy`) and a
-   history.
-5. **Name the pillar correctly.** Quantum-like (a model of people), quantum (a circuit for a quantum
-   computer) or quantum-inspired (a classical algorithm); see `docs/concepts.md`.
-6. **Always compare.** Quantum and quantum-inspired solvers are reported next to the exact answer (for
-   small instances) and a classical baseline with the same budget.
+   `predict(design)`. Belief filters follow `fit / predict_proba / start` (see `quantum_mind.belief`).
+5. **Stay in scope.** Quantum-like models of people, robot beliefs and decisions, and what is needed to show or
+   run them. General-purpose quantum algorithms and quantum-inspired optimisers belong in Qiskit, PennyLane
+   and optimisation libraries, not here; see `docs/concepts.md`.
+6. **Always compare, and ablate.** A new model is reported next to a classical baseline with the same budget,
+   with the ablation that isolates what is new, a control task where it should not help, and a paired test.
 
 ## Workflow
 

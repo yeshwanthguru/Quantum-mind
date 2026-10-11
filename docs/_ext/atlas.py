@@ -180,13 +180,6 @@ PAGES['quantum_like'] = ('Quantum-like families',
     B["concept B subspace<br/>(large)"]:::in --> PB["project B onto A"]:::op --> sBA["sim(B, A)"]:::out
     g["geometric · biased geometric"]:::base -.-> sAB''',
       'GeometricModel, BiasedGeometricModel', 'Pothos, E. M., Busemeyer, J. R., & Trueblood, J. S. (2013). Psychological Review, 120(3), 679-696.'),
-    M('Quantum games', ['quantum_mind.families.game_theory.models.EWLGame'],
-      'Eisert-Wilkens-Lewenstein games: players apply strategies to an entangled pair.',
-      '''flowchart LR
-    s["|00⟩"]:::in --> J["entangler J"]:::op --> UA["player A: U(θ, φ)"]:::hum & UB["player B: U(θ, φ)"]:::hum
-    UA & UB --> Jd["J†"]:::op --> M2["measure → payoffs"]:::out
-    N["classical Nash equilibria"]:::base -.-> M2''',
-      'classical_nash_equilibria', 'Eisert, J., Wilkens, M., & Lewenstein, M. (1999). Physical Review Letters, 83, 3077.'),
     M('Episodic memory overdistribution', ['quantum_mind.families.memory.models.QuantumEpisodicModel'],
       'Verbatim and gist traces as non-orthogonal subspaces; recall of "target or related" can exceed '
       'the sum of its parts.',
@@ -215,6 +208,50 @@ PAGES['quantum_like'] = ('Quantum-like families',
       'MarkovSwitchingModel, GammaRenewalModel', 'Atmanspacher, H., Filk, T., & Römer, H. (2004). Biological Cybernetics, 90, 33-40.',
       '09_bistable_perception'),
 ])
+
+# ------------------------------------------------------------------------------------------- belief
+PAGES['belief'] = ('COBRA belief filter',
+                   'A robot\'s belief about a person as a density matrix whose measurement basis is rotated by the '
+                   'previous sensor frame, so what a reading means depends on what came before it.', [
+    M('Context-rotated belief filter (COBRA)', ['quantum_mind.belief.COBRA'],
+      'Density-matrix belief updated by a generalised measurement whose basis is rotated by the previous frame, '
+      'then partially dephased. Contains the Bayes filter (no rotation) and an incoherent context filter (full '
+      'dephasing) as special cases.',
+      '''flowchart LR
+    prev["previous frame x₍t−1₎"]:::in --> U["rotation U(x₍t−1₎)<br/>learned Hermitian generators"]:::op
+    x["frame xₜ"]:::in --> w["evidence weights<br/>exp(½(Wxₜ+b))"]:::op
+    U --> M["measurement M = U·diag(w)·U†"]:::op
+    w --> M
+    rho["belief ρ"]:::hum --> upd["ρ → MρM / tr"]:::op
+    M --> upd --> deph["dephasing g"]:::op --> rho2["ρ₍t₎<br/>P(z) = ρ_zz"]:::out
+    bayes["Bayes filter (H = 0)"]:::base -.-> rho2
+    inc["incoherent context filter (g = 1)"]:::base -.-> rho2''',
+      'Gaussian Bayes filter; incoherent context filter (g = 1); logistic regression and MLP on the flattened sequence',
+      'Busemeyer, J. R., & Bruza, P. D. (2012). Quantum Models of Cognition and Decision. Cambridge University Press; '
+      'Kraus, K. (1983). States, Effects and Operations: Fundamental Notions of Quantum Theory. Springer.', None),
+    M('Online belief', ['quantum_mind.belief.OnlineBelief'],
+      'The same filter run one frame at a time, as a robot would: update with each sensor frame, read the '
+      'probabilities and the coherence.',
+      '''flowchart LR
+    s["sensor stream"]:::in --> u["update(frame)"]:::op --> p["P(intent)"]:::out
+    u --> c["l1 coherence"]:::out
+    p --> d["min_cost_action<br/>hand over · wait · ask"]:::out''',
+      None, 'Busemeyer, J. R., & Bruza, P. D. (2012). Quantum Models of Cognition and Decision. Cambridge University Press.', None),
+    M('Gaussian Bayes filter', ['quantum_mind.belief.GaussianBayesFilter'],
+      'The commutative classical reference: independent Gaussian features per hypothesis, so reordering the frames cannot '
+      'change the belief.',
+      '''flowchart LR
+    f["frames"]:::in --> g["per-class Gaussians"]:::op --> post["product of likelihoods × prior"]:::op --> p["P(hypothesis)"]:::out''',
+      None, 'Maron, M. E. (1961). Automatic indexing: an experimental inquiry. Journal of the ACM, 8(3), 404-417.', None),
+    M('Minimum-cost action', ['quantum_mind.belief.min_cost_action'],
+      'Choose the action with the lowest expected cost under a belief; an "ask" row lets the robot hedge when the belief '
+      'is spread out.',
+      '''flowchart LR
+    p["belief P(z)"]:::in --> e["expected cost Σ_z C[a,z]·P(z)"]:::op --> a["argmin over actions"]:::out
+    C[("cost matrix")]:::in --> e''',
+      None, 'Berger, J. O. (1985). Statistical Decision Theory and Bayesian Analysis. Springer.', None),
+])
+
 
 # ------------------------------------------------------------------------------------------ robotics
 PAGES['robotics'] = ('Robot decision layer',
@@ -381,15 +418,15 @@ PAGES['perception'] = ('Perception and fusion',
 ])
 
 # ------------------------------------------------------------------------------------------ learning
-PAGES['learning'] = ('Learning',
-                     'Reinforcement-learning environments with simulated people, exploration strategies, a '
-                     'quantum policy and network compression.', [
+PAGES['environments'] = ('Environments with simulated people',
+                         'Gymnasium environments in which a simulated person answers questions with order '
+                         'effects or trusts the robot according to the trust qubit.', [
     M('Clarification environment', ['quantum_mind.envs.hri.ClarificationEnv'],
       'Resolve an ambiguous request by asking yes/no questions (order-dependent answers), then act.',
       '''flowchart LR
     ag["agent"]:::op -->|ask q| P["simulated person<br/>projective answers"]:::hum -->|±1| obs["answers so far"]:::in --> ag
     ag -->|act on object| R["reward: +1 right · −5 wrong<br/>−0.3 per question"]:::out''',
-      None, 'Towers, M., et al. (2024). Gymnasium. arXiv:2407.17032.', '10_rl_environments'),
+      None, 'Towers, M., et al. (2024). Gymnasium. arXiv:2407.17032.', None),
     M('Trust hand-over environment', ['quantum_mind.envs.hri.TrustHandoverEnv', 'quantum_mind.envs.hri.sample_people'],
       'Hand objects to a person whose trust follows the trust qubit; a new simulated person can be drawn '
       'for every episode from the uncertainty of a fitted model.',
@@ -397,62 +434,13 @@ PAGES['learning'] = ('Learning',
     ag["agent"]:::op -->|hand over · slow · ask · wait| P["person: trust qubit"]:::hum
     P --> o["outcome · answer"]:::in --> ag
     P --> R["reward: − failure, slow, ask, wait costs"]:::out''',
-      None, None, '10_rl_environments'),
-    M('Grid world', ['quantum_mind.envs.hri.GridWorldEnv', 'quantum_mind.inspired.rl.GridWorld'],
-      'Navigation to a goal, the standard test bed for tabular agents.',
-      '''flowchart LR
-    s["cell"]:::in --> a["move"]:::op --> s2["next cell"]:::in --> g{"goal?"}:::out''',
-      None, 'Sutton & Barto (2018).', '10_rl_environments'),
-    M('Exploration strategies', ['quantum_mind.inspired.exploration.AmplitudeExploration',
-                                 'quantum_mind.inspired.exploration.EpsilonGreedy',
-                                 'quantum_mind.inspired.exploration.Boltzmann', 'quantum_mind.inspired.exploration.UCB'],
-      'Amplitude exploration samples actions with Born-rule probabilities and rotates amplitudes by the '
-      'advantage; compared with ε-greedy, softmax and UCB.',
-      '''flowchart LR
-    psi["amplitudes ψ(s, ·)"]:::op --> born["sample a with |ψₐ|²"]:::op --> env["environment"]:::in --> td["TD error / advantage"]:::op
-    td --> rot["rotate ψₐ, keep a floor"]:::op --> psi
-    eg["ε-greedy · softmax · UCB"]:::base -.-> born''',
-      'EpsilonGreedy, Boltzmann, UCB', 'Dong, D., et al. (2008). IEEE TSMC-B, 38(5), 1207-1220.', '10_rl_environments'),
-    M('Tabular agent', ['quantum_mind.inspired.exploration.TabularAgent', 'quantum_mind.inspired.exploration.run_episodes'],
-      'Q-learning with a pluggable explorer.',
-      '''flowchart LR
-    s["state"]:::in --> X["explorer picks a"]:::op --> E["env step"]:::in --> Qu["Q ← Q + α·TD"]:::op --> s
-    Qu --> X''',
-      None, 'Watkins, C. J. C. H., & Dayan, P. (1992). Machine Learning, 8, 279-292.', '10_rl_environments'),
-    M('Quantum-inspired Q-learning', ['quantum_mind.inspired.rl.QuantumInspiredQLearning'],
-      'Action selection by amplitude collapse with Grover-style amplitude amplification.',
-      '''flowchart LR
-    s["state"]:::in --> amp["action amplitudes"]:::op --> col["collapse → action"]:::op --> r["reward"]:::in --> gr["amplify good action"]:::op --> amp
-    ql["Q-learning"]:::base -.-> col''',
-      'QLearning', 'Dong, D., Chen, C., Li, H., & Tarn, T.-J. (2008). IEEE TSMC-B, 38(5), 1207-1220.'),
-    M('Variational quantum policy', ['quantum_mind.quantum.policy.VariationalPolicy', 'quantum_mind.quantum.policy.reinforce'],
-      'Action probabilities from a data re-uploading circuit, trained with REINFORCE and adjoint gradients.',
-      '''flowchart LR
-    s["state features"]:::in --> enc["RY(x) encoding"]:::op --> var["trainable RY · RZ · CZ<br/>(re-uploaded)"]:::op --> meas["Born probabilities<br/>of read-out qubits"]:::op --> a["action"]:::out
-    a --> G["returns − baseline"]:::in --> grad["adjoint gradient"]:::op --> var
-    lin["linear softmax policy"]:::base -.-> a''',
-      'linear softmax policy (tutorial 11)', 'Jerbi, S., et al. (2021). NeurIPS 34.', '11_quantum_policy'),
-    M('Tensor-train layers', ['quantum_mind.inspired.tensor_layers.TTMatrix', 'quantum_mind.inspired.tensor_layers.compress_layers'],
-      'A weight matrix stored as a chain of small cores (TT-SVD); applied without forming the dense matrix.',
-      '''flowchart LR
-    W["dense W (M × N)"]:::in --> rs["reshape to (m₁n₁)(m₂n₂)…"]:::op --> svd["truncated SVDs<br/>max rank r"]:::op --> cores["cores G₁ … G_d"]:::out
-    x["inputs"]:::in --> mv["contract core by core"]:::op --> y["W x"]:::out
-    cores --> mv
-    dense["dense layer"]:::base -.-> y''',
-      'dense layer', 'Oseledets, I. V. (2011). SIAM J. Sci. Comput., 33(5), 2295-2317.', '12_tensor_train'),
-    M('Quanvolutional filter', ['quantum_mind.quantum.quanvolution.QuanvolutionFilter'],
-      'Each 2 × 2 image patch is encoded into four qubits, passed through a fixed random circuit and read '
-      'out as four ⟨Z⟩ channels.',
-      '''flowchart LR
-    img["image"]:::in --> pt["2×2 patches"]:::op --> enc["RY(πx) per pixel"]:::op --> rc["random circuit"]:::op --> z["⟨Z⟩ per qubit"]:::op --> fm["4-channel feature map"]:::out --> clf["classical classifier"]:::out
-    rnd["random classical filter · raw pixels"]:::base -.-> clf''',
-      'RandomConvFilter, raw pixels', 'Henderson, M., et al. (2020). Quantum Machine Intelligence, 2, 2.', '13_quanvolution'),
+      None, None, None),
 ])
 
-# ------------------------------------------------------------------------------------------- quantum
-PAGES['quantum'] = ('Quantum models',
-                    'Gate-model machine learning and algorithms on the built-in simulator, exportable to '
-                    'Qiskit for Aer, IBM Quantum and Amazon Braket.', [
+# ------------------------------------------------------------------------------------ infrastructure
+PAGES['infrastructure'] = ('Simulator, circuits and the viewer',
+                           'The state-vector simulator, circuits for the quantum-like families, back ends, the '
+                           'allocation container and the Bloch-sphere viewer.', [
     M('State-vector simulator', ['quantum_mind.quantum.statevector.Circuit'],
       'Batched NumPy simulation of parameterised circuits with adjoint gradients and Qiskit export.',
       '''flowchart LR
@@ -460,133 +448,13 @@ PAGES['quantum'] = ('Quantum models',
     sim --> g["adjoint gradients"]:::out
     c --> qk["to_qiskit()"]:::out''',
       None, 'Jones, T., & Gacon, J. (2020). arXiv:2009.02823 (adjoint differentiation).', '01_introduction'),
-    M('Feature maps and ansatz', ['quantum_mind.quantum.ansatz.angle_encoding', 'quantum_mind.quantum.ansatz.zz_feature_map',
-                                  'quantum_mind.quantum.ansatz.hardware_efficient', 'quantum_mind.quantum.ansatz.parameter_shift'],
-      'How data enter a circuit and which trainable layers follow.',
-      '''flowchart LR
-    x["features"]:::in --> ang["angle encoding RY(x)"]:::op
-    x --> zz["ZZ feature map<br/>H · RZ · RZZ"]:::op
-    ang & zz --> he["hardware-efficient layers<br/>RY · RZ · ring of CZ"]:::op --> o["state"]:::out
-    o --> ps["parameter-shift gradient"]:::out''',
-      None, 'Havlíček, V., et al. (2019). Nature, 567, 209-212.'),
-    M('Variational classifier and regressor', ['quantum_mind.quantum.classifiers.VariationalClassifier',
-                                               'quantum_mind.quantum.classifiers.VariationalRegressor'],
-      'Data re-uploading circuit trained by gradient descent on cross-entropy or squared error.',
-      '''flowchart LR
-    x["features"]:::in --> c["re-uploading circuit"]:::op --> p["class probabilities<br/>or ⟨Z⟩"]:::out
-    p --> L["loss"]:::op --> gd["adjoint gradient step"]:::op --> c
-    lr["logistic / ridge regression"]:::base -.-> p''',
-      'logistic regression, ridge regression', 'Pérez-Salinas, A., et al. (2020). Quantum, 4, 226.'),
-    M('Quantum kernel methods', ['quantum_mind.quantum.classifiers.QuantumKernel',
-                                 'quantum_mind.quantum.classifiers.QuantumKernelClassifier',
-                                 'quantum_mind.quantum.classifiers.QuantumKernelAnomalyDetector',
-                                 'quantum_mind.quantum.classifiers.QuantumKernelClustering'],
-      'Similarity as the overlap of encoded states, used for classification, anomaly detection and clustering.',
-      '''flowchart LR
-    x1["x"]:::in --> e1["|φ(x)⟩"]:::op
-    x2["x'"]:::in --> e2["|φ(x')⟩"]:::op
-    e1 & e2 --> K["K = |⟨φ(x)|φ(x')⟩|²"]:::op --> svm["SVM · one-class · spectral"]:::out
-    rbf["RBF kernel"]:::base -.-> svm''',
-      'rbf_kernel', 'Schuld, M., & Killoran, N. (2019). Physical Review Letters, 122, 040504.'),
-    M('QAOA', ['quantum_mind.quantum.algorithms.QAOA'],
-      'Alternating cost and mixer layers for QUBO problems, with classically tuned angles.',
-      '''flowchart LR
-    q["QUBO"]:::in --> H["|+⟩ⁿ"]:::op --> C["cost layer e^(−iγC)"]:::op --> X["mixer e^(−iβΣX)"]:::op --> r{"repeat p times"}:::op
-    r --> m["sample bit strings"]:::out
-    m --> opt["tune γ, β"]:::op --> C
-    sa["SA · SQA · QIEA · exact"]:::base -.-> m''',
-      'simulated annealing, SQA, QIEA, brute force', 'Farhi, E., Goldstone, J., & Gutmann, S. (2014). arXiv:1411.4028.',
-      '14_task_allocation'),
-    M('VQE', ['quantum_mind.quantum.algorithms.VQE', 'quantum_mind.quantum.algorithms.Hamiltonian'],
-      'Minimise the energy of a Pauli Hamiltonian over a parameterised state.',
-      '''flowchart LR
-    H["Pauli Hamiltonian"]:::in --> E["⟨ψ(θ)|H|ψ(θ)⟩"]:::op
-    ans["ansatz ψ(θ)"]:::op --> E --> o["optimiser"]:::op --> ans
-    E --> g["ground-state estimate"]:::out
-    ex["exact diagonalisation"]:::base -.-> g''',
-      'exact diagonalisation', 'Peruzzo, A., et al. (2014). Nature Communications, 5, 4213.'),
-    M('Grover search', ['quantum_mind.quantum.algorithms.grover'],
-      'Amplitude amplification of marked items in about √N oracle calls.',
-      '''flowchart LR
-    u["uniform superposition"]:::in --> O["oracle: flip marked"]:::op --> D["diffusion"]:::op --> r{"≈ π/4·√N times"}:::op --> m["measure: marked item"]:::out
-    cl["classical search N/2 calls"]:::base -.-> m''',
-      'classical search', 'Grover, L. K. (1996). Proceedings of STOC, 212-219.'),
-    M('Quantum Fourier transform and period finding', ['quantum_mind.quantum.fourier.qft_circuit',
-                                                       'quantum_mind.quantum.fourier.find_period'],
-      'The QFT circuit and its use to find the period of a periodic state.',
-      '''flowchart LR
-    s["periodic state"]:::in --> qft["QFT: H + controlled phases"]:::op --> m["peaks at multiples of N/r"]:::op --> cf["continued fractions"]:::op --> r["period r"]:::out''',
-      'classical FFT', 'Shor, P. W. (1997). SIAM Journal on Computing, 26(5), 1484-1509.'),
-    M('Amplitude estimation', ['quantum_mind.quantum.estimation.AmplitudeEstimation'],
-      'Estimate an expected value with fewer samples than Monte Carlo (maximum-likelihood variant).',
-      '''flowchart LR
-    A["state preparation A"]:::in --> G["Grover powers Qᵏ"]:::op --> M["measure for several k"]:::op --> ml["maximum likelihood"]:::op --> a["estimate of a"]:::out
-    mc["Monte Carlo"]:::base -.-> a''',
-      'monte_carlo_estimate', 'Suzuki, Y., et al. (2020). Quantum Information Processing, 19, 75.'),
-    M('Quantum walks on networks', ['quantum_mind.quantum.walks.ctqw_probabilities',
-                                    'quantum_mind.quantum.walks.quantum_walk_centrality'],
-      'Continuous-time quantum walks and the centrality they induce.',
-      '''flowchart LR
-    G["graph adjacency"]:::in --> U["e^(−iAt)"]:::op --> p["time-averaged occupation"]:::op --> c["quantum-walk centrality"]:::out
-    pr["PageRank · degree"]:::base -.-> c''',
-      'pagerank, degree_centrality', 'Childs, A. M., Farhi, E., & Gutmann, S. (2002). Quantum Information Processing, 1, 35-43.'),
-])
 
-# ------------------------------------------------------------------------------------------ inspired
-PAGES['inspired'] = ('Quantum-inspired algorithms',
-                     'Classical algorithms that borrow quantum ideas, each next to the classical method it has '
-                     'to beat.', [
-    M('QIEA', ['quantum_mind.inspired.optimisers.QIEA'],
-      'Q-bit individuals sampled into bit strings; amplitudes rotated towards the best solution.',
+    M('QUBO container', ['quantum_mind.problems.Qubo'],
+      'The binary-optimisation container used by trust-aware allocation: exact brute force for small teams and an Ising export for external solvers.',
       '''flowchart LR
-    Q["Q-bit angles θᵢ"]:::op --> s["sample bit strings"]:::op --> f["evaluate QUBO"]:::in --> b["best so far"]:::op --> rot["rotate θ (lookup table)"]:::op --> Q
-    b --> out["solution"]:::out
-    sa["simulated annealing"]:::base -.-> out''',
-      'simulated_annealing', 'Han, K.-H., & Kim, J.-H. (2002). IEEE Transactions on Evolutionary Computation, 6(6), 580-593.',
-      '14_task_allocation'),
-    M('QPSO', ['quantum_mind.inspired.optimisers.QPSO'],
-      'Particles sampled around attractors from a delta-potential-well distribution (no velocities).',
-      '''flowchart LR
-    pb["personal bests"]:::in & gb["global best"]:::in --> at["attractor per particle"]:::op
-    mb["mean best"]:::op --> L["spread ∝ |mbest − x|"]:::op
-    at & L --> x["new positions"]:::op --> f["objective"]:::in --> pb
-    x --> out["minimum"]:::out''',
-      'grid or random search, classical PSO', 'Sun, J., Feng, B., & Xu, W. (2004). Proceedings of IEEE CEC, 325-331.'),
-    M('Simulated quantum annealing', ['quantum_mind.inspired.optimisers.SQA'],
-      'Path-integral Monte Carlo on coupled replicas; a decreasing transverse field lets the search tunnel.',
-      '''flowchart LR
-    q["Ising problem"]:::in --> rep["P replicas"]:::op --> cp["inter-replica coupling<br/>from transverse field Γ"]:::op --> mc["Metropolis sweeps"]:::op --> an{"lower Γ"}:::op --> rep
-    mc --> out["lowest-energy replica"]:::out
-    sa["simulated annealing"]:::base -.-> out''',
-      'simulated_annealing', 'Martoňák, R., Santoro, G. E., & Tosatti, E. (2002). Physical Review B, 66, 094203.',
-      '14_task_allocation'),
-    M('MPS classifier', ['quantum_mind.inspired.tensor.MPSClassifier'],
-      'Features mapped to local vectors and contracted with a matrix product state to give class scores.',
-      '''flowchart LR
-    x["features"]:::in --> phi["local maps φ(xᵢ)"]:::op --> mps["MPS cores, bond D"]:::op --> s["class scores"]:::out
-    lr["logistic regression"]:::base -.-> s''',
-      'logistic regression', 'Stoudenmire, E. M., & Schwab, D. J. (2016). NeurIPS 29.'),
-    M('Quantum language model', ['quantum_mind.inspired.text.QuantumLanguageModel'],
-      'Documents as density matrices over term projectors; ranking by quantum relative entropy.',
-      '''flowchart LR
-    d["document terms"]:::in --> rho["density matrix ρ_d"]:::op
-    q["query"]:::in --> rq["ρ_q"]:::op
-    rho & rq --> div["divergence"]:::op --> rank["ranking"]:::out
-    qlm["query likelihood (Dirichlet)"]:::base -.-> rank''',
-      'QueryLikelihoodModel', 'Sordoni, A., Nie, J.-Y., & Bengio, Y. (2013). Proceedings of SIGIR, 653-662.'),
-])
-
-# ------------------------------------------------------------------------------------ infrastructure
-PAGES['infrastructure'] = ('Problems, circuits and the viewer',
-                           'Shared problem formats, circuits for the quantum-like families, back ends and the '
-                           'Bloch-sphere viewer.', [
-    M('QUBO problems', ['quantum_mind.problems.Qubo', 'quantum_mind.problems.task_allocation',
-                        'quantum_mind.problems.maxcut', 'quantum_mind.problems.portfolio'],
-      'One problem format for QAOA, annealing and classical heuristics.',
-      '''flowchart LR
-    pb["task allocation · Max-Cut · knapsack · portfolio"]:::in --> Q["QUBO: xᵀQx + offset"]:::op
-    Q --> qa["QAOA"]:::out & sqa["SQA · QIEA"]:::out & sa["simulated annealing"]:::out & bf["brute force"]:::out''',
-      None, 'Lucas, A. (2014). Frontiers in Physics, 2, 5.', '14_task_allocation'),
+    pb["trust-aware allocation costs"]:::in --> Q["QUBO: xᵀQx + offset"]:::op
+    Q --> bf["brute force"]:::out & ising["Ising export<br/>(any external solver)"]:::out''',
+      None, 'Lucas, A. (2014). Frontiers in Physics, 2, 5.'),
     M('Trust-aware task allocation', ['quantum_mind.applications.allocation.trust_aware_allocation',
                                       'quantum_mind.applications.allocation.expected_costs',
                                       'quantum_mind.applications.allocation.decode'],
@@ -596,7 +464,7 @@ PAGES['infrastructure'] = ('Problems, circuits and the viewer',
       '''flowchart LR
     T["trust per person<br/>trust qubit · online posterior"]:::hum --> C["expected cost<br/>C + F·r·(1 − τ)"]:::op
     B[("effort per person and task")]:::in --> C
-    C --> Q["QUBO + workload term"]:::op --> S["QAOA · SQA · exact"]:::op --> A["who does what"]:::out
+    C --> Q["QUBO + workload term"]:::op --> S["exact · Ising export"]:::op --> A["who does what"]:::out
     blind["trust-blind allocation"]:::base -.-> A''',
       'trust-blind task allocation', 'Lucas, A. (2014). Frontiers in Physics, 2, 5 (allocation QUBO); '
       'trust from Busemeyer & Bruza (2024) and Roeder et al. (2023).'),
@@ -619,7 +487,7 @@ PAGES['infrastructure'] = ('Problems, circuits and the viewer',
     src["circuit · belief model · state"]:::in --> tr["trajectory of Bloch vectors"]:::op --> st["Matplotlib figure"]:::out
     tr --> an["Plotly animation / HTML"]:::out
     tr --> ent["entanglement and concurrence"]:::out''',
-      None, 'Wootters, W. K. (1998). Physical Review Letters, 80, 2245.', '15_bloch_sphere'),
+      None, 'Wootters, W. K. (1998). Physical Review Letters, 80, 2245.', '11_bloch_sphere'),
 ])
 
 # ------------------------------------------------------------------------------------------ origin
@@ -657,10 +525,14 @@ ORIGIN = {
     'Quantum decision theory': ('extended', _ALL),
     'Contextuality tests': ('published', None),
     'Asymmetric similarity': ('extended', _BOOT),
-    'Quantum games': ('published', None),
     'Episodic memory overdistribution': ('extended', _BOOT),
     'Concept combination (Fock space)': ('extended', _BOOT),
     'Bistable perception (quantum Zeno)': ('extended', _ALL),
+    # COBRA belief filter
+    'Context-rotated belief filter (COBRA)': ('unique', None),
+    'Online belief': ('unique', None),
+    'Gaussian Bayes filter': ('published', None),
+    'Minimum-cost action': ('published', None),
     # robot decision layer
     'Human-model ensemble': ('unique', None),
     'Ask or act': ('unique', None),
@@ -686,32 +558,9 @@ ORIGIN = {
     # learning
     'Clarification environment': ('unique', None),
     'Trust hand-over environment': ('unique', None),
-    'Grid world': ('tool', None),
-    'Exploration strategies': ('published', None),
-    'Tabular agent': ('published', None),
-    'Quantum-inspired Q-learning': ('published', None),
-    'Variational quantum policy': ('published', None),
-    'Tensor-train layers': ('published', None),
-    'Quanvolutional filter': ('published', None),
-    # quantum
+    # simulator and infrastructure
     'State-vector simulator': ('tool', None),
-    'Feature maps and ansatz': ('published', None),
-    'Variational classifier and regressor': ('published', None),
-    'Quantum kernel methods': ('published', None),
-    'QAOA': ('published', None),
-    'VQE': ('published', None),
-    'Grover search': ('published', None),
-    'Quantum Fourier transform and period finding': ('published', None),
-    'Amplitude estimation': ('published', None),
-    'Quantum walks on networks': ('published', None),
-    # quantum-inspired
-    'QIEA': ('published', None),
-    'QPSO': ('published', None),
-    'Simulated quantum annealing': ('published', None),
-    'MPS classifier': ('published', None),
-    'Quantum language model': ('published', None),
-    # infrastructure
-    'QUBO problems': ('published', None),
+    'QUBO container': ('tool', None),
     'Trust-aware task allocation': ('unique', None),
     'Circuits for the quantum-like families': ('unique', None),
     'Back ends': ('tool', None),
@@ -740,8 +589,6 @@ CATEGORIES = {
                      'quantum probability used to model people; runs on an ordinary computer'),
     'quantum': ('primary-line', 'Quantum computing',
                 'quantum circuits; run on the simulator or sent to quantum hardware'),
-    'quantum-inspired': ('info-line', 'Quantum-inspired',
-                         'classical algorithms that borrow ideas from quantum mechanics'),
     'classical': ('secondary-line', 'Classical', 'classical statistics, decision theory or baselines'),
     'mixed': ('dark-line', 'Mixed', 'combines parts from more than one of these categories'),
 }
@@ -766,10 +613,14 @@ CATEGORY = {
     'Quantum decision theory': 'quantum-like',
     'Contextuality tests': 'quantum-like',
     'Asymmetric similarity': 'quantum-like',
-    'Quantum games': 'quantum-like',
     'Episodic memory overdistribution': 'quantum-like',
     'Concept combination (Fock space)': 'quantum-like',
     'Bistable perception (quantum Zeno)': 'quantum-like',
+    # COBRA belief filter
+    'Context-rotated belief filter (COBRA)': 'quantum-like',
+    'Online belief': 'quantum-like',
+    'Gaussian Bayes filter': 'classical',
+    'Minimum-cost action': 'classical',
     # robot decision layer
     'Human-model ensemble': 'mixed',
     'Ask or act': 'classical',
@@ -792,32 +643,9 @@ CATEGORY = {
     # learning
     'Clarification environment': 'quantum-like',
     'Trust hand-over environment': 'quantum-like',
-    'Grid world': 'classical',
-    'Exploration strategies': 'mixed',
-    'Tabular agent': 'classical',
-    'Quantum-inspired Q-learning': 'quantum-inspired',
-    'Variational quantum policy': 'quantum',
-    'Tensor-train layers': 'quantum-inspired',
-    'Quanvolutional filter': 'quantum',
-    # quantum
+    # simulator and infrastructure
     'State-vector simulator': 'quantum',
-    'Feature maps and ansatz': 'quantum',
-    'Variational classifier and regressor': 'quantum',
-    'Quantum kernel methods': 'quantum',
-    'QAOA': 'quantum',
-    'VQE': 'quantum',
-    'Grover search': 'quantum',
-    'Quantum Fourier transform and period finding': 'quantum',
-    'Amplitude estimation': 'quantum',
-    'Quantum walks on networks': 'quantum',
-    # quantum-inspired
-    'QIEA': 'quantum-inspired',
-    'QPSO': 'quantum-inspired',
-    'Simulated quantum annealing': 'quantum-inspired',
-    'MPS classifier': 'quantum-inspired',
-    'Quantum language model': 'quantum-inspired',
-    # infrastructure
-    'QUBO problems': 'classical',
+    'QUBO container': 'classical',
     'Trust-aware task allocation': 'mixed',
     'Circuits for the quantum-like families': 'quantum',
     'Back ends': 'quantum',
@@ -840,11 +668,11 @@ def category_counts():
     return counts
 
 
-ORDER = ['core', 'quantum_like', 'robotics', 'perception', 'learning', 'quantum', 'inspired', 'infrastructure']
+ORDER = ['core', 'quantum_like', 'belief', 'robotics', 'perception', 'environments', 'infrastructure']
 
 #: Mathematics page for each atlas page.
-MATH = {'core': 'core', 'quantum_like': 'quantum_like', 'robotics': 'robotics', 'perception': 'perception',
-        'learning': 'learning', 'quantum': 'quantum', 'inspired': 'inspired', 'infrastructure': 'inspired'}
+MATH = {'core': 'core', 'quantum_like': 'quantum_like', 'belief': 'belief', 'robotics': 'robotics',
+        'perception': 'perception', 'environments': 'infrastructure', 'infrastructure': 'infrastructure'}
 
 
 def _role(path):
@@ -902,28 +730,25 @@ def write():
              'to the API, a tutorial where there is one, and a reference.' % total, '',
              '```{mermaid}', '''flowchart LR
     accTitle: How the parts of Quantum Mind fit together
-    accDescr: Data from sensors and people feed the core fitting tools, the quantum-like families, perception and learning, which all feed the robot decision layer; quantum and quantum-inspired models feed learning; classical baselines are compared everywhere.
+    accDescr: Data from sensors and people feed the core fitting tools, the quantum-like families, the COBRA belief filter and perception, which all feed the robot decision layer; the families also feed circuits, back ends and the viewer; classical baselines are compared everywhere.
     D[("data · sensors · people")]:::hum --> C["core: fit · compare"]:::op
     C --> QL["quantum-like families"]:::op --> R["robot decision layer"]:::out
+    C --> BF["COBRA belief filter"]:::op --> R
     P["perception and fusion"]:::op --> R
-    L["learning"]:::op --> R
-    QM["quantum models"]:::in --> L
-    QI["quantum-inspired"]:::in --> L
+    E["environments with simulated people"]:::op --> R
     QL --> CI["circuits · back ends · viewer"]:::in
-    QM --> CI
-    B["classical baselines everywhere"]:::base -.-> QL & P & L & QM & QI''', STYLE, '```', '',
+    B["classical baselines everywhere"]:::base -.-> QL & BF & P''', STYLE, '```', '',
              '## Where each model comes from', '',
              'Every entry carries one of four labels. Most models are published by other researchers and '
              'implemented here from their papers (the reference is on each entry). Quantum Mind\'s own '
-             'contributions are the robot decision layer, the environments, the circuits for the '
-             'quantum-like families, and the tools that give every published people model uncertainty, '
-             'per-person updating and informative-question selection.', '',
+             'contributions are the COBRA belief filter, the robot decision layer, the environments, the '
+             'circuits for the quantum-like families, and the tools that give every published people model '
+             'uncertainty, per-person updating and informative-question selection.', '',
              '| Label | Entries | Meaning |', '|---|---|---|']
     counts = origin_counts()
     index += ['| %s | %d | %s |' % ('{bdg-%s}`%s`' % (c, l), counts[k], d) for k, (c, l, d) in LABELS.items()]
-    index += ['', 'Every entry also carries a category, so the quantum-like models of people, the quantum '
-              'circuits and the quantum-inspired algorithms can be told apart; quantum-like models need no '
-              'quantum computer.', '', '| Category | Entries | Meaning |', '|---|---|---|']
+    index += ['', 'Every entry also carries a category, so the quantum-like models of people and the quantum '
+              'circuits can be told apart; quantum-like models need no quantum computer.', '', '| Category | Entries | Meaning |', '|---|---|---|']
     ccounts = category_counts()
     index += ['| %s | %d | %s |' % ('{bdg-%s}`%s`' % (c, l), ccounts[k], d) for k, (c, l, d) in CATEGORIES.items()]
     for k in ('unique', 'extended'):

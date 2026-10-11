@@ -3,9 +3,9 @@
 ## General
 
 **Does Quantum Mind need a quantum computer?**
-No. Everything runs on an ordinary computer: the quantum-like and quantum-inspired models are
-classical code, and the quantum models run on a built-in NumPy simulator. A quantum computer is only
-needed if you choose to send circuits to IBM Quantum or Amazon Braket.
+No. Everything runs on an ordinary computer: the quantum-like models and COBRA are classical code, and
+circuits run on a built-in NumPy simulator. A quantum computer is only needed if you choose to send circuits
+to IBM Quantum or Amazon Braket.
 
 **Does "quantum-like" mean the brain is quantum?**
 No. Quantum-like models borrow the mathematics of quantum probability because it describes certain
@@ -13,7 +13,7 @@ patterns in human answers (order effects, conjunction fallacies). They make no c
 the brain. See [concepts](../user_guide/concepts.md).
 
 **Is there a quantum advantage?**
-None is claimed. Every quantum and quantum-inspired model is compared with a classical baseline, and
+None is claimed. Every quantum-like model, including COBRA, is compared with a classical baseline, and
 the documentation reports when the classical method wins, which is often.
 
 **Is any of this validated with real robots and real people?**
@@ -64,7 +64,7 @@ Tutorial 1 shows the format; each family's page gives its design.
 
 **How do I use it on a robot?**
 The decision functions are plain Python and middleware-free. `HumanModelService` wraps them with
-JSON-friendly messages, and `integrations/ros2` provides a ROS 2 node. See tutorials 16 and 18.
+JSON-friendly messages, and `integrations/ros2` provides a ROS 2 node. See tutorials 12 and 14.
 
 **How do I cite it?**
 Use the citation file (`CITATION.cff`) or the [citing page](../about/index.md).

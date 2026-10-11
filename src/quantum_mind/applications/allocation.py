@@ -1,6 +1,7 @@
 r"""Trust-aware task allocation: a binary allocation problem whose costs come from models of people.
 
-Task allocation as a QUBO (Lucas, 2014) usually uses fixed costs. In a team of people working with a robot, a task that needs the robot's help (a hand-over, a
+Task allocation as a QUBO (Lucas, 2014) usually uses fixed costs.
+In a team of people working with a robot, a task that needs the robot's help (a hand-over, a
 shared lift) goes wrong more often with a person who does not trust the robot, and people who carry
 too many tasks slow down. :func:`trust_aware_allocation` adds both effects to the costs:
 

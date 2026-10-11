@@ -22,7 +22,7 @@ REPO = 'https://github.com/yeshwanthguru/Quantum-mind'
 READMES = {
     'docs/concepts.md': 'user_guide/concepts',
     'src/quantum_mind/quantum/README.md': 'user_guide/quantum',
-    'src/quantum_mind/inspired/README.md': 'user_guide/inspired',
+    'src/quantum_mind/belief/README.md': 'user_guide/belief',
     'src/quantum_mind/problems/README.md': 'user_guide/problems',
     'src/quantum_mind/circuits/README.md': 'user_guide/circuits',
     'src/quantum_mind/viz/README.md': 'user_guide/viz',
@@ -33,7 +33,7 @@ READMES = {
     'SECURITY.md': 'about/security',
 }
 FAMILIES = ['order_effects', 'conjunction', 'interference', 'qlbn', 'dynamics', 'decision', 'contextuality',
-            'similarity', 'game_theory', 'memory', 'concepts', 'perception']
+            'similarity', 'memory', 'concepts', 'perception']
 for _f in FAMILIES:
     READMES['src/quantum_mind/families/%s/README.md' % _f] = 'user_guide/families/' + _f
 
@@ -47,17 +47,9 @@ API = [
     ('quantum_mind.applications.questioning', 'Adaptive questioning'),
     ('quantum_mind.applications.personalisation', 'Personalised human models'),
     ('quantum_mind.applications.handover', 'Trust-aware hand-over'), ('quantum_mind.applications.fusion', 'Multimodal fusion'),
-    ('quantum_mind.envs.hri', 'Reinforcement-learning environments'),
-    ('quantum_mind.quantum.statevector', 'State-vector simulator'), ('quantum_mind.quantum.ansatz', 'Feature maps and ansatz'),
-    ('quantum_mind.quantum.classifiers', 'Machine-learning models'), ('quantum_mind.quantum.algorithms', 'QAOA, VQE and Grover'),
-    ('quantum_mind.quantum.fourier', 'Quantum Fourier transform'), ('quantum_mind.quantum.estimation', 'Amplitude estimation'),
-    ('quantum_mind.quantum.walks', 'Quantum walks'), ('quantum_mind.quantum.policy', 'Variational quantum policy'),
-    ('quantum_mind.quantum.quanvolution', 'Quanvolutional filter'),
-    ('quantum_mind.inspired.optimisers', 'Quantum-inspired optimisers'), ('quantum_mind.inspired.tensor', 'Tensor-network classifier'),
-    ('quantum_mind.inspired.rl', 'Quantum-inspired reinforcement learning'), ('quantum_mind.inspired.text', 'Quantum language model'),
-    ('quantum_mind.inspired.exploration', 'Exploration strategies'),
-    ('quantum_mind.inspired.tensor_layers', 'Tensor-train layers'),
-    ('quantum_mind.problems', 'QUBO problems'),
+    ('quantum_mind.belief.cobra', 'COBRA belief filter'),
+    ('quantum_mind.envs.hri', 'Environments with simulated people'),
+    ('quantum_mind.quantum.statevector', 'State-vector simulator'), ('quantum_mind.problems', 'QUBO container'),
     ('quantum_mind.circuits.builders', 'Circuit builders'), ('quantum_mind.circuits.backends', 'Running circuits'),
     ('quantum_mind.viz.states', 'Bloch vectors and trajectories'), ('quantum_mind.viz.mpl', 'Matplotlib viewer'),
     ('quantum_mind.viz.interactive', 'Interactive viewer'), ('quantum_mind.viz.themes', 'Themes'),
@@ -65,8 +57,8 @@ API = [
 ]
 API_GROUPS = [('Core', 'quantum_mind.core.'), ('Quantum-like families', 'quantum_mind.families.'),
               ('Applications', 'quantum_mind.applications.'),
-              ('Environments', 'quantum_mind.envs.'), ('Quantum', 'quantum_mind.quantum.'),
-              ('Quantum-inspired', 'quantum_mind.inspired.'), ('Problems', 'quantum_mind.problems'),
+              ('COBRA belief filter', 'quantum_mind.belief.'), ('Environments', 'quantum_mind.envs.'),
+              ('Simulator', 'quantum_mind.quantum.'), ('Problems', 'quantum_mind.problems'),
               ('Circuits', 'quantum_mind.circuits.'), ('Bloch-sphere viewer', 'quantum_mind.viz.'), ('Data', 'quantum_mind.data')]
 
 

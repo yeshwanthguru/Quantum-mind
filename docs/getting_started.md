@@ -10,7 +10,7 @@ pip install "quantum-mind[all] @ git+https://github.com/yeshwanthguru/Quantum-mi
 
 | Extra | Adds | For |
 |---|---|---|
-| (core) | numpy, scipy | quantum-like families, quantum simulator, quantum-inspired solvers, problems |
+| (core) | numpy, scipy | quantum-like families, COBRA belief filter, robot decision layer, state-vector simulator |
 | `[qiskit]` | qiskit, qiskit-aer, qiskit-ibm-runtime | circuits, Aer, IBM fake-backend noise, `circuit_trajectory` |
 | `[cloud]` | qiskit-ibm-runtime, amazon-braket-sdk | IBM Quantum and Amazon Braket hardware |
 | `[viz]` | matplotlib, plotly, ipywidgets, anywidget, seaborn | Bloch-sphere viewer, animations, live widget |
@@ -40,32 +40,24 @@ for r in compare([QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel], co
 ```
 :::
 
-:::{tab-item} Quantum
-Classify with a circuit, then run it under IBM device noise.
+:::{tab-item} COBRA belief filter
+A robot's belief about a person, where the previous sensor frame changes what the next one means.
 
 ```python
-from quantum_mind.quantum import VariationalClassifier
-from quantum_mind.circuits import run
+import numpy as np
+from quantum_mind.belief import COBRA, GaussianBayesFilter, min_cost_action
 
-clf = VariationalClassifier(layers=3).fit(X_train, y_train)
-print(clf.score(X_test, y_test))
-counts = run(clf.to_qiskit(X_test[0]), 'aer:FakeTorino', shots=4000)
-```
-:::
+rng = np.random.default_rng(0)
+frames = rng.normal(size=(300, 4, 3))                    # (sequences, frames, sensor features)
+intent = (frames[:, :, 0].sum(1) > 0).astype(int) + (frames[:, 0, 2] > 1)
+model = COBRA(n_hyp=3, n_features=3, steps=40, restarts=2).fit(frames, np.minimum(intent, 2))
+baseline = GaussianBayesFilter(3).fit(frames, np.minimum(intent, 2))
 
-:::{tab-item} Quantum-inspired
-One robot task-allocation problem, three kinds of solver.
-
-```python
-from quantum_mind.problems import task_allocation
-from quantum_mind.quantum import QAOA
-from quantum_mind.inspired import SQA, QIEA, simulated_annealing
-
-q = task_allocation(costs)                       # costs[robot, task]
-print(q.brute_force()[1],                        # exact
-      QAOA(q, p=3).run().energy,                 # quantum
-      SQA(q).run().value, QIEA(q).run().value,   # quantum-inspired
-      simulated_annealing(q).value)              # classical baseline
+belief = model.start()                                   # online, one frame at a time
+for frame in frames[0]:
+    p = belief.update(frame)
+cost = np.array([[0, 6, 10], [1.5, 0, 0], [0.8, 0.8, 0.8]])   # hand over, wait, ask
+print(p.round(2), min_cost_action(p, cost))
 ```
 :::
 
@@ -108,8 +100,8 @@ bloch_tomography(qc, 'aer:FakeTorino')             # Bloch vectors under IBM dev
    Contextuality-by-Default, or the effect of an intermediate judgement.
 4. **Run a recovery study** ({func}`~quantum_mind.core.fit.recovery`) at the planned sample size before
    collecting data.
-5. **For quantum and quantum-inspired solvers, always print the exact or classical baseline**, as
-   every example does.
+5. **Always print the classical baseline and the ablation next to a quantum-like result**, as every
+   example and the COBRA benchmark do, and look for a control task where the new idea should not help.
 
 ## Running the tests
 

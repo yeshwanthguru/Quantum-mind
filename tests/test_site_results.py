@@ -1,4 +1,4 @@
-"""The 2.0 rows of the website's results table match what the code produces (site/build.py RESULTS)."""
+"""The rows of the website's results table match what the code produces (site/build.py RESULTS)."""
 import pathlib
 import runpy
 
@@ -56,7 +56,7 @@ def _run_example(name, capsys):
 
 
 def test_calibration_row(capsys):
-    out = _run_example('32_calibration_and_conformal.py', capsys)
+    out = _run_example('17_calibration_and_conformal.py', capsys)
     row = _row('Detector calibration')
     for line in out.splitlines():
         if 'ECE' in line:
@@ -65,18 +65,8 @@ def test_calibration_row(capsys):
 
 
 def test_zeno_row(capsys):
-    out = _run_example('34_bistable_perception_zeno.py', capsys)
+    out = _run_example('19_bistable_perception_zeno.py', capsys)
     row = _row('Bistable perception')
     for line in out.splitlines():
         if 'BIC' in line:
             assert line.split('BIC')[1].strip() in row
-
-
-def test_allocation_row(capsys):
-    out = _run_example('37_robot_adapts_to_each_person.py', capsys)
-    row = _row('Trust-aware task allocation')
-    costs = [line.split('expected cost')[1].strip() for line in out.splitlines() if 'expected cost' in line]
-    assert len(costs) == 2 and all(c in row for c in costs)
-    assert out.split('miss rate ')[1].split()[0] in row
-    returns = out.split('mean return on new people:')[1]
-    assert all(v.strip(',') in row for v in returns.split() if v.lstrip('-').replace('.', '').replace(',', '').isdigit())

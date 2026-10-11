@@ -25,8 +25,8 @@ flowchart LR
 
 Quantum-like versus quantum
 : **Quantum-like** models borrow the probability rules and run on any computer. **Quantum** models run
-  as circuits on quantum hardware. **Quantum-inspired** algorithms borrow quantum ideas for classical
-  heuristics. The [concepts page](../user_guide/concepts.md) explains the difference.
+  as circuits on quantum hardware, and quantum-inspired algorithms borrow quantum ideas for classical
+  heuristics; this library only covers the first. The [concepts page](../user_guide/concepts.md) explains the difference.
 
 Projection and Lüders' rule
 : Answering "yes" projects the belief onto the "yes" subspace and renormalises it. If projectors do

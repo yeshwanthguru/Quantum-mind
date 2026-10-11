@@ -1,28 +1,24 @@
 # User guide
 
-Quantum Mind covers the three ways "quantum" enters modelling today. They share one problem format, one
-fitting and comparison workflow, and one Bloch-sphere viewer.
+Quantum Mind is a library for **quantum-probability cognition in robotics**. It has three layers, each next to
+the classical model it has to beat, plus a Bloch-sphere viewer.
 
 ```{mermaid}
 flowchart TB
     core["quantum_mind.core<br/>Model · Param · fit · compare · recovery"]
-    fam["quantum_mind.families<br/>12 quantum-like families"]
-    app["quantum_mind.applications<br/>robotics"]
-    prob["quantum_mind.problems<br/>QUBO builders"]
-    qm["quantum_mind.quantum<br/>classifiers · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]
-    ins["quantum_mind.inspired<br/>QIEA · QPSO · SQA · MPS · QRL · QLM"]
+    fam["quantum_mind.families<br/>11 quantum-like families"]
+    bel["quantum_mind.belief<br/>COBRA belief filter"]
+    app["quantum_mind.applications<br/>robot decision layer"]
     circ["quantum_mind.circuits<br/>circuits + run()"]
+    sim["quantum_mind.quantum<br/>state-vector simulator"]
     viz["quantum_mind.viz<br/>Bloch-sphere viewer"]
     hw[("Aer · IBM Quantum · Amazon Braket")]
     core --> fam --> app
-    fam --> circ
-    prob --> qm
-    prob --> ins
-    qm --> circ
-    circ --> hw
-    fam --> viz
-    qm --> viz
+    core --> bel --> app
+    fam --> circ --> hw
+    sim --> viz
     circ --> viz
+    fam --> viz
 ```
 
 ::::{grid} 1 1 2 2
@@ -32,7 +28,7 @@ flowchart TB
 :link: concepts
 :link-type: doc
 
-What separates quantum-like, quantum and quantum-inspired models, and how to test each.
+What separates quantum-like models from quantum computing, and how to test each.
 :::
 
 :::{grid-item-card} Quantum-like families
@@ -41,23 +37,15 @@ What separates quantum-like, quantum and quantum-inspired models, and how to tes
 :link-type: doc
 
 Order effects, conjunctions, interference, Bayesian networks, dynamics, decisions, contextuality,
-similarity, games, memory and concepts.
+similarity, memory and concepts.
 :::
 
-:::{grid-item-card} Quantum models
+:::{grid-item-card} COBRA belief filter
 :class-card: pillar-quantum
-:link: quantum
+:link: belief
 :link-type: doc
 
-Machine learning and algorithms on a batched simulator with exact gradients.
-:::
-
-:::{grid-item-card} Quantum-inspired models
-:class-card: pillar-inspired
-:link: inspired
-:link-type: doc
-
-Optimisers, tensor networks, reinforcement learning and document ranking.
+A density-matrix belief whose measurement basis is rotated by the previous sensor frame.
 :::
 
 :::{grid-item-card} Robotics
@@ -74,27 +62,32 @@ Questioning designs, trust, intent resolution, a human-model ensemble and a ROS 
 
 Trajectories, animations, interactive HTML, live updates and tomography.
 :::
+
+:::{grid-item-card} Simulator and circuits
+:link: quantum
+:link-type: doc
+
+The exact state-vector simulator and the circuits of the quantum-like families.
+:::
 ::::
 
 ## Status and scope
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
-| Quantum-like models | 12 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
-| Robotics | simulated populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, risk-aware decisions, calibration and conformal sets, orchestration gates, a question planner, trust-aware hand-over, multimodal fusion, Gymnasium environments, `HumanModelService`, a ROS 2 node | a run of the ROS 2 node inside a ROS 2 installation; data from human-robot studies |
-| Quantum models | classifiers, regressor, kernels, QAOA, VQE, Grover, QFT, amplitude estimation, quantum walks on an exact simulator with adjoint gradients; Qiskit export; IBM submission through the Qiskit Runtime Sampler | quantum advantage (none claimed); noise-aware training; runs on hardware |
-| Quantum-inspired | QIEA, QPSO, SQA, simulated-annealing baseline, MPS classifier, quantum reinforcement learning, quantum language model | |
+| Quantum-like models | 11 families with classical baselines, fitting, BIC/AIC, recovery studies, per-person fitting and comparison, partial pooling; published aggregate data | full hierarchical Bayesian inference (only MAP partial pooling) |
+| COBRA belief filter | context-rotated density-matrix filter, online mode, Bayes and incoherent limits, benchmark with paired tests | real-person data; reliable training (the context mechanism is found on some restarts only) |
+| Robotics | simulated populations for three question domains, questioning designs, trust protocol, intent resolution, `HumanModelEnsemble`, `ask_or_act`, risk-aware decisions, calibration and conformal sets, orchestration gates, a question planner, trust-aware hand-over and allocation, multimodal fusion, Gymnasium environments, `HumanModelService`, a ROS 2 node | a run of the ROS 2 node inside a ROS 2 installation; data from human-robot studies |
+| Simulator and circuits | exact state-vector simulator with adjoint gradients; Qiskit export; circuits for the families; IBM submission through the Qiskit Runtime Sampler | noise-aware training; runs on hardware |
 | Viewer | trajectories, animations, interactive HTML, live widget, tomography, concurrence timeline, Q-sphere | |
 
 ## Limitations
 
 - Fitting aggregate counts assumes a homogeneous population. Individual differences can hide or
-  mimic quantum-like structure (example 22).
+  mimic quantum-like structure (example 14).
 - Several quantum-like models have been challenged by further tests; the family pages list these.
-- The quantum models are small and exactly simulable. No quantum advantage is claimed: on the
-  example classification, forecasting, anomaly-detection and clustering tasks a classical model is
-  at least as accurate.
-- "Quantum-inspired" names where an idea came from, not a speed-up.
+- COBRA is a classical simulation of the quantum-probability formalism. No quantum advantage is claimed, and
+  its advantage over classical filters is shown only on synthetic data built to contain a context effect.
 - Hardware noise distorts circuits by a few percent of total variation for small circuits, and more
   for deep ones. No hardware results are included.
 
@@ -105,11 +98,11 @@ Trajectories, animations, interactive HTML, live updates and tomography.
 concepts
 extensions
 families/index
-quantum
-inspired
-problems
-circuits
-viz
+belief
 robotics
 ros2
+circuits
+quantum
+problems
+viz
 ```

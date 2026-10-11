@@ -7,14 +7,13 @@ names the class or function that implements each equation, so the mathematics, t
 ```{mermaid}
 flowchart LR
     accTitle: Mathematics, diagram 1
-    accDescr: The core rules feed the quantum-like families and the decision layer; perception feeds the decision layer; quantum and quantum-inspired models feed learning.
+    accDescr: The core rules feed the quantum-like families, the COBRA belief filter and the decision layer; perception feeds the decision layer.
     C["Core<br/>Born and Lüders rules · Lindblad · likelihood · AIC/BIC"]:::op --> QL["Quantum-like families<br/>projections · interference · walks · Zeno"]:::hum
+    C --> B["COBRA belief filter<br/>density matrix · rotated measurement · dephasing"]:::in
     C --> R["Decision layer<br/>value of information · calibration · conformal · empirical Bayes"]:::out
     QL --> R
+    B --> R
     P["Perception<br/>adapters · Bayes · Dempster-Shafer · Kraus fusion"]:::in --> R
-    L["Learning<br/>MDPs · Q-learning · amplitude exploration · REINFORCE · TT-SVD"]:::out
-    Q["Quantum<br/>circuits · kernels · QAOA · VQE · Grover · QFT · QAE · walks"]:::in --> L
-    I["Quantum-inspired<br/>QUBO · QIEA · QPSO · SQA · MPS · QLM"]:::in --> L
     classDef in fill:#0b2a4a,stroke:#79c0ff,color:#e6edf3
     classDef op fill:#2a1b3d,stroke:#d2a8ff,color:#e6edf3
     classDef out fill:#0f2e1a,stroke:#7ee787,color:#e6edf3
@@ -38,7 +37,15 @@ AIC, BIC, model recovery.
 :link-type: doc
 
 Question order and the QQ equality, conjunction, interference, QLBN, walks, trust qubit, decision,
-contextuality, similarity, games, memory, concepts, Zeno perception.
+contextuality, similarity, memory, concepts, Zeno perception.
+:::
+
+:::{grid-item-card} {fas}`atom` COBRA belief filter
+:class-card: pillar-quantum
+:link: belief
+:link-type: doc
+
+Density-matrix belief, context-rotated generalised measurement, dephasing, and the two classical limits.
 :::
 
 :::{grid-item-card} {fas}`robot` Robot decision layer
@@ -57,29 +64,12 @@ information, partial pooling, hand-over costs.
 Detector, speech and gaze adapters; Bayesian, Dempster-Shafer and quantum-like (Kraus) fusion.
 :::
 
-:::{grid-item-card} {fas}`gamepad` Learning
+:::{grid-item-card} {fas}`gears` Infrastructure
 :class-card: pillar-viz
-:link: learning
+:link: infrastructure
 :link-type: doc
 
-MDPs of the environments, Q-learning, exploration rules, REINFORCE on a circuit, tensor trains,
-quanvolution.
-:::
-
-:::{grid-item-card} {fas}`atom` Quantum models
-:class-card: pillar-quantum
-:link: quantum
-:link-type: doc
-
-Encodings, parameter shift and adjoint gradients, classifiers, kernels, QAOA, VQE, Grover, QFT,
-amplitude estimation, quantum walks.
-:::
-
-:::{grid-item-card} {fas}`wand-magic-sparkles` Quantum-inspired algorithms
-:link: inspired
-:link-type: doc
-
-QUBO formulations, QIEA, QPSO, simulated quantum annealing, MPS classifier, quantum language model.
+Environments with simulated people, the state-vector simulator and the QUBO container.
 :::
 ::::
 
@@ -88,9 +78,8 @@ QUBO formulations, QIEA, QPSO, simulated quantum annealing, MPS classifier, quan
 
 core
 quantum_like
+belief
 robotics
 perception
-learning
-quantum
-inspired
+infrastructure
 ```

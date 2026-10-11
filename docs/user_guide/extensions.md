@@ -42,17 +42,14 @@ and the design functions cost a fraction of a second per answer and can run duri
 
 ## For robots
 
-Four published robotics methods are extended in the same spirit; example 37 uses all of them on
-simulated people.
+Four published robotics methods are extended in the same spirit, and one method is new to this library.
 
 | Published method | Quantum Mind's extension |
 |---|---|
 | Split conformal prediction | {class}`~quantum_mind.applications.calibration.AdaptiveConformalSets`: sets for a person's next answer that keep their long-run coverage while the person changes, with a guaranteed bound; the robot asks when the set holds more than one answer |
 | Partial pooling | `PersonalisedHumanModel(method='online')`: a full per-person posterior from the population prior, with credible intervals |
-| Task allocation QUBO | {func}`~quantum_mind.applications.allocation.trust_aware_allocation`: expected failures of robot-assisted steps from each person's trust in the robot, plus workload; solved exactly, by annealing or by QAOA |
-| Tabular and quantum reinforcement learning | {func}`~quantum_mind.envs.sample_people` and the `people=` option of the environments: a new simulated person every episode, drawn from a fitted model's uncertainty |
+| Task allocation QUBO | {func}`~quantum_mind.applications.allocation.trust_aware_allocation`: expected failures of robot-assisted steps from each person's trust in the robot, plus workload; solved exactly or exported as an Ising model |
+| Reinforcement learning against a fixed simulated person | {func}`~quantum_mind.envs.sample_people` and the `people=` option of the environments: a new simulated person every episode, drawn from a fitted model's uncertainty |
+| (new) Bayes filtering of sensor frames | {class}`~quantum_mind.belief.COBRA`: a density-matrix belief whose measurement basis is rotated by the previous frame, with the Bayes filter and an incoherent filter as built-in limits |
 
-What example 37 measured: the trust-aware plan had an expected cost of 4.91 against 16.27 for a
-trust-blind plan; the adaptive sets missed 14.7% of answers at a 15% target while the robot learned a
-new person; agents trained against one simulated person or a population scored the same on new people,
-because in that environment asking resets every person's trust in the same way.
+What was measured: the adaptive conformal sets keep their coverage while the robot learns a new person, and the trust-aware allocation changes the plan whenever a person's trust in the robot is low (both on simulated people). COBRA's gain over a Bayes filter is shown on a synthetic task built to contain a context effect, with a control task, ablations and paired tests (`benchmarks/context_intent_benchmark.py`); it has not been tested on human data.

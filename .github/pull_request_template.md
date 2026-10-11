@@ -5,9 +5,8 @@
 ## Pillar
 
 - [ ] Quantum-like (model of people)
-- [ ] Quantum (circuit / QML / algorithm)
-- [ ] Quantum-inspired (classical algorithm)
-- [ ] Viewer, problems, core or infrastructure
+- [ ] Belief filter or robot decision layer
+- [ ] Viewer, circuits, core or infrastructure
 
 ## Checks
 

@@ -83,7 +83,7 @@ mermaid_init_config = {'flowchart': {'curve': 'basis', 'nodeSpacing': 28, 'rankS
 sphinx_gallery_conf = {
     'examples_dirs': str(ROOT / 'examples'),
     'gallery_dirs': 'auto_examples',
-    'filename_pattern': r'^((?!11_cloud_run).)*$' if not FAST else r'^$',   # 11 needs command-line arguments
+    'filename_pattern': r'^((?!09_cloud_run).)*$' if not FAST else r'^$',   # 11 needs command-line arguments
     'ignore_pattern': r'__init__\.py',
     'within_subsection_order': 'FileNameSortKey',
     'default_thumb_file': str(DOCS / '_static' / 'thumbs' / 'q.png'),
@@ -111,8 +111,8 @@ html_show_sourcelink = False
 html_last_updated_fmt = '%d %B %Y'
 html_context = {
     'docs_url': SITE + 'docs/',
-    'site_description': ('Quantum Mind %s: quantum-like models of human judgement and trust, quantum machine '
-                         'learning and quantum-inspired algorithms for robots that work with people, each '
+    'site_description': ('Quantum Mind %s: quantum-probability cognition for robots that work with people: '
+                         'quantum-like human models, the COBRA belief filter and a cost-aware decision layer, each '
                          'compared with classical baselines.' % version),
     'github_user': 'yeshwanthguru',
     'github_repo': 'quantum-mind',

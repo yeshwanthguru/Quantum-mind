@@ -115,11 +115,10 @@ plt.show()
 
 | Pillar | What it holds | Start with |
 |---|---|---|
-| Quantum-like | twelve families of models of judgement, decision, trust and perception | tutorials 2, 3, 9 |
+| Quantum-like | eleven families of models of judgement, decision, trust and perception | tutorials 2, 3, 9 |
 | Robot decision layer | ask or act, calibration, orchestration, question planning, fusion, hand-over | tutorials 4 to 8 |
-| Learning | Gymnasium environments, exploration, a quantum policy, compression, quanvolution | tutorials 10 to 13 |
-| Quantum and quantum-inspired | QAOA, VQE, Grover, kernels, QIEA, QPSO, SQA, tensor networks | tutorial 14 |
-| Viewer | Bloch spheres, trajectories and animations | tutorial 15 |
+| COBRA belief filter | a density-matrix belief whose measurement basis is rotated by the previous sensor frame | tutorial 10 |
+| Viewer | Bloch spheres, trajectories and animations | tutorial 11 |
 
 Every model also has a block diagram in the [model atlas](../atlas/index.md), and the
 [foundations](../learn/index.md) pages explain the background from the basics.

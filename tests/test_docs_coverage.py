@@ -13,14 +13,13 @@ import atlas  # noqa: E402
 
 MODEL_MODULES = (['quantum_mind.families.%s' % f for f in ('order_effects', 'conjunction', 'interference', 'qlbn',
                                                            'dynamics', 'decision', 'contextuality', 'similarity',
-                                                           'game_theory', 'memory', 'concepts', 'perception')]
+                                                           'memory', 'concepts', 'perception')]
                  + ['quantum_mind.applications.%s' % a for a in ('robotics', 'intent', 'calibration', 'orchestration',
                                                                  'questioning', 'personalisation', 'handover', 'fusion', 'allocation')]
-                 + ['quantum_mind.envs', 'quantum_mind.quantum', 'quantum_mind.inspired', 'quantum_mind.problems'])
+                 + ['quantum_mind.belief', 'quantum_mind.envs', 'quantum_mind.quantum', 'quantum_mind.problems'])
 
 #: Public classes that are results, settings or helpers rather than models.
-NOT_MODELS = {'Module', 'RoutingTask', 'X', 'W', 'XX', 'QAOAResult', 'GroverResult', 'AEResult', 'OptimResult',
-              'StateIndexer', 'BayesNet', 'ProjectiveQuestionModel', 'Hamiltonian'}
+NOT_MODELS = {'Module', 'RoutingTask', 'X', 'W', 'XX', 'BeliefTrace', 'BayesNet', 'ProjectiveQuestionModel'}
 
 
 def test_every_public_model_has_an_atlas_entry():
@@ -89,8 +88,7 @@ def test_every_atlas_entry_has_a_category():
     assert sorted(titles) == sorted(atlas.CATEGORY), 'CATEGORY in docs/_ext/atlas.py must list every atlas entry once'
     assert set(atlas.CATEGORY.values()) <= set(atlas.CATEGORIES)
     pages = {key: [m['title'] for m in models] for key, (_, _, models) in atlas.PAGES.items()}
-    assert all(atlas.CATEGORY[t] == 'quantum' for t in pages['quantum'])
-    assert all(atlas.CATEGORY[t] == 'quantum-inspired' for t in pages['inspired'])
+    assert all(atlas.CATEGORY[t] == 'quantum-like' for t in pages['belief'][:2])      # COBRA and its online mode
 
 
 def test_reference_collection_resolves_every_short_citation():
