@@ -72,6 +72,7 @@ class Trace:
     """Per-frame outputs of a COBRA forward pass."""
     probs: np.ndarray       # (N, T, d) hypothesis probabilities after each frame
     coherence: np.ndarray   # (N, T) l1 coherence of rho after each frame
+    rho: np.ndarray         # (N, T, d, d) density matrix after each frame
 
 
 class COBRA:
@@ -137,6 +138,7 @@ class COBRA:
         rho = np.broadcast_to(np.diag(prior).astype(complex), (n, self.d, self.d)).copy()
         probs = np.empty((n, t_len, self.d))
         coh = np.empty((n, t_len))
+        rhos = np.empty((n, t_len, self.d, self.d), dtype=complex) if trace else None
         for t in range(t_len):
             xt = x[:, t]
             prev = x[:, t - 1] if t else np.zeros_like(xt)
@@ -150,10 +152,12 @@ class COBRA:
             rho /= np.einsum("nii->n", rho).real[:, None, None]
             diag = np.einsum("nii->ni", rho)
             rho = (1.0 - gamma) * rho + gamma * (diag[:, :, None] * np.eye(self.d))
+            if trace:
+                rhos[:, t] = rho
             probs[:, t] = np.clip(diag.real, 1e-9, None)
             probs[:, t] /= probs[:, t].sum(axis=1, keepdims=True)
             coh[:, t] = np.abs(rho).sum(axis=(1, 2)) - np.abs(diag).sum(axis=1)
-        return (probs, coh) if trace else probs
+        return (probs, coh, rhos) if trace else probs
 
     def _loss(self, theta: np.ndarray, x: np.ndarray, y: np.ndarray) -> float:
         probs = self._forward(theta, x)
@@ -252,8 +256,8 @@ class COBRA:
         return self._forward(self.theta, np.asarray(x, float))[:, -1]
 
     def trace(self, x: np.ndarray) -> Trace:
-        probs, coh = self._forward(self.theta, np.asarray(x, float), trace=True)
-        return Trace(probs=probs, coherence=coh)
+        probs, coh, rhos = self._forward(self.theta, np.asarray(x, float), trace=True)
+        return Trace(probs=probs, coherence=coh, rho=rhos)
 
     def coherence(self, x: np.ndarray) -> np.ndarray:
         """l1 coherence of the final belief (0 for a classical belief)."""

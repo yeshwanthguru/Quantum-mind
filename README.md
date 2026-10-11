@@ -7,6 +7,8 @@ QPDM is a research prototype for **sensor-driven perception and dexterous roboti
 
 Applications define the labels and supply their own labeled sensor examples. The model does not assume a particular object, robot, grasp, or task.
 
+> **See also:** [COBRA](COBRA.md), a trainable density-matrix belief filter for robot intent recognition, with figures, a benchmark and an honest write-up.
+
 ## Use modes
 
 Instantiate the same model separately for the capability you want:
