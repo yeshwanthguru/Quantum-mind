@@ -48,10 +48,18 @@ jobs:
           import sys, nbclient
           sys.path.insert(0, 'tutorials')
           from _convert import to_notebook, sources
+          failed = []
           for src in sources():
-              nbclient.NotebookClient(to_notebook(src), timeout=1800, kernel_name='python3',
-                                      resources={'metadata': {'path': '.'}}).execute()
-              print('executed', src.name)
+              try:
+                  nbclient.NotebookClient(to_notebook(src), timeout=1800, kernel_name='python3',
+                                          resources={'metadata': {'path': '.'}}).execute()
+                  print('executed', src.name)
+              except Exception as e:                      # name the tutorial and its error in the run annotations
+                  msg = ' '.join(str(e).split())[-600:].replace('%', ' ')
+                  print('::error title=tutorial %s failed::%s' % (src.name, msg))
+                  failed.append(src.name)
+          if failed:
+              raise SystemExit('tutorials failed: %s' % ', '.join(failed))
           PY
       - name: Notebooks
         run: |
