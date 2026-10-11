@@ -1,7 +1,6 @@
-r"""Trust-aware task allocation: quantum and quantum-inspired optimisation driven by models of people.
+r"""Trust-aware task allocation: a binary allocation problem whose costs come from models of people.
 
-Task allocation as a QUBO (Lucas, 2014; :func:`quantum_mind.problems.task_allocation`) uses fixed
-costs. In a team of people working with a robot, a task that needs the robot's help (a hand-over, a
+Task allocation as a QUBO (Lucas, 2014) usually uses fixed costs. In a team of people working with a robot, a task that needs the robot's help (a hand-over, a
 shared lift) goes wrong more often with a person who does not trust the robot, and people who carry
 too many tasks slow down. :func:`trust_aware_allocation` adds both effects to the costs:
 
@@ -18,8 +17,8 @@ how much task :math:`t` depends on the robot, :math:`F` the cost of a failed rob
 The trust values come from the library's people models: the trust qubit of
 :class:`~quantum_mind.applications.handover.TrustAwareHandover`, an
 :class:`~quantum_mind.core.online.OnlinePersonModel`, or, for a cautious allocation, the lower end of
-a credible interval. The QUBO is solved with any of the package's solvers (exhaustive search,
-simulated quantum annealing, QAOA).
+a credible interval. The QUBO is solved exactly with :meth:`~quantum_mind.problems.Qubo.brute_force` for small teams, or
+handed to any external solver through :meth:`~quantum_mind.problems.Qubo.to_ising`.
 
 Examples
 --------

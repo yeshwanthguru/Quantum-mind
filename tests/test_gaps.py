@@ -1,30 +1,6 @@
-"""Han and Kim QIEA table, MPS sweep training, entanglement views, individual-level fitting."""
+"""Entanglement views and individual-level fitting."""
 import numpy as np
 import pytest
-from quantum_mind.problems import maxcut
-from quantum_mind.inspired import QIEA, MPSClassifier
-
-
-def test_qiea_lookup_table_and_simple_rule():
-    rng = np.random.default_rng(5)
-    q = maxcut([(i, j) for i in range(10) for j in range(i + 1, 10) if rng.random() < 0.4], 10)
-    opt = q.brute_force()[1]
-    assert QIEA(q, rotation='lookup', generations=200).run().value == opt
-    assert QIEA(q, rotation='simple', generations=200).run().value == opt
-    t = QIEA(q)._step
-    assert t[0, 1, 1] < 0 and t[1, 0, 1] > 0 and t[1, 1, 0] > 0 and t[0, 0, 0] == 0     # towards the better bit
-    with pytest.raises(ValueError):
-        QIEA(q, rotation='other')
-
-
-def test_mps_sweep_training_adapts_bonds_and_learns():
-    rng = np.random.default_rng(0)
-    X = rng.normal(size=(240, 4)); y = (X[:, 0] + X[:, 1] * X[:, 2] > 0).astype(int)
-    m = MPSClassifier(bond=4, local_dim=3, method='sweep', sweeps=3, steps=25).fit(X, y)
-    assert m.score(X, y) > 0.85 and np.allclose(m.predict_proba(X[:4]).sum(1), 1)
-    assert len(m.bond_dimensions) == 3 and max(m.bond_dimensions) <= 4 and len(m.history_) == 3
-    with pytest.raises(ValueError):
-        MPSClassifier(method='sweep').fit(X[:, :1], y)
 
 
 def test_concurrence_and_entanglement_views():

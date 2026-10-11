@@ -41,7 +41,7 @@ except ImportError:                            # pragma: no cover - exercised on
             if seed is not None:
                 self.np_random = np.random.default_rng(seed)
 
-__all__ = ['ClarificationEnv', 'TrustHandoverEnv', 'GridWorldEnv', 'register_envs', 'sample_people']
+__all__ = ['ClarificationEnv', 'TrustHandoverEnv', 'register_envs', 'sample_people']
 
 
 class _Discrete:
@@ -326,47 +326,6 @@ class TrustHandoverEnv(_Base):
         self.t += 1
         return self._obs(), reward, False, self.t >= self.n_steps, {'p_trust': self.p_trust}
 
-
-class GridWorldEnv(_Base):
-    """The grid world of :class:`quantum_mind.inspired.rl.GridWorld` with the Gymnasium interface.
-
-    Parameters
-    ----------
-    **kwargs
-        Passed to :class:`~quantum_mind.inspired.rl.GridWorld`.
-    """
-    metadata = {'render_modes': []}
-
-    def __init__(self, **kwargs):
-        from ..inspired.rl import GridWorld
-        self.world = GridWorld(**kwargs)
-        self.action_space = _discrete(self.world.n_actions)
-        self.observation_space = _discrete(self.world.n_states)
-        self.np_random = np.random.default_rng()
-
-    def reset(self, seed=None, options=None):
-        """Return to the start cell.
-
-        Returns
-        -------
-        observation : int
-        info : dict
-        """
-        super().reset(seed=seed)
-        return self.world.reset(), {}
-
-    def step(self, action):
-        """Move one cell.
-
-        Returns
-        -------
-        observation, reward, terminated, truncated, info
-        """
-        s, r, done = self.world.step(int(action))
-        reached = self.world.pos == self.world.goal
-        return s, r, bool(reached), bool(done and not reached), {}
-
-
 def register_envs():
     """Register the environments with Gymnasium.
 
@@ -377,8 +336,7 @@ def register_envs():
     """
     if _gym is None:
         return []
-    ids = {'quantum_mind/Clarification-v0': ClarificationEnv, 'quantum_mind/TrustHandover-v0': TrustHandoverEnv,
-           'quantum_mind/GridWorld-v0': GridWorldEnv}
+    ids = {'quantum_mind/Clarification-v0': ClarificationEnv, 'quantum_mind/TrustHandover-v0': TrustHandoverEnv}
     for i, cls in ids.items():
         if i not in _gym.registry:
             _gym.register(id=i, entry_point=cls)

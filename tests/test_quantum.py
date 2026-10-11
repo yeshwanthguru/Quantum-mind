@@ -1,9 +1,6 @@
 import numpy as np
 import pytest
-from quantum_mind.quantum import (Circuit, W, X, XX, VariationalClassifier, QuantumKernelClassifier, QuantumKernel, QAOA,
-                           Hamiltonian, VQE, grover, parameter_shift)
-from quantum_mind.quantum.ansatz import reuploading_classifier_circuit, shifted_weights
-from quantum_mind.problems import maxcut
+from quantum_mind.quantum import Circuit, W, X, XX
 
 
 def _random_circuit(rng):
@@ -27,55 +24,7 @@ def test_simulator_matches_qiskit():
         assert np.allclose(S2[b], c.state(Ws[b], x[:1])[0])
 
 
-def test_parameter_shift_is_exact():
-    rng = np.random.default_rng(0)
-    c = reuploading_classifier_circuit(2, 2, 2); w = rng.normal(size=c.n_weights); Xs = rng.random((3, 2))
-    f = lambda v: c.probabilities(v, Xs)                                       # noqa: E731
-    g = parameter_shift(f, w)
-    for k in (0, 5):
-        e = np.zeros_like(w); e[k] = 1e-6
-        assert np.abs(g[k] - (f(w + e) - f(w - e)) / 2e-6).max() < 1e-6
-    assert shifted_weights(w).shape == (2 * len(w), len(w))
-
-
 def _moons(rng, n=120):
     th = rng.uniform(0, np.pi, n)
     X_ = np.r_[np.c_[np.cos(th), np.sin(th)], np.c_[1 - np.cos(th), 0.5 - np.sin(th)]] + rng.normal(0, 0.1, (2 * n, 2))
     return X_, np.r_[np.zeros(n), np.ones(n)]
-
-
-def test_classifiers_learn():
-    X_, y = _moons(np.random.default_rng(0))
-    vqc = VariationalClassifier(layers=3, maxiter=100).fit(X_, y)
-    assert vqc.score(X_, y) > 0.85
-    P = vqc.predict_proba(X_[:5]); assert np.allclose(P.sum(1), 1)
-    assert QuantumKernelClassifier(reps=1, scale=0.5).fit(X_, y).score(X_, y) > 0.85
-    K = QuantumKernel(reps=1).fit(X_)(X_[:6]); assert np.allclose(np.diag(K), 1) and np.allclose(K, K.T)
-
-
-def test_vqc_circuit_on_aer():
-    pytest.importorskip('qiskit_aer')
-    from quantum_mind.circuits import run
-    X_, y = _moons(np.random.default_rng(1), 40)
-    vqc = VariationalClassifier(layers=1, maxiter=20).fit(X_, y)
-    counts = run(vqc.to_qiskit(X_[0]), 'aer', 20000)
-    p1 = sum(k for b, k in counts.items() if b[-1] == '1') / 20000
-    assert abs(p1 - vqc.predict_proba(X_[:1])[0, 1]) < 0.02
-
-
-def test_qaoa_vqe_grover():
-    q = maxcut([(0, 1), (1, 2), (2, 3), (3, 0), (0, 2)])
-    r = QAOA(q, p=2, restarts=3).run()
-    uniform = np.isclose(q.all_energies(), r.optimum).mean()                 # 2 optimal cuts of 16
-    assert r.energy == r.optimum and r.p_optimal > 3 * uniform
-    assert r.expectation / r.optimum > 0.85                                  # approximation ratio
-    v = VQE(Hamiltonian([(1, 'ZZ'), (0.5, 'XI'), (0.5, 'IX')]), restarts=2).run()
-    assert abs(v['energy'] - v['exact']) < 1e-6
-    g = grover(4, [5, 11]); assert g.iterations == 2 and g.success > 0.9
-
-
-def test_qaoa_export_matches_simulation():
-    from qiskit.quantum_info import Statevector
-    q = maxcut([(0, 1), (1, 2), (2, 0)]); qa = QAOA(q, p=1, restarts=1); r = qa.run()
-    P = Statevector(qa.to_qiskit(r, measure=False)).probabilities()
-    assert np.allclose(P, r.probabilities, atol=1e-9)
