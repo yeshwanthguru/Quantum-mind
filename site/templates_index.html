@@ -19,7 +19,7 @@
 <header class="top"><div class="wrap">
   <a class="brand" href="#"><img src="assets/logo.svg" alt="" width="26" height="26"> Quantum Mind</a>
   <nav>
-    <a href="#new">New in 3.0</a><a href="#cobra">COBRA</a><a href="#robotics">Robotics</a><a href="#pillars">Layers</a><a href="#playground-section">Playground</a>
+    <a href="#author">Author</a><a href="#new">New in 3.0</a><a href="#cobra">COBRA</a><a href="#robotics">Robotics</a><a href="#pillars">Layers</a><a href="#playground-section">Playground</a>
     <a href="#results">Results</a><a href="docs/learn/index.html">Learn</a><a href="docs/tutorials/index.html">Tutorials</a><a href="docs/">Docs</a>
   </nav>
   <a class="gh" href="{{REPO}}">GitHub</a>
@@ -54,6 +54,30 @@
     <div class="card"><h3>Quantum physics</h3><p>Density matrices, generalised measurements, dephasing and a state-vector simulator with Qiskit export, shown on a Bloch sphere.</p></div>
   </div>
   <p class="note">Version {{VERSION}} · Apache-2.0 · Python 3.10–3.12 · {{TESTS}} tests in CI · Qiskit, IBM Quantum, Amazon Braket</p>
+</div></section>
+
+<section id="author"><div class="wrap">
+  <h2>Author's view</h2>
+  <p class="lead"><em>Yeshwanth Guru, author and maintainer.</em></p>
+  <p>I started Quantum Mind from one belief: a robot that works with people needs a different kind of probability than
+  the one inside most of its filters. People are not neutral sensors. A look changes what a hand movement means, a
+  question changes the answer to the next question, and asking someone whether they trust a robot changes their trust.
+  Classical filters assume the evidence arrives in independent pieces; quantum probability was built for the case where
+  the order and the context of a measurement matter.</p>
+  <p>&ldquo;Quantum robotics&rdquo; usually means using quantum computers to speed up robot algorithms. I think the
+  nearer and more testable meeting point is the mathematics of quantum probability applied to the robot's
+  <strong>beliefs about people</strong>: context, order and trust. So the library does not try to make robots faster
+  with qubits. It asks one question and keeps asking it: does quantum probability describe human context better than the
+  classical alternative, and does a robot decide better when it uses it? Every model sits next to the classical model it
+  has to beat.</p>
+  <p>I removed the general-purpose quantum algorithms and optimisers, because Qiskit, PennyLane and optimisation
+  libraries do them better, and I limited the scope to AI, machine learning, vision, robotics and embodied AI. Models
+  from the literature are implemented from their papers and cited in the
+  <a href="docs/atlas/index.html">model atlas</a>, which labels each as published, extended or unique; the unique ones are
+  my own designs.</p>
+  <p class="note">I do not claim a quantum computational advantage or results with real people and robots, and COBRA's
+  gain is modest and shown only on synthetic data. Next: a pilot study with a real robot, more reliable training, and
+  independent replication. If a claim does not hold, please <a href="{{REPO}}/issues">open an issue</a>.</p>
 </div></section>
 
 <section id="new"><div class="wrap">

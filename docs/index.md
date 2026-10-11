@@ -70,6 +70,32 @@ tomography on real back ends.
 :::
 ::::
 
+## Author's view
+
+*Yeshwanth Guru, author and maintainer.*
+
+I started Quantum Mind from one belief: a robot that works with people needs a different kind of probability than the
+one inside most of its filters. People are not neutral sensors. A look changes what a hand movement means, a question
+changes the answer to the next question, and asking someone whether they trust a robot changes their trust. Classical
+filters assume the evidence arrives in independent pieces; quantum probability was built for the case where the order
+and the context of a measurement matter.
+
+"Quantum robotics" usually means using quantum computers to speed up robot algorithms. I think the nearer and more
+testable meeting point is the mathematics of quantum probability applied to the robot's **beliefs about people**:
+context, order and trust. So the library does not try to make robots faster with qubits. It asks one question and keeps
+asking it: does quantum probability describe human context better than the classical alternative, and does a robot
+decide better when it uses it? Every model sits next to the classical model it has to beat, with the ablation that
+isolates what is new.
+
+I removed the general-purpose quantum algorithms and optimisers (Qiskit, PennyLane and optimisation libraries do them
+better), and I limited the scope to AI, machine learning, vision, robotics and embodied AI. Models from the literature
+are implemented from their papers and cited; the {doc}`model atlas <atlas/index>` labels each as published, extended or
+unique, and the unique ones are my own designs.
+
+I do not claim a quantum computational advantage or results with real people and robots, and COBRA's gain is modest and
+shown only on synthetic data. I want to run a pilot study with a real robot, make COBRA's training more reliable, and see
+others replicate the results. If a claim does not hold, please open an issue.
+
 ## What is new in this library
 
 Classical filters treat evidence as arriving in neutral, independent pieces. People and robots do not: a look

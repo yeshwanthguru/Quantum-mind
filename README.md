@@ -15,6 +15,7 @@
 <p align="center"><b><a href="https://yeshwanthguru.github.io/Quantum-mind/">Website and live Bloch-sphere playground</a> · <a href="https://yeshwanthguru.github.io/Quantum-mind/docs/">Documentation</a> (user guide, example gallery, API reference)</b></p>
 
 <p align="center">
+  <b><a href="#author">Author's view</a></b> ·
   <b><a href="#idea">The idea</a></b> ·
   <b><a href="#cobra">COBRA</a></b> ·
   <b><a href="#layers">Three layers</a></b> ·
@@ -37,6 +38,44 @@ it turns every belief into a cost-aware decision: hand over, wait, or ask.
 > It runs on ordinary computers and makes **no claim of quantum computational advantage**. "Quantum-like" means
 > the probability rules are borrowed; nothing in the brain or the robot is assumed to be quantum. Every model is
 > reported next to the classical model it has to beat, with the ablation that isolates what is new.
+
+<a id="author"></a>
+
+## Author's view
+
+*Yeshwanth Guru, author and maintainer.*
+
+I started Quantum Mind from one belief: a robot that works with people needs a different kind of probability
+than the one inside most of its filters. People are not neutral sensors. A look changes what a hand movement
+means, a question changes the answer to the next question, and asking someone whether they trust a robot changes
+their trust. Classical filters assume the evidence arrives in independent pieces. Quantum probability was built
+for exactly the case where the order and the context of a measurement matter.
+
+"Quantum robotics" usually means using quantum computers to speed up robot algorithms. I think the nearer and more
+testable meeting point of quantum physics and robotics is the mathematics of quantum probability applied to the
+robot's **beliefs about people**: context, order and trust. So this library does not try to make robots faster
+with qubits. It asks one question and keeps asking it: *does quantum probability describe human context better
+than the classical alternative, and does a robot decide better when it uses it?* Every model is therefore built
+next to the classical model it has to beat, with the ablation that isolates what is new.
+
+What I chose to build, and not to build:
+
+* I removed the general-purpose quantum algorithms and the quantum-inspired optimisers. Qiskit, PennyLane and
+  dedicated optimisation libraries do them better, and a library should not carry copies of other people's work.
+* I limited the scope to AI, machine learning, vision, robotics and embodied AI. The cognitive-psychology and
+  economics topics that quantum cognition is usually known for are gone.
+* The models taken from the literature are implemented from their papers and cited in the model atlas, which labels
+  each entry as *published*, *extended* or *unique*. The parts I designed myself are the *unique* ones: the COBRA
+  belief filter, the robot decision layer, the environments and the circuits for the families.
+
+What I do not claim: no quantum computational advantage; no results with real people or a real robot yet; and
+COBRA's gain over a Bayes filter is modest, shown only on synthetic data built to contain a context effect, and it
+loses with little data and on a control task. I would rather state that than hide it.
+
+Where I want it to go: a pilot study with real people and a robot, a more reliable way to train COBRA, and
+independent replication by other groups. If you find a mistake or a claim that does not hold, please open an issue.
+
+---
 
 <a id="idea"></a>
 
