@@ -33,7 +33,7 @@ jobs:
         run: pytest -q --doctest-modules src/quantum_mind
       - name: Examples (smoke test)
         run: |
-          for f in examples/0[1-8]_*.py examples/1*.py examples/2*.py; do
+          for f in examples/0[1-5]_*.py examples/0[7-9]_*.py examples/1*.py; do
             echo "::group::$f"; python -W ignore "$f" > /dev/null; echo "::endgroup::"
           done
           python -W ignore examples/06_cloud_run.py --dry-run > /dev/null
@@ -92,4 +92,4 @@ jobs:
           python -m build
           twine check dist/*
           python -m venv /tmp/core && /tmp/core/bin/pip install dist/*.whl
-          cd /tmp && /tmp/core/bin/python -c "import quantum_mind, quantum_mind.belief, quantum_mind.quantum, quantum_mind.problems, quantum_mind.viz; print('core install OK', quantum_mind.__version__)"
+          cd /tmp && /tmp/core/bin/python -c "import quantum_mind, quantum_mind.belief, quantum_mind.computing, quantum_mind.sensing, quantum_mind.quantum, quantum_mind.problems, quantum_mind.viz; print('core install OK', quantum_mind.__version__)"
