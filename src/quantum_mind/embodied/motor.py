@@ -47,9 +47,13 @@ class OneMotor:
     def step(self, u):
         u = float(np.clip(u, -1.0, 1.0))
         acc = self.g * u - self.b * self.omega - self.coulomb * np.tanh(self.omega / 0.02) + self.ext
-        self.acc = acc
+        w0 = self.omega
         self.omega += self.dt * acc
-        self.theta = float(np.clip(self.theta + self.dt * self.omega, -1.0, 1.0))
+        nxt = self.theta + self.dt * self.omega
+        if abs(nxt) > 1.0:                                # hard stop at the end of the workspace: position held, velocity lost
+            nxt, self.omega = float(np.sign(nxt)), 0.0
+        self.theta = float(nxt)
+        self.acc = (self.omega - w0) / self.dt             # the acceleration an accelerometer on the carriage actually reads
         return self.measure()
 
 

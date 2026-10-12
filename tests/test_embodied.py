@@ -150,3 +150,27 @@ def test_assignment_matches_the_exact_optimum_and_the_system_facade_runs():
     sysm.slot.x = np.zeros(sysm.slot.n_params)
     r = sysm.run(make_dataset(5, 2)[0], np.random.default_rng(0))
     assert 'success' in r and sysm.assign(m, t)[0] == exact
+
+
+def _fault_runs(policy, faults, n=24):
+    from quantum_mind.embodied import run_fault_episode
+    act = lambda t, th, om: expert_command(t, th, om)           # noqa: E731
+    return [run_fault_episode(act, np.random.default_rng(900 + i), faults, policy) for i in range(n)]
+
+
+def test_agent_is_quiet_when_healthy_and_does_not_hurt():
+    healthy = _fault_runs('agent', [])
+    assert np.mean([bool(r['events']) for r in healthy]) <= 0.15
+    assert np.mean([r['success'] for r in healthy]) >= 0.9
+    assert np.mean([r['success'] for r in healthy]) >= np.mean([r['success'] for r in _fault_runs('kalman', [])]) - 0.1
+
+
+def test_agent_finds_and_heals_an_encoder_offset_and_a_friction_fault():
+    off = [dict(kind='encoder_offset', t=1.5, mag=0.25)]
+    agent, base = _fault_runs('agent', off), _fault_runs('kalman', off)
+    assert all('encoder_jump' in r['events'][0] for r in agent) and np.mean([r['success'] for r in base]) == 0.0
+    assert np.mean([r['success'] for r in agent]) > 0.3
+    fr = [dict(kind='friction', t=1.5, mag=6.0)]
+    agent, mon = _fault_runs('agent', fr), _fault_runs('monitor', fr)
+    assert np.mean([r['final'] == 'friction_increase' for r in agent]) > 0.8
+    assert np.mean([r['success'] for r in agent]) > np.mean([r['success'] for r in mon]) + 0.15      # healing, not just seeing

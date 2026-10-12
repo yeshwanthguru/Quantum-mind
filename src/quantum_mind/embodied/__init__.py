@@ -29,3 +29,6 @@ from .assignment import SOLVERS, assign_targets   # noqa: E402
 from .system import QuantumRobotVLA   # noqa: E402
 
 __all__ += ['assign_targets', 'SOLVERS', 'QuantumRobotVLA']
+from .agent import MotorAgent, run_fault_episode   # noqa: E402
+
+__all__ += ['MotorAgent', 'run_fault_episode']
