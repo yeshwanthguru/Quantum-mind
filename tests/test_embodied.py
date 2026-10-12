@@ -100,3 +100,19 @@ def test_belief_slots_limits_and_fit():
     assert np.allclose(t.posterior(*args), bayes, atol=1e-9)
     nll = lambda p: -np.mean(np.log(p[np.arange(len(b['y'])), b['y']] + 1e-9))
     assert nll(TemperedSlot().fit(b).posterior(*args)) <= nll(bayes) + 1e-6   # a fitted slot cannot be worse in-sample
+
+
+def test_qiskit_circuit_reproduces_the_numpy_quantum_slot():
+    pytest.importorskip('qiskit')
+    from quantum_mind.embodied import QuantumSlot, sequence_batch
+    from quantum_mind.embodied.qiskit_slot import qiskit_posterior
+    vla = TinyVLA(seed=0).fit(make_dataset(600, 0), steps=600)
+    amb = [s for s in make_dataset(300, 4) if s.ambiguous][:12]
+    b = sequence_batch(vla, amb, np.random.default_rng(1))
+    q = QuantumSlot()
+    q.x = 0.5 * np.random.default_rng(2).standard_normal(q.n_params)
+    ref = q.posterior(b['g0'], b['L'], b['ctx'], b['mask'])
+    for i in range(len(amb)):
+        sl = {k: v[i:i + 1] for k, v in b.items()}
+        p, accept = qiskit_posterior(q, sl['g0'], sl['L'], sl['ctx'], sl['mask'])
+        assert np.allclose(p, ref[i], atol=1e-8) and 0 < accept <= 1

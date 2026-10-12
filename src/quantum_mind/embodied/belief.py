@@ -3,7 +3,7 @@
 Three interchangeable slots share one interface (``fit`` on held-out sequences, ``posterior`` over the objects on the table):
 
 * :class:`BayesSlot`: the product of the instruction belief and each answer's likelihood (answers independent and equally reliable).
-* :class:`TemperedSlot`: the classical control for context effects: the same product, but each answer is weighted by a learned
+* :class:`TemperedSlot` (``shared=True``: one exponent, calibrated Bayes): the classical control for context effects: the same product, but each answer is weighted by a learned
   exponent that depends on the *context* of the answer (first answer, same kind as the previous one, different kind).
 * :class:`QuantumSlot`: a quantum-probability belief. The instruction belief is a state ``psi = sqrt(g0)`` over the objects, each
   answer is a measurement ``M = U_c diag(sqrt(L)) U_c^dagger`` whose rotation ``U_c = exp(iH_c)`` depends on the context ``c``,
@@ -64,12 +64,17 @@ class _Fitted:
 
 
 class TemperedSlot(_Fitted):
-    n_params = N_CTX
+    """Product rule with learned exponents. ``shared=True`` learns a single exponent (calibrated Bayes, no context)."""
+
+    def __init__(self, shared=False):
+        self.shared = shared
+        self.n_params = 1 if shared else N_CTX
 
     def init(self, rng):
-        return np.ones(N_CTX)
+        return np.ones(self.n_params)
 
     def _post(self, x, g0, L, ctx, mask):
+        ctx = np.zeros_like(ctx) if self.shared else ctx
         logp = np.log(g0 + 1e-12) + np.sum(x[ctx][:, :, None] * np.log(_floor(L, mask) + 1e-12), axis=1)
         logp = np.where(mask > 0, logp, -np.inf)
         p = np.exp(logp - logp.max(-1, keepdims=True))
