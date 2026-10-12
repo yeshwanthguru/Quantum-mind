@@ -44,7 +44,7 @@ def first_paragraph(obj):
 
 
 def signature(obj):
-    # Enum and Protocol classes print a different (internal) signature in each Python version: leave it out so the file is the same everywhere
+    # Enum and Protocol classes print a different internal signature in each Python version: leave it out
     if inspect.isclass(obj) and (issubclass(obj, enum.Enum) or getattr(obj, '_is_protocol', False)):
         return ''
     try:
