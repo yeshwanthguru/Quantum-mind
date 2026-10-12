@@ -21,3 +21,11 @@ __all__ = ['OneMotor', 'expert_command', 'Scene', 'sample_scene', 'clarification
 from .belief import BayesSlot, QuantumSlot, TemperedSlot, person_answers, sequence_batch   # noqa: E402
 
 __all__ += ['BayesSlot', 'TemperedSlot', 'QuantumSlot', 'person_answers', 'sequence_batch']
+from .policies import run_sensed_episode   # noqa: E402
+from .state import MODES, JointEstimator, SensedMotor   # noqa: E402
+
+__all__ += ['run_sensed_episode', 'JointEstimator', 'SensedMotor', 'MODES']
+from .assignment import SOLVERS, assign_targets   # noqa: E402
+from .system import QuantumRobotVLA   # noqa: E402
+
+__all__ += ['assign_targets', 'SOLVERS', 'QuantumRobotVLA']

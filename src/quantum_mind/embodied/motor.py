@@ -29,6 +29,7 @@ class OneMotor:
         self.g = self.gain * (rng.uniform(0.8, 1.2) if self.randomise else 1.0)
         self.b = self.damping * (rng.uniform(0.8, 1.2) if self.randomise else 1.0)
         self.theta, self.omega = float(theta0), 0.0
+        self.ext = 0.0                                   # unmodelled external acceleration (contact, payload), set by the caller
         self._last = self.theta + self.encoder_noise * rng.standard_normal()
         self._vel = 0.0
         return self.measure(first=True)
@@ -45,7 +46,8 @@ class OneMotor:
 
     def step(self, u):
         u = float(np.clip(u, -1.0, 1.0))
-        acc = self.g * u - self.b * self.omega - self.coulomb * np.tanh(self.omega / 0.02)
+        acc = self.g * u - self.b * self.omega - self.coulomb * np.tanh(self.omega / 0.02) + self.ext
+        self.acc = acc
         self.omega += self.dt * acc
         self.theta = float(np.clip(self.theta + self.dt * self.omega, -1.0, 1.0))
         return self.measure()

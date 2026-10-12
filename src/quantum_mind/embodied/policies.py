@@ -78,3 +78,20 @@ def bc_plan(model):
     def plan(scene, rng):
         return (lambda th, om: model.command(scene.image, scene.text, th, om)), 0
     return plan
+
+
+def run_sensed_episode(scene, rng, plan, mode, outage_at=1.0, disturbance=0.0, steps=60, tol=0.0625, n_cells=16):
+    """Like :func:`run_episode`, but the controller sees a state *estimate* (see :mod:`quantum_mind.embodied.state`).
+
+    The encoder drops out at ``outage_at`` seconds and an unmodelled push of up to ``disturbance`` workspace units/s^2 acts on the joint."""
+    from .state import JointEstimator, SensedMotor
+    controller, asked = plan(scene, rng)
+    sm, est = SensedMotor(outage_at=outage_at, disturbance=disturbance), JointEstimator(mode)
+    z0 = sm.reset(rng.uniform(-1, 1), rng)
+    est.reset(z0)
+    th, om = z0, 0.0
+    for _ in range(steps):
+        u = controller(th, om)
+        th, om = est.step(sm.step(u), u)
+    goal = cell_centres(n_cells)[scene.target]
+    return {'error': abs(sm.m.theta - goal), 'success': abs(sm.m.theta - goal) < tol, 'asked': asked}

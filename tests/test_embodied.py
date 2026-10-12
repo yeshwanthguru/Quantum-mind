@@ -116,3 +116,37 @@ def test_qiskit_circuit_reproduces_the_numpy_quantum_slot():
         sl = {k: v[i:i + 1] for k, v in b.items()}
         p, accept = qiskit_posterior(q, sl['g0'], sl['L'], sl['ctx'], sl['mask'])
         assert np.allclose(p, ref[i], atol=1e-8) and 0 < accept <= 1
+
+
+def test_state_estimators_track_and_the_accelerometer_helps_under_an_unmodelled_push():
+    from quantum_mind.embodied import MODES, JointEstimator, SensedMotor
+
+    def err(mode, outage, dist, n=40):
+        out = []
+        for seed in range(n):
+            rng = np.random.default_rng(seed)
+            sm, est = SensedMotor(outage_at=outage, disturbance=dist), JointEstimator(mode)
+            tgt = rng.uniform(-0.9, 0.9)
+            z0 = sm.reset(rng.uniform(-1, 1), rng)
+            est.reset(z0)
+            th, om = z0, 0.0
+            for _ in range(60):
+                u = float(expert_command(tgt, th, om))
+                th, om = est.step(sm.step(u), u)
+            out.append(abs(sm.m.theta - tgt))
+        return np.mean(out)
+    assert all(err(m, None, 0.0) < 0.05 for m in MODES if m != 'kalman + MEMS')          # encoder present: all fine
+    assert err('kalman + motor model', 1.0, 0.0) < err('kalman + MEMS + quantum', 1.0, 0.0)   # known plant: the model wins
+    assert err('kalman + MEMS + quantum', 1.0, 3.0) < err('kalman + motor model', 1.0, 3.0)   # unmodelled push: the sensors win
+
+
+def test_assignment_matches_the_exact_optimum_and_the_system_facade_runs():
+    from quantum_mind.embodied import QuantumRobotVLA, QuantumSlot, assign_targets
+    m, t = [-0.8, 0.1, 0.7], [0.65, -0.75, 0.15]
+    exact, cost, _ = assign_targets(m, t, 'exact')
+    assert exact == {0: 2, 1: 0, 2: 1} and cost == pytest.approx(0.15)
+    assert assign_targets(m, t, 'annealing')[0] == exact
+    sysm = QuantumRobotVLA.fit(make_dataset(600, 0), make_dataset(300, 1), slot=QuantumSlot(), steps=600)
+    sysm.slot.x = np.zeros(sysm.slot.n_params)
+    r = sysm.run(make_dataset(5, 2)[0], np.random.default_rng(0))
+    assert 'success' in r and sysm.assign(m, t)[0] == exact
