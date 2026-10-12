@@ -212,6 +212,54 @@ The benefit comes from the quantum sensor being **stable**: when its bias is as 
 
 <a id="cobra"></a>
 
+## QR-VLA: a one-motor vision-language-action prototype
+
+`quantum_mind.embodied` puts the three threads into one small, inspectable robot policy: an instruction and an image go in, a motor command
+comes out. It is a prototype to scale from, not a competitor to large VLA models, and it is trained and run entirely in NumPy on simulated data.
+
+```mermaid
+flowchart LR
+    I[image strip] --> G
+    T[instruction] --> G
+    G["grounding<br/>TinyVLA attention<br/>(classical, 817 parameters)"] --> B["belief over objects"]
+    B --> Q{"conformal gate:<br/>one object in the set?"}
+    Q -- yes --> A
+    Q -- "no: ask" --> P["person answers<br/>(simulated)"]
+    P --> S1["belief slot<br/>Bayes, classical context weights,<br/>or quantum-probability slot"]
+    B --> S1
+    S1 --> A["action head<br/>(target, state) to motor command"]
+    E["encoder<br/>(can drop out)"] --> S2
+    M["MEMS + atom-interferometer<br/>accelerometers"] --> S2["state slot<br/>Kalman estimator"]
+    S2 --> A
+    A --> MOT[one DC-motor joint]
+    MOT --> E
+    MOT --> M
+    ASG["assignment slot<br/>QUBO: exact / annealing / greedy / QAOA"] -.-> |"several motors:<br/>who goes where"| A
+```
+
+| Slot | Thread | Quantum component | Measured against |
+|---|---|---|---|
+| belief | cognition | `QuantumSlot`: rotated measurement per answer context; a Qiskit circuit reproduces it exactly | Bayes, classical context weights |
+| state | sensing | Kalman fusion of the MEMS and a slow quantum accelerometer when the encoder drops out | encoder, Kalman with the nominal motor model |
+| assignment | computing | `assign_targets` on the robot QUBOs, optional QAOA | exact, annealing, greedy |
+
+```python
+import numpy as np
+from quantum_mind.embodied import QuantumRobotVLA, QuantumSlot, make_dataset, sequence_batch
+
+system = QuantumRobotVLA.fit(make_dataset(2000, 0), make_dataset(800, 1))      # grounding + conformal gate
+ambiguous = [s for s in make_dataset(3000, 2) if s.ambiguous]
+system.slot = QuantumSlot().fit(sequence_batch(system.vla, ambiguous, np.random.default_rng(0)))   # fit the belief slot
+print(system.run(make_dataset(1, 3)[0], np.random.default_rng(0)))             # one closed-loop episode
+```
+
+What the benchmarks say (all simulated; see `src/quantum_mind/embodied/README.md` and `benchmarks/results/`):
+
+* **Grounding and asking:** 0.96 success on unambiguous instructions; on ambiguous ones acting blindly gives 0.04 and the conformal ask gate 0.90 with a question in 32% of episodes.
+* **Belief slot:** the quantum slot wins only against a person built to be non-commuting; against classical context noise the classical context weights are better.
+* **State slot:** with the plant as modelled, the classical motor-model Kalman filter wins (0.96 against 0.43); under an unmodelled push the quantum-accelerometer fusion wins (0.39 against 0.14).
+* Asking for help with conformal prediction has prior art in LLM planning (KnowNo, Ren et al., 2023); the grounding and behaviour cloning here are standard. The open step is data from real people and a real joint.
+
 ## Thread 3 in depth: COBRA, a context-rotated belief filter
 
 COBRA keeps the robot's belief about a person as a **density matrix** over hypotheses (for example the person's

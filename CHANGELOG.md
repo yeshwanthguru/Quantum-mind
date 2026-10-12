@@ -1,9 +1,9 @@
 # Changelog
 
-## 3.0.0 (unreleased)
+## 3.1.0 (2026-10-12)
 
-Version 3.0 organises the library around the three threads of quantum robotics (computing, sensing and cognition), narrows
-it to AI, ML, vision, robotics and embodied AI, and adds its first original model.
+Version 3.1 completes the three threads of quantum robotics (computing and sensing join cognition) and adds QR-VLA, a one-motor
+vision-language-action prototype that uses all three. Nothing from 3.0 is removed.
 
 ### Added
 
@@ -27,6 +27,13 @@ it to AI, ML, vision, robotics and embodied AI, and adds its first original mode
   `benchmarks/quantum_sensing_benchmark.py`: fusing the quantum sensor cuts the position error about 34 times without fixes, the
   benefit shrinks with a position fix and vanishes when the quantum sensor is as unstable as the MEMS one.
 - Tutorials 15 and 16, examples 18 and 19, math pages and atlas entries for both threads.
+
+## 3.0.0 (2026-10-11)
+
+Version 3.0 narrows the library to AI, ML, vision, robotics and embodied AI and adds its first original model, COBRA.
+
+### Added
+
 - `quantum_mind.belief`: **COBRA**, a context-rotated density-matrix belief filter. Each sensor frame updates the
   belief with a generalised measurement `M = U(x_prev) diag(w(x)) U(x_prev)^dagger`, followed by partial
   dephasing, so what a reading means depends on the previous frame. With no rotation it is a Bayes filter, and
