@@ -217,25 +217,35 @@ The benefit comes from the quantum sensor being **stable**: when its bias is as 
 `quantum_mind.embodied` puts the three threads into one small, inspectable robot policy: an instruction and an image go in, a motor command
 comes out. It is a prototype to scale from, not a competitor to large VLA models, and it is trained and run entirely in NumPy on simulated data.
 
-```mermaid
-flowchart LR
-    I[image strip] --> G
-    T[instruction] --> G
-    G["grounding<br/>TinyVLA attention<br/>(classical, 817 parameters)"] --> B["belief over objects"]
-    B --> Q{"conformal gate:<br/>one object in the set?"}
-    Q -- yes --> A
-    Q -- "no: ask" --> P["person answers<br/>(simulated)"]
-    P --> S1["belief slot<br/>Bayes, classical context weights,<br/>or quantum-probability slot"]
-    B --> S1
-    S1 --> A["action head<br/>(target, state) to motor command"]
-    E["encoder<br/>(can drop out)"] --> S2
-    M["MEMS + atom-interferometer<br/>accelerometers"] --> S2["state slot<br/>Kalman estimator"]
-    S2 --> A
-    A --> MOT[one DC-motor joint]
-    MOT --> E
-    MOT --> M
-    ASG["assignment slot<br/>QUBO: exact / annealing / greedy / QAOA"] -.-> |"several motors:<br/>who goes where"| A
+```text
+ image strip ──┐
+               ├─► GROUNDING (TinyVLA attention, classical, 817 parameters)
+ instruction ──┘            │
+                            ▼
+                 belief over the objects on the table
+                            │
+                 conformal gate: is the prediction set one object?
+                   │ yes                          │ no: ask a question
+                   │                              ▼
+                   │                  person answers (simulated)
+                   │                              │
+                   │                              ▼
+                   │        BELIEF SLOT (thread 3, cognition)
+                   │        Bayes | classical context weights | quantum-probability slot
+                   ▼                              │
+                   └──────────────┬───────────────┘
+                                  ▼ target position
+       STATE SLOT (thread 2, sensing)           ACTION HEAD
+       Kalman: encoder + MEMS accelerometer     (target - position, velocity) -> command
+       + slow quantum accelerometer ──────────► ────────────┐
+       (encoder can drop out)                                ▼
+              ▲                                      ONE DC-MOTOR JOINT
+              └──────── encoder, accelerometers ◄────────────┘
+
+ several motors:  ASSIGNMENT SLOT (thread 1, computing)
+                  which motor goes to which target: QUBO with exact | annealing | greedy | QAOA solvers
 ```
+
 
 | Slot | Thread | Quantum component | Measured against |
 |---|---|---|---|
