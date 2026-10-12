@@ -370,7 +370,7 @@ Embodied AI: a tiny vision-language-action (VLA) prototype for one motor, as a f
 - **class `Decision(action: 'str', reason: 'str' = '', source: 'str' = 'rules') -> None`**: Decision(action: 'str', reason: 'str' = '', source: 'str' = 'rules')
 - `expert_command(target, theta, omega, kp=3.0, kd=1.0)`: Saturated PD command toward ``target`` (used as the demonstrator; it sees the true target).
 - `fuse(g_first, g_answer, eps=1e-06)`: Classical belief update after an answer: product of the two groundings, renormalised (Bayes with independent evidence).
-- **class `Health(*values)`**: Create a collection of name/value pairs.
+- **class `Health`**: Health level a sub-agent reports, from fine (``OK``) to out of service (``FAILED``).
 - **class `Heartbeat(timeout=0.5)`**: Watchdog: FAILED if no telemetry arrived within ``timeout`` seconds.
   - `update(self, ctx)`:
 - **class `JointEstimator(mode, dt=0.05, stroke=0.2, mems=None, quantum=None, enc_std=0.005, vel_process=3.0)`**: Kalman filter for (position, velocity, MEMS bias) in workspace units; ``mode`` is one of :data:`MODES`.
@@ -381,13 +381,13 @@ Embodied AI: a tiny vision-language-action (VLA) prototype for one motor, as a f
   - `decide(self, mode, statuses, history=())`:
   - `prompt(self, mode, statuses, history)`:
 - `make_dataset(n_scenes, seed, n_cells=16)`: Scenes plus, for each, one random motor state and the demonstrator's command.
-- **class `Mode(*values)`**: Create a collection of name/value pairs.
+- **class `Mode`**: Operating mode of the robot, the states of the supervisor's state machine.
 - `MODES` (constant)
 - **class `MotorAgent(heal=True, quantum=True, dt=0.05, stroke=0.2, window=16, persist=3)`**: Monitor, diagnose and heal one motor. ``heal=False`` only monitors; ``quantum=False`` leaves the quantum accelerometer out.
   - `control(self, u_pd)`: Turn the controller's command into the one sent to the motor (identity unless healing and a plant fault is diagnosed).
   - `reset(self, z0)`:
   - `step(self, meas, u)`: Feed one set of measurements (and the command that produced them). Returns the state estimate ``(theta, omega)``.
-- **class `MotorHardware(*args, **kwargs)`**: What a dev-kit driver must provide.
+- **class `MotorHardware`**: What a dev-kit driver must provide.
   - `read(self) -> 'dict'`: ``{'t': seconds, 'enc': position in -1..1 or None, 'a_mems': m/s^2 or None, 'a_q': m/s^2 or None}`` (latest values).
   - `stop(self) -> 'None'`: Cut torque / apply the brake. Must be safe to call at any time, repeatedly.
   - `write(self, u: 'float') -> 'None'`: Send a normalised command in [-1, 1] (the driver maps it to voltage, PWM or current).

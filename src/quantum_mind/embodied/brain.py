@@ -29,6 +29,8 @@ from enum import Enum
 
 
 class Health(Enum):
+    """Health level a sub-agent reports, from fine (``OK``) to out of service (``FAILED``)."""
+
     OK = 0
     WARN = 1
     HEALING = 2
@@ -37,6 +39,8 @@ class Health(Enum):
 
 
 class Mode(Enum):
+    """Operating mode of the robot, the states of the supervisor's state machine."""
+
     BOOT = 'boot'
     CALIBRATING = 'calibrating'
     NOMINAL = 'nominal'

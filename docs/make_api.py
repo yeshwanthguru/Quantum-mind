@@ -1,5 +1,6 @@
 """Generate docs/API.md, the API reference, from the package's docstrings and signatures
 (python3 docs/make_api.py). CI checks that the committed file is up to date."""
+import enum
 import importlib
 import inspect
 import pathlib
@@ -43,6 +44,9 @@ def first_paragraph(obj):
 
 
 def signature(obj):
+    # Enum and Protocol classes print a different (internal) signature in each Python version: leave it out so the file is the same everywhere
+    if inspect.isclass(obj) and (issubclass(obj, enum.Enum) or getattr(obj, '_is_protocol', False)):
+        return ''
     try:
         return re.sub(r' at 0x[0-9a-fA-F]+', '', str(inspect.signature(obj)))
     except (TypeError, ValueError):
