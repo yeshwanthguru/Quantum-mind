@@ -59,6 +59,34 @@ The grounding model (`TinyVLA`) is classical; the quantum parts are simulated on
 
 The encoder drops out 1 s into a 3 s move. With the plant as modelled, the classical Kalman filter that uses the known command and the nominal
 motor wins by a wide margin (success 0.96 against 0.43 for the quantum-accelerometer fusion). When an unmodelled push acts on the joint, the model-based
-filter collapses (0.14 and 0.07) and the quantum-accelerometer fusion is best (0.39 and 0.30, MEMS alone 0.19 and 0.17). So the accelerometer
+filter collapses (0.14 and 0.07) and the quantum-accelerometer fusion is best (0.43 and 0.29, MEMS alone 0.14 and 0.13). So the accelerometer
 earns its place only where the dynamics are not known, and the quantum one beats the MEMS one only because its bias is near zero. All simulated, with
 illustrative sensor values.
+
+## The motor agent: monitor, diagnose, self-heal (`agent.py`, `benchmarks/results/motor_agent/`)
+
+`MotorAgent` supervises the motor every control step. It estimates the state (encoder + MEMS + quantum accelerometer), checks the encoder
+against an accelerometer prediction, fits single-fault models of the motor's acceleration over the last second (gain loss, friction, external push),
+self-calibrates the healthy plant online, and heals: encoder faults fall back on a model-based state, plant faults re-linearise the command with the
+fitted plant, a dead actuator ends in a safe stop. Faults are injected by `SensedMotor(faults=[...])`.
+
+Closed loop, simulated, one fault at 1.5 s of a 4 s two-leg move, 5 seeds x 80 episodes (success = within a quarter cell at the end):
+
+| Fault | Best no-agent policy | Agent, monitor only | Agent (self-heal) |
+|---|---|---|---|
+| none | 1.00 | 1.00 | 0.96 |
+| encoder dropout | 0.58 | 0.44 | 0.85 |
+| encoder offset | 0.00 | 0.00 | 0.84 |
+| actuator gain loss | 0.77 | 0.77 | 0.90 |
+| friction increase | 0.77 | 0.68 | 0.97 |
+| external push | 0.00 | 0.00 | 0.35 |
+
+What this does not show, stated plainly:
+
+* **It costs something when nothing is wrong:** 4.3% of healthy episodes raise an alarm and success drops from 1.00 to 0.96.
+* **Pushes are the weak case:** the first diagnosis is right in 33% of episodes (a push against the motion looks like friction until the joint stops),
+  10% of episodes end in a false safe stop, and success is 0.35.
+* **Gain loss is diagnosed in about half of the episodes** (the plain controller tolerates much of it anyway).
+* **The quantum accelerometer adds little inside the agent:** the agent without it scores 0.81 and 0.81 on encoder dropout and offset against 0.85 and 0.84
+  (not retuned for that case).
+* The agent knows the nominal plant, handles five fault kinds one at a time, and its thresholds were tuned on this fault family. Nothing here was run on hardware.

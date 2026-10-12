@@ -244,6 +244,9 @@ comes out. It is a prototype to scale from, not a competitor to large VLA models
 
  several motors:  ASSIGNMENT SLOT (thread 1, computing)
                   which motor goes to which target: QUBO with exact | annealing | greedy | QAOA solvers
+
+ MOTOR AGENT (supervises the loop):  monitor encoder vs accelerometer, diagnose gain / friction / push / encoder faults,
+                  heal by state fallback, command re-linearisation or safe stop
 ```
 
 
@@ -267,7 +270,8 @@ What the benchmarks say (all simulated; see `src/quantum_mind/embodied/README.md
 
 * **Grounding and asking:** 0.96 success on unambiguous instructions; on ambiguous ones acting blindly gives 0.04 and the conformal ask gate 0.90 with a question in 32% of episodes.
 * **Belief slot:** the quantum slot wins only against a person built to be non-commuting; against classical context noise the classical context weights are better.
-* **State slot:** with the plant as modelled, the classical motor-model Kalman filter wins (0.96 against 0.43); under an unmodelled push the quantum-accelerometer fusion wins (0.39 against 0.14).
+* **State slot:** with the plant as modelled, the classical motor-model Kalman filter wins (0.96 against 0.43); under an unmodelled push the quantum-accelerometer fusion wins (0.43 against 0.14).
+* **Motor agent:** `MotorAgent` monitors the joint, diagnoses encoder, friction, gain and push faults and heals them (estimator fallback, command re-linearisation, safe stop). In simulation it lifts success from 0 to 0.84 on an encoder offset and from 0.68 to 0.97 on a friction increase, but it is weak on external pushes (0.35, diagnosis often wrong) and costs 4 points on a healthy motor.
 * Asking for help with conformal prediction has prior art in LLM planning (KnowNo, Ren et al., 2023); the grounding and behaviour cloning here are standard. The open step is data from real people and a real joint.
 
 ## Thread 3 in depth: COBRA, a context-rotated belief filter
