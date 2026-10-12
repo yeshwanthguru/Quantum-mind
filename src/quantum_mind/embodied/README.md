@@ -32,3 +32,15 @@ Run `python benchmarks/one_motor_vla_benchmark.py` for the closed-loop study (re
   QUBO tools of `quantum_mind.computing`. Each needs the same treatment as the rest of the library: a classical baseline, an
   ablation, a control task and paired tests.
 * All data are simulated. No real motor, camera or person was involved.
+
+## Belief slot: what the benchmark found (`benchmarks/results/belief_slot/`)
+
+`BayesSlot`, `TemperedSlot` (classical context weights) and `QuantumSlot` (a COBRA-style rotated measurement per answer context) fuse the
+instruction with two clarifying answers. `qiskit_slot.qiskit_posterior` reproduces the quantum slot exactly as a circuit on a simulator.
+
+* **Where the quantum slot wins:** only when the simulated person is built to be non-commuting (log-loss 0.60 against 0.80 for the
+  classical context weights). That person uses the slot's own form, so this shows representational capacity, not that people behave so.
+* **Where it does not:** with a classical context-noise person the classical context weights are better (0.417 against 0.457), and in the
+  closed loop the quantum slot does not beat Bayes or the classical slot (success 0.912, 0.916, 0.925). Two noisy answers were not worth
+  their question cost over one.
+* Real evidence needs answers from real people (or a robot's real users); that is the open step.

@@ -11,7 +11,9 @@ it to AI, ML, vision, robotics and embodied AI, and adds its first original mode
   action head with hand-written, finite-difference-checked gradients; `OneMotor` simulated joint; a one-dimensional tabletop with
   instructions; a split-conformal ask gate with Bayes fusion of the answer; an end-to-end `BCBaseline`). Example 20 and
   `benchmarks/one_motor_vla_benchmark.py`. Simulated data only; not a new VLA architecture (see the module README for prior art
-  and for what remains to be tested).
+  and for what remains to be tested). Belief slots (`BayesSlot`, `TemperedSlot`, `QuantumSlot`), a Qiskit circuit that reproduces the
+  quantum slot exactly on a simulator, and `benchmarks/belief_slot_benchmark.py` (the quantum slot wins only on a person built to be
+  non-commuting; it loses to classical context weights on a classical context-noise person).
 - `quantum_mind.computing` (thread 1, quantum computing for robot algorithms): `multi_robot_allocation`, `grasp_selection` and
   `slot_scheduling` as QUBOs with true objectives, feasibility checks and decoders; classical baselines (`exhaustive`,
   `greedy_descent`, `simulated_annealing`, `random_sampling`); `qaoa`, a thin adapter to Qiskit's `QAOAAnsatz` on an exact simulator
