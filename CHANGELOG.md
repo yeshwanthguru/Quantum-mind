@@ -7,6 +7,11 @@ it to AI, ML, vision, robotics and embodied AI, and adds its first original mode
 
 ### Added
 
+- `quantum_mind.embodied`: a one-motor vision-language-action prototype in NumPy (`TinyVLA`, 817 parameters: attention grounding plus an
+  action head with hand-written, finite-difference-checked gradients; `OneMotor` simulated joint; a one-dimensional tabletop with
+  instructions; a split-conformal ask gate with Bayes fusion of the answer; an end-to-end `BCBaseline`). Example 20 and
+  `benchmarks/one_motor_vla_benchmark.py`. Simulated data only; not a new VLA architecture (see the module README for prior art
+  and for what remains to be tested).
 - `quantum_mind.computing` (thread 1, quantum computing for robot algorithms): `multi_robot_allocation`, `grasp_selection` and
   `slot_scheduling` as QUBOs with true objectives, feasibility checks and decoders; classical baselines (`exhaustive`,
   `greedy_descent`, `simulated_annealing`, `random_sampling`); `qaoa`, a thin adapter to Qiskit's `QAOAAnsatz` on an exact simulator
