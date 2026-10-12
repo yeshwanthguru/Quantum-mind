@@ -3,8 +3,9 @@
 Three interchangeable slots share one interface (``fit`` on held-out sequences, ``posterior`` over the objects on the table):
 
 * :class:`BayesSlot`: the product of the instruction belief and each answer's likelihood (answers independent and equally reliable).
-* :class:`TemperedSlot` (``shared=True``: one exponent, calibrated Bayes): the classical control for context effects: the same product, but each answer is weighted by a learned
-  exponent that depends on the *context* of the answer (first answer, same kind as the previous one, different kind).
+* :class:`TemperedSlot` (``shared=True``: one exponent, calibrated Bayes): the classical control for context effects: the same
+  product, but each answer is weighted by a learned exponent that depends on the *context* of the answer (first answer, same kind
+  as the previous one, different kind).
 * :class:`QuantumSlot`: a quantum-probability belief. The instruction belief is a state ``psi = sqrt(g0)`` over the objects, each
   answer is a measurement ``M = U_c diag(sqrt(L)) U_c^dagger`` whose rotation ``U_c = exp(iH_c)`` depends on the context ``c``,
   and the posterior is the Born rule. Measurements in different contexts need not commute, so the order of the answers can matter.
@@ -18,7 +19,7 @@ import numpy as np
 from scipy.linalg import expm
 from scipy.optimize import minimize
 
-from .scene import COLORS, clarification, encode
+from .scene import COLORS, encode
 
 K = 3
 N_CTX = 3          # 0: first answer, 1: same kind as the previous answer, 2: different kind

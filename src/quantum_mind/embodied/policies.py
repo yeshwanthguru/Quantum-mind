@@ -6,7 +6,7 @@ import numpy as np
 from ..applications.calibration import SplitConformalClassifier
 from .motor import OneMotor, expert_command
 from .belief import K, _restrict, person_answers
-from .scene import cell_centres, clarification, encode, sample_scene
+from .scene import cell_centres, clarification
 
 
 def calibrate_gate(model, scenes, alpha=0.1):

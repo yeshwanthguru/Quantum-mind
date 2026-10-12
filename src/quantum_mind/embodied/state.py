@@ -3,8 +3,8 @@
 The joint is a linear stage of half-stroke ``stroke`` metres (the workspace [-1, 1] maps to +/- stroke). An accelerometer on the
 carriage is a :class:`quantum_mind.sensing.Sensor` (MEMS or atom interferometer; illustrative values). The estimator state is
 position, velocity and the MEMS bias. Modes, from least to most informed: raw encoder; encoder-only Kalman; Kalman with the MEMS
-accelerometer as the motion input;
-the classical rival 'kalman + motor model' predicts with the nominal plant and the command instead of an accelerometer; the same plus the slow quantum accelerometer, whose near-bias-free samples measure the MEMS bias
+accelerometer as the motion input; the classical rival 'kalman + motor model' predicts with the nominal plant and the command
+instead of an accelerometer; the same plus the slow quantum accelerometer, whose near-bias-free samples measure the MEMS bias
 (``a_mems - a_quantum = bias + noise``). The encoder can drop out (cable fault, occlusion), which is when the difference shows.
 """
 from __future__ import annotations
@@ -32,7 +32,7 @@ class SensedMotor:
         self.m.ext = self.disturbance * rng.uniform(-1, 1)                    # constant unmodelled push, workspace units/s^2
         self.bias = self.mems.bias_std0 * rng.standard_normal()                 # m/s^2
         self.per = max(int(round(self.mems.rate_hz * self.m.dt)), 1)            # MEMS samples averaged per control step
-        self.q_every = max(int(round(self.quantum.cycle_time / self.m.dt)), 1) if hasattr(self.quantum, 'cycle_time') else int(round(self.m.dt ** -1))
+        self.q_every = max(int(round(1.0 / (self.quantum.rate_hz * self.m.dt))), 1)         # one quantum sample per interrogation cycle
         return self.theta0_reading(theta0)
 
     def theta0_reading(self, theta0):
@@ -79,7 +79,7 @@ class JointEstimator:
             Q = np.diag([0.0, (self.vel_process * dt) ** 2, 0.0])
             self.x = F @ self.x
         elif self.mode == 'kalman + motor model':
-            nom = OneMotor(randomise=False)                                     # nominal plant; the real gain and damping differ by up to 20%
+            nom = OneMotor(randomise=False)                       # nominal plant; the real gain and damping differ by up to 20%
             acc = nom.gain * float(np.clip(u, -1, 1)) - nom.damping * self.x[1] - nom.coulomb * np.tanh(self.x[1] / 0.02)
             self.x = F @ self.x + np.array([0.5 * dt * dt * acc, dt * acc, 0.0])
             Q = np.diag([0.0, (1.5 * dt) ** 2, 0.0])
