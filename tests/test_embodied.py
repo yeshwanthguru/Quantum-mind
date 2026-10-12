@@ -82,3 +82,21 @@ def test_fuse_and_baseline_interface(trained):
     s = make_dataset(1, 0)[0]
     assert -1 <= bc.command(s.image, s.text, 0.0, 0.0) <= 1
     assert callable(bc_plan(bc))
+
+
+def test_belief_slots_limits_and_fit():
+    from quantum_mind.embodied import BayesSlot, QuantumSlot, TemperedSlot, sequence_batch
+    vla = TinyVLA(seed=0).fit(make_dataset(800, 0), steps=800)
+    amb = [s for s in make_dataset(600, 3) if s.ambiguous]
+    b = sequence_batch(vla, amb, np.random.default_rng(0))
+    args = (b['g0'], b['L'], b['ctx'], b['mask'])
+    bayes = BayesSlot().posterior(*args)
+    assert np.allclose(bayes.sum(1), 1) and (bayes[b['mask'] == 0] == 0).all()
+    q = QuantumSlot()
+    q.x = np.zeros(q.n_params)                                    # no rotation: exactly the Bayes slot
+    assert np.allclose(q.posterior(*args), bayes, atol=1e-9)
+    t = TemperedSlot()
+    t.x = np.ones(t.n_params)
+    assert np.allclose(t.posterior(*args), bayes, atol=1e-9)
+    nll = lambda p: -np.mean(np.log(p[np.arange(len(b['y'])), b['y']] + 1e-9))
+    assert nll(TemperedSlot().fit(b).posterior(*args)) <= nll(bayes) + 1e-6   # a fitted slot cannot be worse in-sample

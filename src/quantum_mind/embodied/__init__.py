@@ -18,3 +18,6 @@ from .vla import BCBaseline, TinyVLA, make_dataset
 __all__ = ['OneMotor', 'expert_command', 'Scene', 'sample_scene', 'clarification', 'cell_centres', 'WORDS', 'COLORS',
            'TinyVLA', 'BCBaseline', 'make_dataset', 'vla_plan', 'bc_plan', 'oracle_plan', 'calibrate_gate', 'fuse',
            'run_episode']
+from .belief import BayesSlot, QuantumSlot, TemperedSlot, person_answers, sequence_batch   # noqa: E402
+
+__all__ += ['BayesSlot', 'TemperedSlot', 'QuantumSlot', 'person_answers', 'sequence_batch']
