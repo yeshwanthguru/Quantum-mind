@@ -13,7 +13,10 @@ it to AI, ML, vision, robotics and embodied AI, and adds its first original mode
   `benchmarks/one_motor_vla_benchmark.py`. Simulated data only; not a new VLA architecture (see the module README for prior art
   and for what remains to be tested). Belief slots (`BayesSlot`, `TemperedSlot`, `QuantumSlot`), a Qiskit circuit that reproduces the
   quantum slot exactly on a simulator, and `benchmarks/belief_slot_benchmark.py` (the quantum slot wins only on a person built to be
-  non-commuting; it loses to classical context weights on a classical context-noise person).
+  non-commuting; it loses to classical context weights on a classical context-noise person). A state slot (`JointEstimator`,
+  `SensedMotor`: Kalman fusion of the MEMS and quantum accelerometer models when the encoder drops out), an assignment slot
+  (`assign_targets` on the computing QUBO solvers) and `QuantumRobotVLA`, which composes the three. `benchmarks/vla_state_benchmark.py`:
+  the classical motor-model filter wins when the plant is as modelled; the quantum-accelerometer fusion wins under an unmodelled push.
 - `quantum_mind.computing` (thread 1, quantum computing for robot algorithms): `multi_robot_allocation`, `grasp_selection` and
   `slot_scheduling` as QUBOs with true objectives, feasibility checks and decoders; classical baselines (`exhaustive`,
   `greedy_descent`, `simulated_annealing`, `random_sampling`); `qaoa`, a thin adapter to Qiskit's `QAOAAnsatz` on an exact simulator

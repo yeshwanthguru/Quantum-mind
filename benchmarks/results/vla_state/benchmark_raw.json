@@ -1,0 +1,68 @@
+{
+ "0.0": {
+  "encoder": {
+   "succ": 0.283,
+   "err": 0.19910597674828429
+  },
+  "kalman, encoder only": {
+   "succ": 0.02,
+   "err": 1.124852406897254
+  },
+  "kalman + motor model": {
+   "succ": 0.959,
+   "err": 0.025482489717207655
+  },
+  "kalman + MEMS": {
+   "succ": 0.19,
+   "err": 0.21342117909561584
+  },
+  "kalman + MEMS + quantum": {
+   "succ": 0.43,
+   "err": 0.09246514690308734
+  }
+ },
+ "2.0": {
+  "encoder": {
+   "succ": 0.265,
+   "err": 0.20554156091350997
+  },
+  "kalman, encoder only": {
+   "succ": 0.02,
+   "err": 1.1207320483399568
+  },
+  "kalman + motor model": {
+   "succ": 0.135,
+   "err": 0.42292527419638215
+  },
+  "kalman + MEMS": {
+   "succ": 0.189,
+   "err": 0.21743040769857247
+  },
+  "kalman + MEMS + quantum": {
+   "succ": 0.392,
+   "err": 0.10250260428581112
+  }
+ },
+ "4.0": {
+  "encoder": {
+   "succ": 0.194,
+   "err": 0.21619514915647348
+  },
+  "kalman, encoder only": {
+   "succ": 0.019,
+   "err": 1.0951991998174189
+  },
+  "kalman + motor model": {
+   "succ": 0.067,
+   "err": 0.7110671662402812
+  },
+  "kalman + MEMS": {
+   "succ": 0.166,
+   "err": 0.22871956056759074
+  },
+  "kalman + MEMS + quantum": {
+   "succ": 0.299,
+   "err": 0.13106047256668849
+  }
+ }
+}

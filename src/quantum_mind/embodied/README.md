@@ -1,4 +1,4 @@
-# `quantum_mind.embodied`: a one-motor vision-language-action prototype
+# `quantum_mind.embodied`: QR-VLA, a one-motor quantum-robotics vision-language-action prototype
 
 A deliberately small system to build the fourth strand of the library on: embodied AI. One simulated DC-motor joint must move to
 the object that an instruction names on a one-dimensional table. Everything (model, gradients, training) is NumPy.
@@ -44,3 +44,21 @@ instruction with two clarifying answers. `qiskit_slot.qiskit_posterior` reproduc
   closed loop the quantum slot does not beat Bayes or the classical slot (success 0.912, 0.916, 0.925). Two noisy answers were not worth
   their question cost over one.
 * Real evidence needs answers from real people (or a robot's real users); that is the open step.
+
+## The three strands in one system: `QuantumRobotVLA`
+
+| Slot | Strand | Quantum component | Classical rival it is measured against |
+|---|---|---|---|
+| belief | cognition | `QuantumSlot` (rotated measurements per answer; Qiskit circuit reproduces it) | `BayesSlot`, `TemperedSlot` |
+| state | sensing | `kalman + MEMS + quantum` (slow atom-interferometer accelerometer pins the MEMS bias) | encoder, Kalman with encoder only, Kalman with the nominal motor model |
+| assignment | computing | `assign_targets` over the QUBO solvers incl. Qiskit QAOA | exact, annealing, greedy |
+
+The grounding model (`TinyVLA`) is classical; the quantum parts are simulated on a classical machine.
+
+### What the state benchmark found (`benchmarks/results/vla_state/`)
+
+The encoder drops out 1 s into a 3 s move. With the plant as modelled, the classical Kalman filter that uses the known command and the nominal
+motor wins by a wide margin (success 0.96 against 0.43 for the quantum-accelerometer fusion). When an unmodelled push acts on the joint, the model-based
+filter collapses (0.14 and 0.07) and the quantum-accelerometer fusion is best (0.39 and 0.30, MEMS alone 0.19 and 0.17). So the accelerometer
+earns its place only where the dynamics are not known, and the quantum one beats the MEMS one only because its bias is near zero. All simulated, with
+illustrative sensor values.
