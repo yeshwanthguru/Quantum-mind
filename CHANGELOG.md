@@ -59,7 +59,7 @@ that the library contains only quantum cognition for robotics:
   `interference_circuit`, `chsh_circuit`), data (`PRISONERS_DILEMMA`, `TWO_STAGE_GAMBLE`, `LINDA`), examples,
   the judgement-families tutorial and atlas and math entries. Four families remain: order effects, quantum-like
   Bayesian networks, trust and belief dynamics, and bistable perception.
-- Examples and tutorials were renumbered, then extended (19 examples, 16 tutorials).
+- Examples and tutorials were renumbered, then extended (20 examples, 16 tutorials).
 
 ### Changed
 
