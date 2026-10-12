@@ -112,7 +112,7 @@ class JointEstimator:
             self.x = F @ self.x + np.array([0.5 * dt * dt * acc, dt * acc, 0.0])
             Q = np.diag([0.0, (1.5 * dt) ** 2, 0.0])
         else:
-            acc = meas['a_mems'] / s                                            # raw reading, workspace units / s^2; F carries the -bias term
+            acc = meas['a_mems'] / s                                            # raw reading (units/s^2); F carries the -bias term
             self.x = F @ self.x + np.array([0.5 * dt * dt * acc, dt * acc, 0.0])
             q_a = (self.mems.noise_std / np.sqrt(self.per) / s * dt) ** 2
             q_b = (self.mems.bias_walk / s) ** 2 * dt
@@ -120,7 +120,8 @@ class JointEstimator:
         self.P = F @ self.P @ F.T + Q + 1e-12 * np.eye(3)
         if meas['enc'] is not None:
             self._update(np.array([1.0, 0, 0]), meas['enc'], self.enc_std ** 2)
-        if (self.mode == 'kalman + MEMS + quantum' or (self.quantum_bias and self.mode == 'kalman + motor model')) and meas['a_q'] is not None:
+        pins_bias = self.mode == 'kalman + MEMS + quantum' or (self.quantum_bias and self.mode == 'kalman + motor model')
+        if pins_bias and meas['a_q'] is not None:
             r = (self.mems.noise_std / np.sqrt(self.per)) ** 2 + self.quantum.noise_std ** 2
             self._update(np.array([0, 0, 1.0]), (meas['a_mems'] - meas['a_q']) / s, r / s ** 2)
         return float(self.x[0]), float(self.x[1])

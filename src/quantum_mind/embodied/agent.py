@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from .motor import OneMotor
 from .state import JointEstimator
 
 NOMINAL = np.array([8.0, 2.0, 0.3, 0.0])        # gain, damping, Coulomb friction, external acceleration (workspace units/s^2)
@@ -84,7 +83,7 @@ class MotorAgent:
         return theta, omega
 
     def _calibrate(self, y, u, omega):
-        """Self-calibration: while the encoder is trusted and no plant fault is flagged, track the gain and damping by recursive least squares."""
+        """Self-calibration: while the encoder is trusted and nothing is flagged, track gain and damping (recursive least squares)."""
         if not self.enc_ok or ({'actuator_degraded', 'friction_increase', 'external_push'} & self.flags):
             return
         phi = np.array([np.clip(u, -1, 1), -omega])
@@ -127,7 +126,8 @@ class MotorAgent:
             band = {'actuator_degraded': p[0] < 0.65 * self.ref[0], 'friction_increase': p[2] > 1.0, 'external_push': abs(p[3]) > 1.5}[name]
             if band and (best == 'none' or rss < fits[best][1]):
                 best, plant = name, p
-        self.counts = {k: (self.counts.get(k, 0) + 1 if k == best else 0) for k in ('actuator_degraded', 'friction_increase', 'external_push')}
+        plant_faults = ('actuator_degraded', 'friction_increase', 'external_push')
+        self.counts = {k: (self.counts.get(k, 0) + 1 if k == best else 0) for k in plant_faults}
         if best != 'none' and self.counts[best] >= self.persist:
             self._log(best)
             self.label, self.plant = best, plant
@@ -165,14 +165,16 @@ def run_fault_episode(act, rng, faults=(), policy='agent', steps=80, switch_at=3
     """Two-leg move with faults injected: go to target A, then (at ``switch_at``) to target B, which is where the score is taken.
 
     ``act(target, theta, omega)`` is the controller (for example ``TinyVLA.act``). ``policy`` is ``'encoder'`` (raw encoder, no agent),
-    ``'kalman'`` (Kalman state estimate, no agent), ``'model'`` (Kalman with the nominal motor model, no agent), ``'monitor'`` (agent that only monitors), ``'agent no quantum'`` or ``'agent'``.
+    ``'kalman'`` (Kalman state estimate, no agent), ``'model'`` (Kalman with the nominal motor model, no agent), ``'monitor'`` (agent
+    that only monitors), ``'agent no quantum'`` or ``'agent'``.
     """
     from .state import SensedMotor
     sm = SensedMotor(faults=faults)
     a, b = rng.uniform(-0.9, 0.9, 2)
     z0 = sm.reset(rng.uniform(-1, 1), rng)
     if policy in ('encoder', 'kalman', 'model'):
-        agent, est = None, JointEstimator({'encoder': 'encoder', 'kalman': 'kalman + MEMS + quantum', 'model': 'kalman + motor model'}[policy])
+        modes = {'encoder': 'encoder', 'kalman': 'kalman + MEMS + quantum', 'model': 'kalman + motor model'}
+        agent, est = None, JointEstimator(modes[policy])
         est.reset(z0)
     else:
         agent = MotorAgent(heal=policy != 'monitor', quantum=policy != 'agent no quantum')
@@ -188,4 +190,5 @@ def run_fault_episode(act, rng, faults=(), policy='agent', steps=80, switch_at=3
             peak = max(peak, abs(sm.m.theta - b))
     err = abs(sm.m.theta - b)
     return {'error': err, 'success': err < tol, 'diagnosis': agent.diagnosis if agent else [],
-            'events': agent.events if agent else [], 'final': agent.final_diagnosis if agent else None, 'safe_stop': bool(agent and agent.safe_stop)}
+            'events': agent.events if agent else [], 'final': agent.final_diagnosis if agent else None,
+            'safe_stop': bool(agent and agent.safe_stop)}
