@@ -41,7 +41,7 @@ class MotorAgent:
         self.plant = np.array(NOMINAL)
         self.cal, self.Pcal = np.array(NOMINAL[:2]), np.diag([4.0, 1.0])
         self.buf = []
-        self.t, self.enc_ok, self.bad_enc, self.none_enc = 0.0, True, 0, 0
+        self.t, self.enc_ok, self.bad_enc, self.none_enc, self.agree = 0.0, True, 0, 0, 0
         self.flags, self.counts, self.events, self.safe_stop, self.dead = set(), {}, [], False, 0
         self.label = None                                              # latest plant diagnosis; it can be revised as more data arrive
         self.theta_hat, self.omega_hat = z0, 0.0
@@ -66,11 +66,18 @@ class MotorAgent:
         else:
             self.none_enc = 0
             pred = x[0] + x[1] * dt + 0.5 * dt * dt * a_corr           # dead-reckoned position
-            jump = abs(enc - pred) > 0.03 + 0.003 * abs(a_corr)         # integrator mismatch grows with acceleration
+            jump = abs(enc - pred) > 0.035 + 0.004 * abs(a_corr)         # integrator mismatch grows with acceleration
             self.bad_enc = self.bad_enc + 1 if jump else 0
-            if self.bad_enc >= 2 and self.enc_ok:
+            if self.bad_enc >= 3 and self.enc_ok:
                 self.enc_ok = False
                 self._log('encoder_jump')
+            if self.heal and not self.enc_ok:                          # masked: let the encoder back in once it agrees with the state again
+                self.agree = self.agree + 1 if abs(enc - self.est.x[0]) < 0.04 else 0
+                if self.agree >= 10:
+                    self.enc_ok, self.agree, self.bad_enc = True, 0, 0
+                    self.est.mode, self.est.plant = self.mode, None
+                    self.events.append((round(self.t, 2), 'encoder_recovered'))
+                    self.flags -= {'encoder_lost', 'encoder_jump'}
             if self.heal and (jump or not self.enc_ok):
                 enc = None                                             # never feed a suspect reading to the filter
         if self.heal and not self.enc_ok:                              # heal: predict with the diagnosed plant, not the raw accelerometer
@@ -114,6 +121,19 @@ class MotorAgent:
             out['friction_increase'] = (np.array([g0, b0, c, 0.0]), float(((r + c * th) ** 2).sum()))
         return out
 
+    def _joint(self):
+        """Ridge fit of gain, Coulomb friction and push together, used to tell apart faults whose single-fault fits are close."""
+        y, u, w = (np.array(c) for c in zip(*self.buf))
+        g0, b0, c0, _ = self.ref
+        th = np.tanh(w / 0.02)
+        Phi = np.stack([u, -th, np.ones_like(u)], axis=1)
+        r = y + b0 * w
+        prior, lam = np.array([g0, c0, 0.0]), np.diag([1 / 3.0 ** 2, 1 / 0.7 ** 2, 1 / 1.0 ** 2])
+        sol = np.linalg.solve(Phi.T @ Phi / 0.05 ** 2 + lam, Phi.T @ r / 0.05 ** 2 + lam @ prior)
+        dev = {'actuator_degraded': (g0 - sol[0]) / (0.35 * g0), 'friction_increase': (sol[1] - c0) / 0.7,
+               'external_push': abs(sol[2]) / 1.5}
+        return dev, np.array([sol[0], b0, sol[1], sol[2]])
+
     def _diagnose(self):
         if len(self.buf) < self.W // 2:
             return
@@ -126,13 +146,20 @@ class MotorAgent:
             band = {'actuator_degraded': p[0] < 0.65 * self.ref[0], 'friction_increase': p[2] > 1.0, 'external_push': abs(p[3]) > 1.5}[name]
             if band and (best == 'none' or rss < fits[best][1]):
                 best, plant = name, p
+        close = [n for n, (p, rss) in fits.items() if n != 'none' and rss <= 0.5 * rss0 and rss / len(self.buf) <= 0.05
+                 and rss <= 1.3 * fits[best][1]] if best != 'none' else []
+        if len(close) > 1:                                             # ambiguous: let the joint fit decide which parameter moved most
+            dev, joint = self._joint()
+            pick = max(close, key=lambda n: dev[n])
+            if dev[pick] > 1.0:
+                best, plant = pick, joint
         plant_faults = ('actuator_degraded', 'friction_increase', 'external_push')
         self.counts = {k: (self.counts.get(k, 0) + 1 if k == best else 0) for k in plant_faults}
         if best != 'none' and self.counts[best] >= self.persist:
             self._log(best)
             self.label, self.plant = best, plant
         self.dead = self.dead + 1 if (best == 'actuator_degraded' and plant[0] < 1.2) else 0
-        if self.dead >= 15:                                  # a transient mis-fit must not end in a latched safe stop
+        if self.dead >= 25:                                  # a transient mis-fit must not end in a latched safe stop
             self._log('actuator_unrecoverable')
             self.safe_stop = True
 

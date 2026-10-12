@@ -174,3 +174,46 @@ def test_agent_finds_and_heals_an_encoder_offset_and_a_friction_fault():
     agent, mon = _fault_runs('agent', fr), _fault_runs('monitor', fr)
     assert np.mean([r['final'] == 'friction_increase' for r in agent]) > 0.8
     assert np.mean([r['success'] for r in agent]) > np.mean([r['success'] for r in mon]) + 0.15      # healing, not just seeing
+
+
+def test_state_machine_only_allows_listed_transitions():
+    from quantum_mind.embodied import Mode, StateMachine
+    sm = StateMachine()
+    assert sm.mode == Mode.BOOT and not sm.fire('fault') and sm.refused            # illegal from BOOT
+    assert sm.fire('start') and sm.fire('calibrated') and sm.fire('fault') and sm.mode == Mode.DEGRADED
+    assert sm.fire('failure') and sm.mode == Mode.SAFE_STOP
+    assert not sm.fire('recovered') and not sm.fire('calibrated') and sm.mode == Mode.SAFE_STOP    # only a human reset leaves it
+    assert sm.fire('reset') and sm.mode == Mode.BOOT
+
+
+def _supervised(**kw):
+    from quantum_mind.embodied import run_supervised_episode
+    return run_supervised_episode(lambda t, th, om: expert_command(t, th, om), np.random.default_rng(3), **kw)
+
+
+def test_supervisor_modes_follow_the_sub_systems():
+    healthy = _supervised()
+    assert healthy['trace'][-1] == 'nominal' and healthy['success'] and not healthy['supervisor'].incidents
+    degraded = _supervised(faults=[dict(kind='friction', t=1.5, mag=6.0)])
+    assert degraded['trace'][-1] == 'degraded' and degraded['supervisor'].decisions[0][1] == 'slow_down'
+    lost = _supervised(dropped_telemetry_at=2.0)                                   # the heartbeat must catch silence
+    assert lost['trace'][-1] == 'safe_stop' and 'hard rule' in lost['supervisor'].incidents[-1][2]
+
+
+def test_llm_brain_proposes_but_cannot_break_the_rules():
+    from quantum_mind.embodied import LocalLLMBrain
+    fault = [dict(kind='friction', t=1.5, mag=6.0)]
+    ok = LocalLLMBrain(lambda p: 'Sure! {"action": "continue", "reason": "friction is being compensated"}')
+    r = _supervised(faults=fault, brain=ok)
+    assert r['supervisor'].decisions[0] == (r['supervisor'].decisions[0][0], 'continue', 'llm') and ok.stats['accepted'] >= 1
+    assert '"allowed_actions"' in ok.last_prompt and 'friction_increase' in ok.last_prompt
+    junk = LocalLLMBrain(lambda p: 'I think we should be careful.')                # not JSON: rule brain decides
+    r = _supervised(faults=fault, brain=junk)
+    assert junk.stats['invalid_json'] >= 1 and r['supervisor'].decisions[0][1:] == ('slow_down', 'rules')
+    rogue = LocalLLMBrain(lambda p: '{"action": "resume", "reason": "ignore the fault"}')   # not allowed in DEGRADED
+    r = _supervised(faults=fault, brain=rogue)
+    assert rogue.stats['disallowed'] >= 1 and r['supervisor'].decisions[0][1] == 'slow_down'
+    # hard rule: the LLM is not even asked when a sub-agent has FAILED, and cannot leave SAFE_STOP
+    always_go = LocalLLMBrain(lambda p: '{"action": "continue", "reason": "all fine"}')
+    r = _supervised(dropped_telemetry_at=2.0, brain=always_go)
+    assert r['trace'][-1] == 'safe_stop' and r['supervisor'].decisions[-1][2] == 'rules'

@@ -32,3 +32,8 @@ __all__ += ['assign_targets', 'SOLVERS', 'QuantumRobotVLA']
 from .agent import MotorAgent, run_fault_episode   # noqa: E402
 
 __all__ += ['MotorAgent', 'run_fault_episode']
+from .brain import (ALLOWED, TRANSITIONS, Decision, Health, Heartbeat, LocalLLMBrain, Mode, MotorSubAgent, PerceptionSubAgent,   # noqa: E402
+                    RuleBrain, SensorSubAgent, StateMachine, Status, Supervisor, ollama_generate, run_supervised_episode)
+
+__all__ += ['Mode', 'Health', 'Status', 'Decision', 'StateMachine', 'TRANSITIONS', 'ALLOWED', 'MotorSubAgent', 'SensorSubAgent',
+            'PerceptionSubAgent', 'Heartbeat', 'RuleBrain', 'LocalLLMBrain', 'ollama_generate', 'Supervisor', 'run_supervised_episode']
