@@ -100,3 +100,25 @@ def test_reference_collection_resolves_every_short_citation():
     cited = {s for e in refs for s in e['sources'] if s.startswith('atlas: ')}
     with_ref = {'atlas: ' + m['title'] for _, _, models in atlas.PAGES.values() for m in models if m['ref']}
     assert cited == with_ref                                            # every atlas reference is covered
+
+
+def test_readme_api_table_names_exist():
+    """Every name in the README's API table can be imported, and docs/API.md lists the embodied package."""
+    text = (ROOT / 'README.md').read_text()
+    section = text[text.index('## API reference'):text.index('<a id="quick-start">')]
+    for line in section.splitlines():
+        if not line.startswith('| `quantum_mind.'):
+            continue
+        cells = [c.strip() for c in line.strip('|').split('|')]
+        mods = re.findall(r'`(quantum_mind\.\w+)`', cells[0])
+        if len(mods) != 1:
+            continue
+        mod = importlib.import_module(mods[0])
+        for name in re.findall(r'`([\w.]+)`', cells[2]):
+            obj = mod
+            for part in name.split('.'):
+                obj = getattr(obj, part, None) or importlib.import_module('%s.%s' % (obj.__name__, part))
+            assert obj is not None, '%s.%s' % (mods[0], name)
+    api = (ROOT / 'docs' / 'API.md').read_text()
+    for needle in ('## `quantum_mind.embodied`', 'MotorAgent', 'Supervisor', 'ControlRuntime', 'TinyVLA'):
+        assert needle in api

@@ -19,7 +19,7 @@ vision-language-action prototype that uses all three. Nothing from 3.0 is remove
   the classical motor-model filter wins when the plant is as modelled; the quantum-accelerometer fusion wins under an unmodelled push.
   `MotorAgent`: a monitoring and self-healing agent for the motor (encoder redundancy checks, single-fault diagnosis, online self-calibration,
   estimator fallback, command re-linearisation, safe stop) with fault injection in `SensedMotor` and `benchmarks/motor_agent_benchmark.py`;
-  it helps on encoder faults and friction, is weak on external pushes and costs 4 points on a healthy motor. Fixed: the state estimator's
+  it helps on encoder faults and friction and is still weak on external pushes (0.52 success). Fixed: the state estimator's
   transition matrix lacked the accelerometer-bias coupling; the state results were re-run (conclusions unchanged), and the workspace end stop is
   now a hard stop with a consistent accelerometer reading.
 - `quantum_mind.computing` (thread 1, quantum computing for robot algorithms): `multi_robot_allocation`, `grasp_selection` and

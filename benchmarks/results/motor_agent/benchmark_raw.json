@@ -17,12 +17,12 @@
    "error": 0.009063734885548009
   },
   "agent no quantum": {
-   "success": 0.95,
-   "error": 0.013643242707158651
+   "success": 0.9925,
+   "error": 0.010231980695706544
   },
   "agent": {
-   "success": 0.9625,
-   "error": 0.01248740840578879
+   "success": 0.9975,
+   "error": 0.0098696871246417
   }
  },
  "encoder dropout": {
@@ -44,11 +44,11 @@
   },
   "agent no quantum": {
    "success": 0.805,
-   "error": 0.041835956171950385
+   "error": 0.04220347167224876
   },
   "agent": {
    "success": 0.8475,
-   "error": 0.036980114311308245
+   "error": 0.037348890369433
   }
  },
  "encoder offset": {
@@ -69,12 +69,12 @@
    "error": 0.2671670258778855
   },
   "agent no quantum": {
-   "success": 0.805,
-   "error": 0.041835956171950385
+   "success": 0.825,
+   "error": 0.04100683823737274
   },
   "agent": {
-   "success": 0.8425,
-   "error": 0.03671624432097692
+   "success": 0.8625,
+   "error": 0.0355291990323746
   }
  },
  "actuator gain loss": {
@@ -95,12 +95,12 @@
    "error": 0.05298987742979367
   },
   "agent no quantum": {
-   "success": 0.8875,
-   "error": 0.03603433042179754
+   "success": 0.855,
+   "error": 0.05896562646696731
   },
   "agent": {
-   "success": 0.8975,
-   "error": 0.03483576157926462
+   "success": 0.8525,
+   "error": 0.066256607665545
   }
  },
  "friction increase": {
@@ -121,12 +121,12 @@
    "error": 0.04949260306037713
   },
   "agent no quantum": {
-   "success": 0.9575,
-   "error": 0.026412341497017825
+   "success": 0.9925,
+   "error": 0.018692839830408974
   },
   "agent": {
-   "success": 0.965,
-   "error": 0.024748381117896442
+   "success": 0.9925,
+   "error": 0.018640800491658085
   }
  },
  "external push": {
@@ -147,12 +147,12 @@
    "error": 0.18582530044280599
   },
   "agent no quantum": {
-   "success": 0.3175,
-   "error": 0.2101261488139275
+   "success": 0.5475,
+   "error": 0.11453723850246109
   },
   "agent": {
-   "success": 0.345,
-   "error": 0.20104151757634844
+   "success": 0.515,
+   "error": 0.12373304819578697
   }
  }
 }

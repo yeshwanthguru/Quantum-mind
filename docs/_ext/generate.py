@@ -58,13 +58,23 @@ API = [
     ('quantum_mind.viz.states', 'Bloch vectors and trajectories'), ('quantum_mind.viz.mpl', 'Matplotlib viewer'),
     ('quantum_mind.viz.interactive', 'Interactive viewer'), ('quantum_mind.viz.themes', 'Themes'),
     ('quantum_mind.data', 'Published data'),
+    ('quantum_mind.evaluation.metrics', 'Metrics'), ('quantum_mind.evaluation.statistics', 'Paired statistics'),
+    ('quantum_mind.evaluation.manifest', 'Run manifests'), ('quantum_mind.evaluation.provenance', 'Provenance'),
+    ('quantum_mind.embodied.motor', 'Motor simulator'), ('quantum_mind.embodied.scene', 'Tabletop scenes and instructions'),
+    ('quantum_mind.embodied.vla', 'TinyVLA model'), ('quantum_mind.embodied.policies', 'Closed-loop policies'),
+    ('quantum_mind.embodied.belief', 'Belief slots'), ('quantum_mind.embodied.state', 'State estimation'),
+    ('quantum_mind.embodied.agent', 'Motor monitor and self-heal agent'), ('quantum_mind.embodied.brain', 'Main brain and state machine'),
+    ('quantum_mind.embodied.runtime', 'Hardware interface, safety and runtime'),
+    ('quantum_mind.embodied.assignment', 'Target assignment'), ('quantum_mind.embodied.system', 'QuantumRobotVLA'),
+    ('quantum_mind.embodied.qiskit_slot', 'Qiskit check of the quantum slot'),
 ]
 API_GROUPS = [('Core', 'quantum_mind.core.'), ('Quantum-like families', 'quantum_mind.families.'),
               ('Applications', 'quantum_mind.applications.'),
               ('Quantum computing for robots', 'quantum_mind.computing.'), ('Quantum sensing', 'quantum_mind.sensing.'),
               ('COBRA belief filter', 'quantum_mind.belief.'), ('Environments', 'quantum_mind.envs.'),
               ('Simulator', 'quantum_mind.quantum.'), ('Problems', 'quantum_mind.problems'),
-              ('Circuits', 'quantum_mind.circuits.'), ('Bloch-sphere viewer', 'quantum_mind.viz.'), ('Data', 'quantum_mind.data')]
+              ('Circuits', 'quantum_mind.circuits.'), ('Bloch-sphere viewer', 'quantum_mind.viz.'), ('Data', 'quantum_mind.data'),
+              ('Evaluation', 'quantum_mind.evaluation.'), ('Embodied AI: the one-motor VLA, agents and runtime', 'quantum_mind.embodied.')]
 
 
 def _rewrite(md, src):

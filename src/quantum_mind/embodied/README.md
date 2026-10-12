@@ -74,19 +74,20 @@ Closed loop, simulated, one fault at 1.5 s of a 4 s two-leg move, 5 seeds x 80 e
 
 | Fault | Best no-agent policy | Agent, monitor only | Agent (self-heal) |
 |---|---|---|---|
-| none | 1.00 | 1.00 | 0.96 |
+| none | 1.00 | 1.00 | 1.00 |
 | encoder dropout | 0.58 | 0.44 | 0.85 |
-| encoder offset | 0.00 | 0.00 | 0.84 |
-| actuator gain loss | 0.77 | 0.77 | 0.90 |
-| friction increase | 0.77 | 0.68 | 0.97 |
-| external push | 0.00 | 0.00 | 0.35 |
+| encoder offset | 0.00 | 0.00 | 0.86 |
+| actuator gain loss | 0.77 | 0.77 | 0.85 |
+| friction increase | 0.77 | 0.68 | 0.99 |
+| external push | 0.00 | 0.00 | 0.52 |
 
 What this does not show, stated plainly:
 
-* **It costs something when nothing is wrong:** 4.3% of healthy episodes raise an alarm and success drops from 1.00 to 0.96.
-* **Pushes are the weak case:** the first diagnosis is right in 33% of episodes (a push against the motion looks like friction until the joint stops),
-  10% of episodes end in a false safe stop, and success is 0.35.
+* **Pushes are still the weak case:** the diagnosis is right in about half of the episodes (a push against the motion looks like friction until the
+  joint stops) and success is 0.52.
 * **Gain loss is diagnosed in about half of the episodes** (the plain controller tolerates much of it anyway).
-* **The quantum accelerometer adds little inside the agent:** the agent without it scores 0.81 and 0.81 on encoder dropout and offset against 0.85 and 0.84
-  (not retuned for that case).
+* **The quantum accelerometer adds little inside the agent:** the agent without it scores 0.81 and 0.83 on encoder dropout and offset against 0.85 and
+  0.86 with it, and 0.55 against 0.52 on pushes (not retuned for that case).
+* A first version of the agent raised false alarms on 4% of healthy episodes and cost 4 points of success there; the encoder check now needs three
+  consecutive jumps with an acceleration-dependent threshold (0.3% false alarms). The thresholds were tuned on separate seeds but on this fault family.
 * The agent knows the nominal plant, handles five fault kinds one at a time, and its thresholds were tuned on this fault family. Nothing here was run on hardware.

@@ -6,14 +6,14 @@ Simulation. 5 seeds x 80 episodes per cell. One fault is injected at 1.5 s of a 
 
 | Policy | Success | Mean final error | Safe stops | p vs agent |
 |---|---|---|---|---|
-| raw encoder | 1.000 | 0.011 | 0.000 | 0.0535 |
-| Kalman (no agent) | 1.000 | 0.009 | 0.000 | 0.0005 |
-| Kalman + motor model (no agent) | 1.000 | 0.009 | 0.000 | 0.0005 |
-| agent, monitor only | 1.000 | 0.009 | 0.000 | 0.0005 |
-| agent, no quantum accelerometer | 0.950 | 0.014 | 0.000 | 0.0005 |
-| agent (monitor + self-heal) | 0.963 | 0.012 | 0.000 | – |
+| raw encoder | 1.000 | 0.011 | 0.000 | 0.4101 |
+| Kalman (no agent) | 1.000 | 0.009 | 0.000 | 0.1290 |
+| Kalman + motor model (no agent) | 1.000 | 0.009 | 0.000 | 0.8983 |
+| agent, monitor only | 1.000 | 0.009 | 0.000 | 0.1290 |
+| agent, no quantum accelerometer | 0.993 | 0.010 | 0.000 | 0.3654 |
+| agent (monitor + self-heal) | 0.998 | 0.010 | 0.000 | – |
 
-False alarms (any event in a healthy episode): 0.043 of episodes.
+False alarms (any event in a healthy episode): 0.003 of episodes.
 
 ## Fault: encoder dropout
 
@@ -26,7 +26,7 @@ False alarms (any event in a healthy episode): 0.043 of episodes.
 | agent, no quantum accelerometer | 0.805 | 0.042 | 0.000 | 0.0002 |
 | agent (monitor + self-heal) | 0.848 | 0.037 | 0.000 | – |
 
-Agent diagnosis: first event is the injected fault in 0.995 of episodes; the final diagnosis is in 0.995; any event in 1.000; median latency 0.10 s.
+Agent diagnosis: first event is the injected fault in 0.998 of episodes; the final diagnosis is in 0.998; any event in 1.000; median latency 0.10 s.
 
 ## Fault: encoder offset
 
@@ -35,24 +35,24 @@ Agent diagnosis: first event is the injected fault in 0.995 of episodes; the fin
 | raw encoder | 0.000 | 0.246 | 0.000 | 0.0002 |
 | Kalman (no agent) | 0.000 | 0.267 | 0.000 | 0.0002 |
 | Kalman + motor model (no agent) | 0.000 | 0.246 | 0.000 | 0.0002 |
-| agent, monitor only | 0.000 | 0.267 | 0.025 | 0.0002 |
-| agent, no quantum accelerometer | 0.805 | 0.042 | 0.000 | 0.0002 |
-| agent (monitor + self-heal) | 0.843 | 0.037 | 0.000 | – |
+| agent, monitor only | 0.000 | 0.267 | 0.000 | 0.0002 |
+| agent, no quantum accelerometer | 0.825 | 0.041 | 0.000 | 0.0002 |
+| agent (monitor + self-heal) | 0.863 | 0.036 | 0.000 | – |
 
-Agent diagnosis: first event is the injected fault in 1.000 of episodes; the final diagnosis is in 1.000; any event in 1.000; median latency 0.10 s.
+Agent diagnosis: first event is the injected fault in 1.000 of episodes; the final diagnosis is in 0.998; any event in 1.000; median latency 0.15 s.
 
 ## Fault: actuator gain loss
 
 | Policy | Success | Mean final error | Safe stops | p vs agent |
 |---|---|---|---|---|
-| raw encoder | 0.725 | 0.056 | 0.000 | 0.0002 |
-| Kalman (no agent) | 0.765 | 0.053 | 0.000 | 0.0002 |
-| Kalman + motor model (no agent) | 0.495 | 0.074 | 0.000 | 0.0002 |
-| agent, monitor only | 0.765 | 0.053 | 0.043 | 0.0002 |
-| agent, no quantum accelerometer | 0.887 | 0.036 | 0.010 | 0.0020 |
-| agent (monitor + self-heal) | 0.897 | 0.035 | 0.013 | – |
+| raw encoder | 0.725 | 0.056 | 0.000 | 0.1710 |
+| Kalman (no agent) | 0.765 | 0.053 | 0.000 | 0.0770 |
+| Kalman + motor model (no agent) | 0.495 | 0.074 | 0.000 | 0.2927 |
+| agent, monitor only | 0.765 | 0.053 | 0.000 | 0.0770 |
+| agent, no quantum accelerometer | 0.855 | 0.059 | 0.000 | 0.0130 |
+| agent (monitor + self-heal) | 0.853 | 0.066 | 0.000 | – |
 
-Agent diagnosis: first event is the injected fault in 0.517 of episodes; the final diagnosis is in 0.510; any event in 0.675; median latency 0.45 s.
+Agent diagnosis: first event is the injected fault in 0.520 of episodes; the final diagnosis is in 0.512; any event in 0.675; median latency 0.45 s.
 
 ## Fault: friction increase
 
@@ -62,22 +62,22 @@ Agent diagnosis: first event is the injected fault in 0.517 of episodes; the fin
 | Kalman (no agent) | 0.677 | 0.049 | 0.000 | 0.0002 |
 | Kalman + motor model (no agent) | 0.590 | 0.056 | 0.000 | 0.0002 |
 | agent, monitor only | 0.677 | 0.049 | 0.000 | 0.0002 |
-| agent, no quantum accelerometer | 0.958 | 0.026 | 0.000 | 0.0095 |
-| agent (monitor + self-heal) | 0.965 | 0.025 | 0.000 | – |
+| agent, no quantum accelerometer | 0.993 | 0.019 | 0.000 | 0.7101 |
+| agent (monitor + self-heal) | 0.993 | 0.019 | 0.000 | – |
 
-Agent diagnosis: first event is the injected fault in 0.925 of episodes; the final diagnosis is in 0.910; any event in 0.955; median latency 1.20 s.
+Agent diagnosis: first event is the injected fault in 0.948 of episodes; the final diagnosis is in 0.865; any event in 0.955; median latency 1.25 s.
 
 ## Fault: external push
 
 | Policy | Success | Mean final error | Safe stops | p vs agent |
 |---|---|---|---|---|
-| raw encoder | 0.000 | 0.185 | 0.000 | 0.2222 |
-| Kalman (no agent) | 0.000 | 0.186 | 0.000 | 0.2347 |
+| raw encoder | 0.000 | 0.185 | 0.000 | 0.0002 |
+| Kalman (no agent) | 0.000 | 0.186 | 0.000 | 0.0002 |
 | Kalman + motor model (no agent) | 0.000 | 0.255 | 0.000 | 0.0002 |
-| agent, monitor only | 0.000 | 0.186 | 0.412 | 0.2347 |
-| agent, no quantum accelerometer | 0.318 | 0.210 | 0.098 | 0.1445 |
-| agent (monitor + self-heal) | 0.345 | 0.201 | 0.100 | – |
+| agent, monitor only | 0.000 | 0.186 | 0.092 | 0.0002 |
+| agent, no quantum accelerometer | 0.547 | 0.115 | 0.000 | 0.0717 |
+| agent (monitor + self-heal) | 0.515 | 0.124 | 0.000 | – |
 
-Agent diagnosis: first event is the injected fault in 0.330 of episodes; the final diagnosis is in 0.250; any event in 0.998; median latency 1.40 s.
+Agent diagnosis: first event is the injected fault in 0.492 of episodes; the final diagnosis is in 0.500; any event in 0.995; median latency 1.45 s.
 
 Limits: the agent knows the nominal plant and handles only these five fault kinds; faults are single and step-like; all data are simulated, with illustrative sensor values.

@@ -346,6 +346,114 @@ Belief filters that keep a robot's belief about a person as a density matrix.
 - **class `OnlineBelief(model, rho, prev)`**: A COBRA belief updated one frame at a time, as a robot would run it.
   - `update(self, frame)`: Fold one sensor frame into the belief and return the new probabilities.
 
+## `quantum_mind.embodied`
+
+Embodied AI: a tiny vision-language-action (VLA) prototype for one motor, as a framework of replaceable slots.
+
+- `ALLOWED` (constant)
+- `assign_targets(motor_positions, target_positions, solver='exact', balance=0.5, **kw)`: Assign each target to a motor. Returns ``(mapping, total_travel, problem)``; ``mapping[target] = motor``.
+- **class `BayesSlot()`**:
+  - `fit(self, batch)`:
+  - `posterior(self, g0, L, ctx, mask)`:
+- `bc_plan(model)`:
+- **class `BCBaseline(n_cells=16, hidden=64, seed=0)`**: The usual end-to-end behaviour-cloning policy: image, instruction and state in, command out (one hidden layer).
+  - `command(self, image, text, theta, omega)`:
+  - `fit(self, scenes, steps=3000, batch=128, lr=0.01, seed=0)`:
+- `calibrate_gate(model, scenes, alpha=0.1)`: Split-conformal gate fitted on held-out scenes: ask when the prediction set over cells has more than one cell.
+- `cell_centres(n_cells)`:
+- `clarification(scene, rng=None, n_cells=16, pixel_noise=0.1)`: The person's answer to "which one?": a word that singles out the intended target.
+- `COLORS` (constant)
+- **class `ControlRuntime(hardware, act, brain=None, safety=None, heal=True, dt=0.05)`**: Fixed-rate loop: read, estimate, control, supervise, filter for safety, write. One :meth:`step` is one control period.
+  - `run(self, steps, schedule=None)`: Run ``steps`` periods; ``schedule`` maps a step index to a new target.
+  - `start(self)`:
+  - `step(self, target=None)`:
+- **class `Decision(action: 'str', reason: 'str' = '', source: 'str' = 'rules') -> None`**: Decision(action: 'str', reason: 'str' = '', source: 'str' = 'rules')
+- `expert_command(target, theta, omega, kp=3.0, kd=1.0)`: Saturated PD command toward ``target`` (used as the demonstrator; it sees the true target).
+- `fuse(g_first, g_answer, eps=1e-06)`: Classical belief update after an answer: product of the two groundings, renormalised (Bayes with independent evidence).
+- **class `Health(*values)`**: Create a collection of name/value pairs.
+- **class `Heartbeat(timeout=0.5)`**: Watchdog: FAILED if no telemetry arrived within ``timeout`` seconds.
+  - `update(self, ctx)`:
+- **class `JointEstimator(mode, dt=0.05, stroke=0.2, mems=None, quantum=None, enc_std=0.005, vel_process=3.0)`**: Kalman filter for (position, velocity, MEMS bias) in workspace units; ``mode`` is one of :data:`MODES`.
+  - `reset(self, z0)`:
+  - `step(self, meas, u=0.0)`:
+  - `uses_accel(self)`:
+- **class `LocalLLMBrain(generate, fallback=None)`**: Ask a local language model to choose the action. ``generate(prompt) -> str`` is any local text generator.
+  - `decide(self, mode, statuses, history=())`:
+  - `prompt(self, mode, statuses, history)`:
+- `make_dataset(n_scenes, seed, n_cells=16)`: Scenes plus, for each, one random motor state and the demonstrator's command.
+- **class `Mode(*values)`**: Create a collection of name/value pairs.
+- `MODES` (constant)
+- **class `MotorAgent(heal=True, quantum=True, dt=0.05, stroke=0.2, window=16, persist=3)`**: Monitor, diagnose and heal one motor. ``heal=False`` only monitors; ``quantum=False`` leaves the quantum accelerometer out.
+  - `control(self, u_pd)`: Turn the controller's command into the one sent to the motor (identity unless healing and a plant fault is diagnosed).
+  - `reset(self, z0)`:
+  - `step(self, meas, u)`: Feed one set of measurements (and the command that produced them). Returns the state estimate ``(theta, omega)``.
+- **class `MotorHardware(*args, **kwargs)`**: What a dev-kit driver must provide.
+  - `read(self) -> 'dict'`: ``{'t': seconds, 'enc': position in -1..1 or None, 'a_mems': m/s^2 or None, 'a_q': m/s^2 or None}`` (latest values).
+  - `stop(self) -> 'None'`: Cut torque / apply the brake. Must be safe to call at any time, repeatedly.
+  - `write(self, u: 'float') -> 'None'`: Send a normalised command in [-1, 1] (the driver maps it to voltage, PWM or current).
+- **class `MotorSubAgent()`**: Reports the motor agent's view: healing a fault, failed (safe stop) or fine.
+  - `update(self, ctx)`:
+- `ollama_generate(model='llama3.2', host='http://localhost:11434', timeout=30.0)`: A ``generate`` function for a local Ollama server (needs Ollama running on this machine; not exercised in the test suite).
+- **class `OneMotor(gain: 'float' = 8.0, damping: 'float' = 2.0, coulomb: 'float' = 0.3, dt: 'float' = 0.05, encoder_noise: 'float' = 0.005, velocity_filter: 'float' = 0.4, randomise: 'bool' = True) -> None`**: One position-controlled motor joint (simulated).
+  - `measure(self, first=False)`: Noisy ``(theta, omega)`` as the controller sees them.
+  - `reset(self, theta0, rng)`:
+  - `step(self, u)`:
+- `oracle_plan(scene, rng)`:
+- **class `PerceptionSubAgent()`**: Grounding confidence: WARN while the instruction is ambiguous (the gate would ask).
+  - `update(self, ctx)`:
+- `person_answers(scene, rng, e_first=0.05, e_same=0.1, e_switch=0.35, n_answers=2)`: Simulated person who answers ``n_answers`` clarifying questions about the intended object.
+- **class `QuantumRobotVLA(vla: 'TinyVLA', gate: 'object' = None, slot: 'object' = <factory>, state_mode: 'str' = 'kalman + MEMS + quantum', solver: 'str' = 'exact') -> None`**: Quantum-robotics VLA (QR-VLA): one grounding model and three slots.
+  - `assign(self, motor_positions, target_positions, **kw)`: Which motor goes to which target (computing strand).
+  - `plan(self, person=<function person_answers>, n_questions=2)`: Closed-loop plan: ground, ask through the conformal gate when ambiguous, fuse the answers with the belief slot.
+  - `run(self, scene, rng, **kw)`: One episode with the state slot between the sensors and the controller.
+- **class `QuantumSlot()`**:
+  - `init(self, rng)`:
+- **class `RuleBrain()`**: Deterministic policy; also the fallback when the LLM misbehaves.
+  - `decide(self, mode, statuses, history=())`:
+- `run_episode(scene, rng, plan, motor=None, steps=60, tol=0.0625, n_cells=16)`: Roll one episode out. ``plan(scene, rng)`` returns ``(controller, n_questions)``; ``controller(theta, omega)`` is called every control step with the noisy measurement.
+- `run_fault_episode(act, rng, faults=(), policy='agent', steps=80, switch_at=30, tol=0.0625)`: Two-leg move with faults injected: go to target A, then (at ``switch_at``) to target B, which is where the score is taken.
+- `run_sensed_episode(scene, rng, plan, mode, outage_at=1.0, disturbance=0.0, steps=60, tol=0.0625, n_cells=16)`: Like :func:`run_episode`, but the controller sees a state *estimate* (see :mod:`quantum_mind.embodied.state`).
+- `run_supervised_episode(act, rng, faults=(), brain=None, steps=100, switch_at=30, tol=0.0625, heal=True, dropped_telemetry_at=None)`: Two-leg move under the main brain. Returns the final error, the mode trace and the supervisor.
+- **class `SafetyLayer(limits=None)`**: Last line of defence between any command and the motor; independent of the AI.
+  - `filter(self, u, position)`:
+  - `latch(self, reason)`:
+  - `release(self)`: Human action only.
+- **class `SafetyLimits(u_max: 'float' = 0.8, slew: 'float' = 0.25, soft_limit: 'float' = 0.95) -> None`**: SafetyLimits(u_max: 'float' = 0.8, slew: 'float' = 0.25, soft_limit: 'float' = 0.95)
+- `sample_scene(rng, n_cells=16, pixel_noise=0.1, kinds=('color', 'leftmost', 'rightmost', 'block'))`: Draw a scene with 2-3 objects, an instruction, and the intended target.
+- **class `Scene(image: 'np.ndarray', text: 'np.ndarray', cells: 'list', colors: 'list', valid: 'list', target: 'int', words: 'tuple') -> None`**: One episode: an image strip, an instruction, and the ground truth behind them.
+- **class `SensedMotor(motor=None, stroke=0.2, mems=None, quantum=None, enc_std=0.005, outage_at=None, disturbance=0.0, faults=())`**: A :class:`OneMotor` plus an encoder (which can drop out) and the MEMS and quantum accelerometers, all simulated.
+  - `reset(self, theta0, rng)`:
+  - `step(self, u)`: Advance one control step. Faults fire when time passes their ``t``: ``encoder_dropout`` (no reading), ``encoder_offset`` (reading shifted by ``mag``), ``gain_loss`` (motor gain times ``mag``), ``friction`` (Coulomb friction times ``mag``), ``push`` (extra constant external acceleration ``mag``).
+  - `theta0_reading(self, theta0)`:
+- **class `SensorSubAgent(quantum_timeout=3.0, bias_limit=0.15)`**: Encoder, MEMS and quantum accelerometer health.
+  - `update(self, ctx)`:
+- `sequence_batch(model, scenes, rng, person=<function person_answers>, **kw)`: Turn scenes into the arrays the slots use: instruction belief, answer likelihoods, contexts, mask, target index.
+- **class `SimulatedHardware(faults=(), seed=0, theta0=0.0, drop_telemetry_at=None, **kw)`**: The simulator behind the :class:`MotorHardware` interface.
+  - `read(self)`:
+  - `stop(self)`:
+  - `write(self, u)`:
+- `SOLVERS` (constant)
+- **class `StateMachine()`**:
+  - `fire(self, event, t=0.0)`:
+- **class `Status(name: 'str', health: 'Health', message: 'str' = '', data: 'dict' = <factory>) -> None`**: Status(name: 'str', health: 'Health', message: 'str' = '', data: 'dict' = <factory>)
+- **class `Supervisor(subagents=None, brain=None, calibrate_steps=20, recover_steps=40, dt=0.05, slow_factor=0.5)`**: The main brain's loop: sub-agent statuses -> state-machine events -> brain decision -> command limits.
+  - `human_reset(self)`: The only way out of SAFE_STOP (an operator has inspected the machine).
+  - `limit(self, u)`: Apply the current action to a motor command.
+  - `observe(self, ctx)`: Run one supervision step with the telemetry context; returns the current mode.
+  - `report(self)`:
+  - `reset(self)`:
+- **class `TemperedSlot(shared=False)`**: Product rule with learned exponents. ``shared=True`` learns a single exponent (calibrated Bayes, no context).
+  - `init(self, rng)`:
+- **class `TinyVLA(n_cells=16, d=16, hidden=24, seed=0)`**: Grounding by attention plus a small action head (about 1.3k parameters at the defaults).
+  - `act(self, target, theta, omega)`: Motor command in [-1, 1] for a target position and the measured state.
+  - `expected_target(self, g)`:
+  - `fit(self, scenes, steps=3000, batch=128, lr=0.01, seed=0, lam_g=1.0, lam_a=1.0)`:
+  - `ground(self, image, text)`: Distribution over cells for the instruction in the image. Accepts one scene or a batch.
+  - `loss_and_grads(self, img, txt, tgt, theta, omega, u_star, lam_g=1.0, lam_a=1.0, l2=0.0001)`:
+- `TRANSITIONS` (constant)
+- `vla_plan(model, gate=None, always_ask=False, slot=None, person=<function person_answers>, n_questions=2)`: Plan factory. No gate: act on the model's expected target. With a gate: ask when the set is not a single cell.
+- `WORDS` (constant)
+
 ## `quantum_mind.computing`
 
 Quantum computing for robot algorithms: robot problems as QUBOs, classical baselines and a Qiskit QAOA adapter.

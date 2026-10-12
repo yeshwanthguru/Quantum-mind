@@ -271,7 +271,7 @@ What the benchmarks say (all simulated; see `src/quantum_mind/embodied/README.md
 * **Grounding and asking:** 0.96 success on unambiguous instructions; on ambiguous ones acting blindly gives 0.04 and the conformal ask gate 0.90 with a question in 32% of episodes.
 * **Belief slot:** the quantum slot wins only against a person built to be non-commuting; against classical context noise the classical context weights are better.
 * **State slot:** with the plant as modelled, the classical motor-model Kalman filter wins (0.96 against 0.43); under an unmodelled push the quantum-accelerometer fusion wins (0.43 against 0.14).
-* **Motor agent:** `MotorAgent` monitors the joint, diagnoses encoder, friction, gain and push faults and heals them (estimator fallback, command re-linearisation, safe stop). In simulation it lifts success from 0 to 0.84 on an encoder offset and from 0.68 to 0.97 on a friction increase, but it is weak on external pushes (0.35, diagnosis often wrong) and costs 4 points on a healthy motor.
+* **Motor agent:** `MotorAgent` monitors the joint, diagnoses encoder, friction, gain and push faults and heals them (estimator fallback, command re-linearisation, safe stop). In simulation it lifts success from 0 to 0.86 on an encoder offset and from 0.77 to 0.99 on a friction increase, with 0.3% false alarms on a healthy motor, but it is still weak on external pushes (0.52, diagnosis right about half the time).
 * Asking for help with conformal prediction has prior art in LLM planning (KnowNo, Ren et al., 2023); the grounding and behaviour cloning here are standard. The open step is data from real people and a real joint.
 
 ## Thread 3 in depth: COBRA, a context-rotated belief filter
@@ -334,6 +334,26 @@ and on the [COBRA page](https://yeshwanthguru.github.io/Quantum-mind/docs/user_g
 * Under 1.5x test noise COBRA is the best calibrated model (cost 0.481 against 0.608 for the Bayes filter at 1000 sequences).
 * Its l1 coherence flags its own errors barely better than chance (AUROC about 0.53); belief entropy (about 0.81) is far better.
 
+
+## API reference
+
+The complete reference is generated from the docstrings, so it cannot drift from the code:
+
+* **[`docs/API.md`](docs/API.md)**: every public class, function and method of every subpackage, with signatures (renders on GitHub; regenerate with `python docs/make_api.py`).
+* **[Website API reference](https://yeshwanthguru.github.io/Quantum-mind/docs/api/index.html)**: one page per module with the full NumPy-style docstrings (parameters, returns, examples).
+* In Python: `help(quantum_mind.embodied.MotorAgent)`, or `python -m pydoc quantum_mind.sensing`.
+
+| Package | What it is | Main entry points |
+|---|---|---|
+| `quantum_mind.core` | model base class, fitting, model comparison, bootstrap | `Model`, `fit`, `compare`, `bootstrap` |
+| `quantum_mind.families` | the four families of quantum-like models | `order_effects`, `qlbn`, `dynamics`, `perception` |
+| `quantum_mind.belief` | COBRA, the context-rotated belief filter | `COBRA`, `OnlineBelief`, `min_cost_action` |
+| `quantum_mind.applications` | robot-facing tools: calibration, conformal sets, fusion, questioning, hand-over | `calibration.SplitConformalClassifier`, `calibration.TemperatureScaling`, `calibration.AdaptiveConformalSets` |
+| `quantum_mind.computing` | thread 1: robot problems as QUBOs and their solvers | `multi_robot_allocation`, `simulated_annealing`, `qaoa`, `compare_solvers` |
+| `quantum_mind.sensing` | thread 2: quantum-limited sensors and dead reckoning | `atom_interferometer_sensitivity`, `mems_accelerometer`, `compare_sensor_suites` |
+| `quantum_mind.embodied` | QR-VLA: the one-motor VLA, the motor agent, the supervisor and the runtime | `TinyVLA`, `QuantumRobotVLA`, `MotorAgent`, `Supervisor`, `ControlRuntime` |
+| `quantum_mind.evaluation` | metrics, paired statistics, run manifests | `paired_bootstrap_difference`, `paired_permutation_test` |
+| `quantum_mind.envs`, `quantum_mind.quantum`, `quantum_mind.circuits`, `quantum_mind.viz`, `quantum_mind.data` | simulated people, the state-vector simulator, circuits, the Bloch-sphere viewer, published data | see [`docs/API.md`](docs/API.md) |
 
 <a id="quick-start"></a>
 

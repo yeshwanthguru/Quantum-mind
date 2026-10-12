@@ -217,3 +217,43 @@ def test_llm_brain_proposes_but_cannot_break_the_rules():
     always_go = LocalLLMBrain(lambda p: '{"action": "continue", "reason": "all fine"}')
     r = _supervised(dropped_telemetry_at=2.0, brain=always_go)
     assert r['trace'][-1] == 'safe_stop' and r['supervisor'].decisions[-1][2] == 'rules'
+
+
+def test_safety_layer_clamps_limits_slew_and_latches():
+    from quantum_mind.embodied import SafetyLayer
+    s = SafetyLayer()
+    assert s.filter(5.0, 0.0) == pytest.approx(0.25)                    # slew first
+    assert max(s.filter(5.0, 0.0) for _ in range(10)) == pytest.approx(0.8)    # then the amplitude limit
+    assert s.filter(1.0, 0.99) == 0.0 and 'soft limit' in s.log          # no pushing into the end of the workspace
+    assert s.filter(-1.0, 0.99) < 0                                      # but backing away is allowed
+    s.latch('test')
+    assert s.filter(1.0, 0.0) == 0.0
+    s.release()
+    assert s.filter(0.1, 0.0) == pytest.approx(0.1)
+
+
+def test_runtime_runs_the_whole_system_and_fails_safe():
+    from quantum_mind.embodied import ControlRuntime, SimulatedHardware
+    act = lambda t, th, om: expert_command(t, th, om)                    # noqa: E731
+    hw = SimulatedHardware(theta0=-0.5, seed=1)
+    rt = ControlRuntime(hw, act)
+    assert rt.run(80, {0: 0.4}) == rt.sup.mode and abs(hw.position - 0.4) < 0.1 and hw.stop_calls == 0   # healthy: reaches the target
+    hw = SimulatedHardware(theta0=-0.5, seed=1, drop_telemetry_at=1.5)   # telemetry dies: heartbeat -> safe stop -> torque cut
+    rt = ControlRuntime(hw, act)
+    rt.run(100, {0: 0.4})
+    assert rt.sup.mode.value == 'safe_stop' and hw.stop_calls >= 1 and rt.safety.latched and hw.stopped
+
+    class Boom(SimulatedHardware):
+        def read(self):
+            raise OSError('bus error')
+    boom = Boom()
+    rt = ControlRuntime(boom, act)
+    with pytest.raises(OSError):
+        rt.step(0.3)
+    assert boom.stop_calls >= 1                                          # an exception always cuts torque before leaving
+
+    class NoAccel(SimulatedHardware):
+        def read(self):
+            return dict(super().read(), a_mems=None)
+    with pytest.raises(RuntimeError, match='accelerometer'):
+        ControlRuntime(NoAccel(), act).step(0.1)
