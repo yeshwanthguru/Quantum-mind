@@ -351,23 +351,44 @@ Belief filters that keep a robot's belief about a person as a density matrix.
 Quantum cognition as a trainable model: a density-matrix belief with context-dependent measurements, and its classical competitors.
 
 - **class `BayesCore(*a, **kw)`**: The same evidence map without rotations or dephasing: a Bayes filter with a learned likelihood.
+- `belief_from_parse(reference, cells, colors)`: Belief over the 16 cells implied by a parsed reference (uniform over the matching objects), or ``None`` for ``'none'``/invalid.
+- **class `BridgeResult(belief: 'np.ndarray', lm_belief: 'np.ndarray', llm_belief: 'np.ndarray', sentence: 'str', ask: 'bool', reason: 'str') -> None`**: What the bridge decided.
 - **class `ContextWeightedCore(n_hyp=3, n_features=3, n_context=2, *, steps=500, lr=0.03, batch=256, restarts=3, seed=0, val_fraction=0.15)`**: Classical context effect: each context scales how much its evidence counts, ``log p = a + sum_t lambda(c_t) (W x_t + b)``.
   - `init(self, key)`:
   - `probs(self, params, X, C, mask)`:
+- **class `DialogueBelief(lm, fusion='quantum core', **kw)`**: Fuse the turns of a dialogue into a belief over the objects on the table.
+  - `accuracy(self, dialogues)`:
+  - `features(self, dialogues)`: Evidence ``X`` (log belief of each object slot, per turn) and context ``Cx`` (instruction or follow-up) for the dialogues.
+  - `fit(self, dialogues)`:
+  - `labels(dialogues)`:
+  - `log_loss(self, dialogues)`:
+  - `predict_proba(self, dialogues)`: Probabilities over the object slots (left to right), padded slots get probability near 0.
 - **class `GRUCore(*a, hidden=6, **kw)`**: A small GRU over the concatenated evidence and context, the generic recurrent baseline.
   - `init(self, key)`:
   - `probs(self, params, X, C, mask)`:
 - `hermitian(A)`: Hermitian matrix from a real square matrix: symmetric part plus ``i`` times the antisymmetric part.
+- `language_plan(lm, act)`: A closed-loop plan for :func:`quantum_mind.embodied.run_episode`: ground the sentence, drive to the most likely cell.
+- `llm_parse(text, generate)`: The LLM's reading of the final referent: ``'red'``, ``'green'``, ``'blue'``, ``'leftmost'``, ``'rightmost'`` or ``'none'``.
+- **class `LLMBridge(lm, generate=None, disagreement=0.5)`**: Ground free-form language with the small model, checked by a local LLM.
+  - `ground(self, text, image, cells, colors)`: Ground ``text`` for a scene given its image strip and the object cells and colours (left to right).
+- `make_dialogues(n, seed, e_after_clear=0.25, e_after_unclear=0.05)`: Two-turn dialogues about one scene: an instruction, then a follow-up that sometimes misspeaks.
 - **class `MarkovContextCore(n_hyp=3, n_features=3, n_context=2, *, steps=500, lr=0.03, batch=256, restarts=3, seed=0, val_fraction=0.15)`**: Classical analogue of a rotation: a context-dependent stochastic transition between hypotheses, then the evidence.
   - `init(self, key)`:
   - `probs(self, params, X, C, mask)`:
 - `measurement(w, U)`: The generalised measurement operator ``U diag(w) U^dagger``.
+- `normalise(text, generate)`: Rewrite ``text`` into the robot vocabulary with the LLM; ``None`` if the reply uses any other word.
 - **class `QuantumCognitionCore(n_hyp=3, n_features=3, n_context=2, *, coherent=True, dephasing=True, rotation_penalty=0.01, **kw)`**: The quantum-cognition core (see the module docstring).
   - `coherence(self, X, C, mask=None)`: l1 norm of the off-diagonal part of the final state: how much interference the model uses (0 for a Bayes filter).
   - `init(self, key)`:
   - `penalty(self, params)`:
   - `probs(self, params, X, C, mask)`:
   - `state(self, params, X, C, mask)`: Final density matrix of one sequence (``X`` of shape ``(T, F)``).
+- **class `RobotLanguageModel(d=32, n_layers=2, n_heads=2, encoder='transformer', lm_weight=1.0, steps=1500, lr=0.003, batch=128, seed=0, d_img=16)`**: A tiny language model with a grounding head.
+  - `complete(self, prefix='', max_words=12)`: Greedy completion of an instruction from a prefix (for example ``'please go to the'``).
+  - `fit(self, utterances)`: Train on a list of :class:`~quantum_mind.cognition.corpus.Utterance` by minibatch Adam with cosine decay.
+  - `ground(self, utterances)`: Belief over the 16 cells for each utterance (a list, or one utterance), shape ``(N, 16)``.
+  - `ground_text(self, text, image)`: Belief over cells for a sentence (a string of vocabulary words) and an image strip ``(16, 3)``.
+  - `perplexity(self, utterances)`: Per-word perplexity of the sentences under the language model (``<eos>`` included).
 - `update_state(rho, w, U)`: Unnormalised post-measurement state ``M rho M^dagger`` (its trace is the probability of the outcome).
 
 ## `quantum_mind.embodied`

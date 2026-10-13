@@ -190,7 +190,8 @@ A good path, from the basics to the newest parts (each takes from seconds to abo
 | 4 | [`10_context_belief_filter`](tutorials/10_context_belief_filter.md) | COBRA, a belief whose update depends on context |
 | 5 | [`17_quantum_cognition_core`](tutorials/17_quantum_cognition_core.md) | the trainable core (needs `[cognition]`), when it helps and when it does not |
 | 6 | [`18_qr_vla_motor_agent`](tutorials/18_qr_vla_motor_agent.md) | a one-motor VLA that asks, a self-healing agent, a supervisor and a safety layer |
-| 7 | [`15`](tutorials/15_quantum_computing_for_robots.md), [`16`](tutorials/16_quantum_sensing.md) | the other two threads: robot problems on QAOA and a quantum accelerometer |
+| 7 | [`19_robot_language_model`](tutorials/19_robot_language_model.md) | a small language model trained from scratch that reads corrections, and a local LLM kept on a short leash (needs `[cognition]`) |
+| 8 | [`15`](tutorials/15_quantum_computing_for_robots.md), [`16`](tutorials/16_quantum_sensing.md) | the other two threads: robot problems on QAOA and a quantum accelerometer |
 
 ### 4. Run an example script
 
@@ -613,7 +614,7 @@ src/quantum_mind/
 ├── evaluation/     metrics, paired statistics, manifests, provenance
 └── data/           published aggregate data sets
 benchmarks/         COBRA context-intent · robot quantum computing · quantum sensing · HRI decision
-examples/           21 scripts        tutorials/   18 tutorials + a packaged hand-over use case
+examples/           21 scripts        tutorials/   19 tutorials + a packaged hand-over use case
 docs/               Sphinx documentation, atlas, mathematics        notebooks/   2 Jupyter notebooks
 integrations/ros2/  ROS 2 node (quantum_mind_ros)        site/   project website (built by CI)
 ```

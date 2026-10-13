@@ -50,6 +50,8 @@ API = [
     ('quantum_mind.applications.handover', 'Trust-aware hand-over'), ('quantum_mind.applications.fusion', 'Multimodal fusion'),
     ('quantum_mind.belief.cobra', 'COBRA belief filter'),
     ('quantum_mind.cognition.core', 'Quantum-cognition core'),
+    ('quantum_mind.cognition.language', 'Robot language model'), ('quantum_mind.cognition.corpus', 'Robot-instruction corpus'),
+    ('quantum_mind.cognition.dialogue', 'Dialogue belief'), ('quantum_mind.cognition.bridge', 'Local-LLM bridge'),
     ('quantum_mind.computing.problems', 'Robot problems as QUBOs'), ('quantum_mind.computing.solvers', 'QUBO solvers'),
     ('quantum_mind.sensing.limits', 'Quantum sensing limits'), ('quantum_mind.sensing.sensors', 'Inertial sensor models'),
     ('quantum_mind.sensing.dead_reckoning', 'Dead reckoning with a Kalman filter'),

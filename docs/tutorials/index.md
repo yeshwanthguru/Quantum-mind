@@ -12,7 +12,7 @@ Where the classical method wins, the tutorial says so.
 ```{mermaid}
 flowchart LR
     accTitle: Reading order of the tutorials
-    accDescr: The introduction leads to four tracks: models of people (2, 3), the robot decision layer (4 to 7, then 12, 13 and the packaged hand-over use case 14), perception (8, 9) and the COBRA belief filter and viewer (10, 11), the quantum computing and quantum sensing threads (15, 16), the quantum-cognition core (17) and the QR-VLA with its agent and supervisor (18).
+    accDescr: The introduction leads to four tracks: models of people (2, 3), the robot decision layer (4 to 7, then 12, 13 and the packaged hand-over use case 14), perception (8, 9) and the COBRA belief filter and viewer (10, 11), the quantum computing and quantum sensing threads (15, 16), the quantum-cognition core (17), the QR-VLA with its agent and supervisor (18) and the robot language model (19).
     T1["1 · Introduction"]:::a --> T2["2 · Question order"]:::h --> T3["3 · Trust on a qubit"]:::h
     T1 --> T4["4 · Ask or act"]:::r --> T5["5 · Calibration"]:::r --> T6["6 · Orchestration"]:::r --> T7["7 · Question planner"]:::r
     T5 --> T8["8 · Fusion"]:::p --> T9["9 · Bistable perception"]:::p
@@ -21,6 +21,8 @@ flowchart LR
     T1 --> T16["16 · Quantum sensing"]:::q
     T10 --> T17["17 · Quantum-cognition core"]:::q
     T12 --> T18["18 · QR-VLA, agent, supervisor"]:::r
+    T17 --> T19["19 · Robot language model"]:::q
+    T18 --> T19
     T7 --> T12["12 · End to end"]:::r
     T8 --> T12
     T3 --> T12 --> T13["13 · ROS 2"]:::r --> T14["14 · Hand-over package"]:::r
@@ -207,6 +209,14 @@ A trainable density-matrix belief with context-dependent measurements, against B
 
 A tiny vision-language-action model for one motor that asks when unsure, a self-healing motor agent, a state-machine supervisor and a safety layer.
 :::
+
+:::{grid-item-card} 19 · A small robot language model
+:class-card: pillar-quantum
+:link: 19_robot_language_model
+:link-type: doc
+
+A 29k-parameter transformer trained from scratch that reads corrections a bag of words cannot, a local-LLM bridge that checks every reply, and dialogue fusion.
+:::
 ::::
 
 ```{toctree}
@@ -231,4 +241,5 @@ A tiny vision-language-action model for one motor that asks when unsure, a self-
 16_quantum_sensing
 17_quantum_cognition_core
 18_qr_vla_motor_agent
+19_robot_language_model
 ```
