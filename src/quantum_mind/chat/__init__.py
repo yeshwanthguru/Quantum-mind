@@ -5,10 +5,11 @@ file through llama.cpp), plus a conversation memory, an optional self-consistenc
 backend as a ``generate`` function for the library's robot supervisor and LLM bridge. Start it with ``quantum-mind-chat`` (see
 :mod:`quantum_mind.chat.cli`).
 """
-from .backends import ChatError, LlamaCppBackend, OllamaBackend, ScriptedBackend, list_ollama_models
+from .backends import ChatError, LlamaCppBackend, OllamaBackend, ScratchBackend, ScriptedBackend, list_ollama_models
 from .cli import main
 from .session import ChatSession, ConsistencyCheck, agreement
 from .web import make_server, serve
 
-__all__ = ['ChatSession', 'ConsistencyCheck', 'agreement', 'OllamaBackend', 'LlamaCppBackend', 'ScriptedBackend', 'ChatError',
+__all__ = ['ChatSession', 'ConsistencyCheck', 'agreement', 'OllamaBackend', 'LlamaCppBackend', 'ScratchBackend',
+'ScriptedBackend', 'ChatError',
            'list_ollama_models', 'main', 'make_server', 'serve']

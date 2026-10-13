@@ -15,7 +15,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__all__ = ['ChatError', 'OllamaBackend', 'LlamaCppBackend', 'ScriptedBackend', 'list_ollama_models']
+__all__ = ['ChatError', 'OllamaBackend', 'LlamaCppBackend', 'ScratchBackend', 'ScriptedBackend', 'list_ollama_models']
 
 LOCAL_HOSTS = ('localhost', '127.0.0.1', '::1', '[::1]')
 
@@ -127,6 +127,38 @@ class LlamaCppBackend(_Backend):
             piece = chunk['choices'][0].get('delta', {}).get('content')
             if piece:
                 yield piece
+
+
+class ScratchBackend(_Backend):
+    """A model you trained yourself with :mod:`quantum_mind.llm` (``quantum-mind-llm train``), loaded from its checkpoint directory.
+
+    Parameters
+    ----------
+    checkpoint : str
+        Directory written by ``LanguageModel.save`` (``config.json``, ``tokenizer.json``, ``weights.npz``).
+    temperature, top_k, top_p : float, optional
+        Sampling settings (``temperature=0`` is greedy).
+    """
+
+    def __init__(self, checkpoint, temperature=0.7, top_k=40, top_p=0.95, max_new_tokens=200):
+        try:
+            from ..llm import LanguageModel
+        except ImportError as e:
+            raise ChatError('your own model needs JAX: pip install "quantum-mind[cognition]"') from e
+        if not (__import__('pathlib').Path(checkpoint) / 'weights.npz').exists():
+            raise ChatError('no checkpoint in %r; train one with: quantum-mind-llm train --data <your text> --out %s' % (checkpoint,
+            checkpoint))
+        self.lm, self.opts = LanguageModel.load(checkpoint), dict(temperature=temperature, top_k=top_k, top_p=top_p,
+        max_new_tokens=max_new_tokens)
+        self.model = checkpoint
+
+    def stream(self, messages, temperature=None, max_tokens=None, **_):
+        opts = dict(self.opts)
+        if temperature is not None:
+            opts['temperature'] = temperature
+        if max_tokens is not None:
+            opts['max_new_tokens'] = max_tokens
+        yield from self.lm.stream_chat(messages, **opts)
 
 
 class ScriptedBackend(_Backend):

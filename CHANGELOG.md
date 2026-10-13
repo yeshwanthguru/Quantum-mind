@@ -7,6 +7,10 @@ optional local-LLM decision layer, a hardware interface with an independent safe
 
 ### Added
 
+- `quantum_mind.llm`: a language model built from scratch, with no pretrained weights: byte-level BPE tokenizer (pure Python), GPT in JAX (tiny/small/base presets,
+  bfloat16, gradient accumulation, resumable checkpoints), text and answer-only question-answer training, and the `quantum-mind-llm` command
+  (`train`, `sample`, `info`). `quantum-mind-chat --backend scratch --checkpoint DIR` chats with it. Trained on the CPU here only at toy scale; see README.
+
 - `quantum_mind.cognition` (optional extra `cognition`: JAX and Optax): `QuantumCognitionCore`, a density-matrix belief updated by
   context-dependent generalised measurements and trained by gradients, with its classical competitors on the same interface (`BayesCore`,
   `ContextWeightedCore`, `MarkovContextCore`, `GRUCore`). With zero rotations it is exactly a Bayes filter (tested), projective measurements

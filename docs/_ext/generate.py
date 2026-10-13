@@ -53,6 +53,8 @@ API = [
     ('quantum_mind.cognition.language', 'Robot language model'), ('quantum_mind.cognition.corpus', 'Robot-instruction corpus'),
     ('quantum_mind.cognition.dialogue', 'Dialogue belief'), ('quantum_mind.cognition.bridge', 'Local-LLM bridge'),
     ('quantum_mind.chat.backends', 'Chat backends'), ('quantum_mind.chat.session', 'Chat session'),
+    ('quantum_mind.llm.tokenizer', 'BPE tokenizer'), ('quantum_mind.llm.model', 'GPT model'), ('quantum_mind.llm.trainer', 'LLM trainer'),
+    ('quantum_mind.llm.corpus', 'LLM corpus'), ('quantum_mind.llm.cli', 'LLM command line'),
     ('quantum_mind.chat.cli', 'Terminal chat'), ('quantum_mind.chat.web', 'Browser chat'),
     ('quantum_mind.computing.problems', 'Robot problems as QUBOs'), ('quantum_mind.computing.solvers', 'QUBO solvers'),
     ('quantum_mind.sensing.limits', 'Quantum sensing limits'), ('quantum_mind.sensing.sensors', 'Inertial sensor models'),
@@ -81,7 +83,8 @@ API_GROUPS = [('Core', 'quantum_mind.core.'), ('Quantum-like families', 'quantum
               ('Environments', 'quantum_mind.envs.'),
               ('Simulator', 'quantum_mind.quantum.'), ('Problems', 'quantum_mind.problems'),
               ('Circuits', 'quantum_mind.circuits.'), ('Bloch-sphere viewer', 'quantum_mind.viz.'), ('Data', 'quantum_mind.data'),
-              ('Chat with a local LLM', 'quantum_mind.chat.'), ('Evaluation', 'quantum_mind.evaluation.'),
+              ('Chat with a local LLM', 'quantum_mind.chat.'),
+              ('Your own LLM from scratch', 'quantum_mind.llm.'), ('Evaluation', 'quantum_mind.evaluation.'),
               ('Embodied AI: the one-motor VLA, agents and runtime', 'quantum_mind.embodied.')]
 
 

@@ -5,6 +5,7 @@
     quantum-mind-chat                                  # Ollama on this machine, model llama3.2
     quantum-mind-chat --model qwen2.5 --check          # another model, with the "am I sure?" check
     quantum-mind-chat --backend llamacpp --model-path ./model.gguf
+    quantum-mind-chat --backend scratch --checkpoint my_model   # a model you trained yourself (quantum-mind-llm)
     quantum-mind-chat --web                            # the same chat in a browser tab on this machine
     quantum-mind-chat --backend demo                   # no model: a stand-in, to see how it works
 
@@ -16,7 +17,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .backends import ChatError, LlamaCppBackend, OllamaBackend, ScriptedBackend, list_ollama_models
+from .backends import ChatError, LlamaCppBackend, OllamaBackend, ScratchBackend, ScriptedBackend, list_ollama_models
 from .session import DEFAULT_SYSTEM, ChatSession, ConsistencyCheck
 
 HELP = '''commands: /help  /reset  /model NAME  /system TEXT  /check on|off  /save FILE  /quit
@@ -26,6 +27,10 @@ Type a question and press Enter. Ctrl-C stops an answer, Ctrl-D leaves.'''
 def build_backend(args):
     if args.backend == 'demo':
         return ScriptedBackend()
+    if args.backend == 'scratch':
+        if not args.checkpoint:
+            raise ChatError('--backend scratch needs --checkpoint DIR (a model trained with quantum-mind-llm train)')
+        return ScratchBackend(args.checkpoint)
     if args.backend == 'llamacpp':
         if not args.model_path:
             raise ChatError('--backend llamacpp needs --model-path FILE.gguf')
@@ -35,10 +40,11 @@ def build_backend(args):
 
 def parser():
     p = argparse.ArgumentParser(prog='quantum-mind-chat', description='Chat with a local LLM: type a question and press Enter.')
-    p.add_argument('--backend', choices=('ollama', 'llamacpp', 'demo'), default='ollama')
+    p.add_argument('--backend', choices=('ollama', 'llamacpp', 'scratch', 'demo'), default='ollama')
     p.add_argument('--model', default='llama3.2', help='Ollama model name (default llama3.2)')
     p.add_argument('--host', default='http://localhost:11434', help='Ollama address (default http://localhost:11434)')
     p.add_argument('--model-path', help='GGUF file for --backend llamacpp')
+    p.add_argument('--checkpoint', help='directory of a model you trained yourself, for --backend scratch')
     p.add_argument('--allow-remote', action='store_true', help='allow an Ollama host that is not this machine')
     p.add_argument('--system', default=DEFAULT_SYSTEM, help='system prompt')
     p.add_argument('--check', action='store_true', help='ask each question 3 times and warn when the answers disagree (slower)')
