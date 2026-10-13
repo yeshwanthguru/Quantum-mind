@@ -15,6 +15,7 @@
 <p align="center"><b><a href="https://yeshwanthguru.github.io/Quantum-mind/">Website and live Bloch-sphere playground</a> · <a href="https://yeshwanthguru.github.io/Quantum-mind/docs/">Documentation</a> (user guide, example gallery, API reference)</b></p>
 
 <p align="center">
+  <b><a href="#get-started">Get started</a></b> ·
   <b><a href="#author">Author's view</a></b> ·
   <b><a href="#idea">The idea</a></b> ·
   <b><a href="#cobra">COBRA</a></b> ·
@@ -41,67 +42,7 @@ interference, density matrices and generalised measurements, ending in a cost-aw
 > reported next to the classical model it has to beat, with the ablation that isolates what is new, and the benchmarks
 > report where the quantum version does no better.
 
-<a id="author"></a>
-
-## Author's view
-
-*Yeshwanth Guru, author and maintainer.*
-
-I started Quantum Mind from one belief: a robot that works with people needs a different kind of probability
-than the one inside most of its filters. People are not neutral sensors. A look changes what a hand movement
-means, a question changes the answer to the next question, and asking someone whether they trust a robot changes
-their trust. Classical filters assume the evidence arrives in independent pieces. Quantum probability was built
-for exactly the case where the order and the context of a measurement matter.
-
-Quantum robotics is a young field with at least three threads, and I think it helps to keep them apart:
-
-1. **Quantum computing for robot algorithms**: planning, optimisation and learning on quantum hardware. It is
-   promising on paper, but no practical advantage has been shown on real robot problems with today's noisy devices.
-2. **Quantum sensing for robots**: atomic and solid-state sensors for navigation, magnetometry and gravimetry. That is
-   physical hardware, beyond what a software library can offer.
-3. **Quantum-probability models of the beliefs a robot holds about people**: context, order and trust. These run on
-   ordinary computers today and can be tested today.
-
-Quantum Mind covers all three, because I want to work on the whole umbrella, and it holds each thread to the same
-standard: a classical baseline, an ablation, and results that are allowed to say no.
-
-* **Thread 1** (`quantum_mind.computing`): robot problems posed as binary optimisation, the classical baselines a quantum
-  result must be reported against, and a thin adapter to Qiskit's QAOA. It does not re-implement quantum algorithms, which
-  Qiskit and PennyLane do better.
-* **Thread 2** (`quantum_mind.sensing`): quantum-limited sensor models and a Kalman filter that fuses a slow, stable quantum
-  accelerometer with a fast, drifting classical one, in simulation. It does not claim to build a sensor; that is hardware.
-* **Thread 3** (`quantum_mind.belief`, `families`, `applications`): quantum-probability models of the beliefs a robot holds about
-  people, the part of the library I have developed furthest.
-
-The circuits of the thread-3 models also run on quantum hardware (Aer, IBM Quantum, Amazon Braket), which is the bridge between the
-threads. I claim no speed-up anywhere. In every thread I ask the same question: *does the quantum version beat the classical one, and
-does the robot decide or move better with it?* For beliefs about people that becomes: does quantum probability describe human
-context better than the classical alternative? Every model is therefore built next to the classical model it has to beat, with
-the ablation that isolates what is new.
-
-What I chose to build, and not to build:
-
-* I did not re-implement general-purpose quantum algorithms or quantum-inspired optimisers. Qiskit, PennyLane and
-  dedicated optimisation libraries do them better, and a library should not carry copies of other people's work; thread 1
-  connects to Qiskit instead.
-* I limited the scope to AI, machine learning, vision, robotics and embodied AI. The cognitive-psychology and
-  economics topics that quantum cognition is usually known for are gone.
-* The models taken from the literature are implemented from their papers and cited in the model atlas, which labels
-  each entry as *published*, *extended* or *unique*. The parts I designed myself are the *unique* ones: the COBRA
-  belief filter, the robot decision layer, the environments and the circuits for the families; the robot problems, the
-  baselines and the sensing study are labelled as what they are.
-
-What I do not claim: no quantum computational advantage (QAOA does no better than random sampling on the problems I tested);
-no quantum-sensing hardware; no results with real people or a real robot yet; and COBRA's gain over a Bayes filter is modest,
-shown only on synthetic data built to contain a context effect, and it loses with little data and on a control task. I would
-rather state that than hide it.
-
-Where I want it to go: a pilot study with real people and a robot, a more reliable way to train COBRA, runs on quantum hardware
-and measured sensor data for threads 1 and 2, and independent replication by other groups. If you find a mistake or a claim that does not hold, please open an issue.
-
----
-
-<a id="idea"></a>
+<a id="get-started"></a>
 
 ## Get started
 
@@ -230,6 +171,71 @@ for model in (BayesCore(3, 3, 2, steps=150, restarts=1), QuantumCognitionCore(3,
 Chance for 3 hypotheses is 1.099. On real data the question is whether the quantum core beats `BayesCore` and the classical context models on held-out
 log-loss; if its rotations stay near zero (`model.rotation_size`) the data show no quantum-like order effect. [Tutorial 17](tutorials/17_quantum_cognition_core.md) walks through it.
 
+---
+
+<a id="author"></a>
+
+## Author's view
+
+*Yeshwanth Guru, author and maintainer.*
+
+I started Quantum Mind from one belief: a robot that works with people needs a different kind of probability
+than the one inside most of its filters. People are not neutral sensors. A look changes what a hand movement
+means, a question changes the answer to the next question, and asking someone whether they trust a robot changes
+their trust. Classical filters assume the evidence arrives in independent pieces. Quantum probability was built
+for exactly the case where the order and the context of a measurement matter.
+
+Quantum robotics is a young field with at least three threads, and I think it helps to keep them apart:
+
+1. **Quantum computing for robot algorithms**: planning, optimisation and learning on quantum hardware. It is
+   promising on paper, but no practical advantage has been shown on real robot problems with today's noisy devices.
+2. **Quantum sensing for robots**: atomic and solid-state sensors for navigation, magnetometry and gravimetry. That is
+   physical hardware, beyond what a software library can offer.
+3. **Quantum-probability models of the beliefs a robot holds about people**: context, order and trust. These run on
+   ordinary computers today and can be tested today.
+
+Quantum Mind covers all three, because I want to work on the whole umbrella, and it holds each thread to the same
+standard: a classical baseline, an ablation, and results that are allowed to say no.
+
+* **Thread 1** (`quantum_mind.computing`): robot problems posed as binary optimisation, the classical baselines a quantum
+  result must be reported against, and a thin adapter to Qiskit's QAOA. It does not re-implement quantum algorithms, which
+  Qiskit and PennyLane do better.
+* **Thread 2** (`quantum_mind.sensing`): quantum-limited sensor models and a Kalman filter that fuses a slow, stable quantum
+  accelerometer with a fast, drifting classical one, in simulation. It does not claim to build a sensor; that is hardware.
+* **Thread 3** (`quantum_mind.belief`, `families`, `applications`): quantum-probability models of the beliefs a robot holds about
+  people, the part of the library I have developed furthest.
+
+The circuits of the thread-3 models also run on quantum hardware (Aer, IBM Quantum, Amazon Braket), which is the bridge between the
+threads. I claim no speed-up anywhere. In every thread I ask the same question: *does the quantum version beat the classical one, and
+does the robot decide or move better with it?* For beliefs about people that becomes: does quantum probability describe human
+context better than the classical alternative? Every model is therefore built next to the classical model it has to beat, with
+the ablation that isolates what is new.
+
+What I chose to build, and not to build:
+
+* I did not re-implement general-purpose quantum algorithms or quantum-inspired optimisers. Qiskit, PennyLane and
+  dedicated optimisation libraries do them better, and a library should not carry copies of other people's work; thread 1
+  connects to Qiskit instead.
+* I limited the scope to AI, machine learning, vision, robotics and embodied AI. The cognitive-psychology and
+  economics topics that quantum cognition is usually known for are gone.
+* The models taken from the literature are implemented from their papers and cited in the model atlas, which labels
+  each entry as *published*, *extended* or *unique*. The parts I designed myself are the *unique* ones: the COBRA
+  belief filter, the robot decision layer, the environments and the circuits for the families; the robot problems, the
+  baselines and the sensing study are labelled as what they are.
+
+What I do not claim: no quantum computational advantage (QAOA does no better than random sampling on the problems I tested);
+no quantum-sensing hardware; no results with real people or a real robot yet; and COBRA's gain over a Bayes filter is modest,
+shown only on synthetic data built to contain a context effect, and it loses with little data and on a control task. I would
+rather state that than hide it.
+
+Where I want it to go: a pilot study with real people and a robot, a more reliable way to train COBRA, runs on quantum hardware
+and measured sensor data for threads 1 and 2, and independent replication by other groups. If you find a mistake or a claim that does not hold, please open an issue.
+
+---
+
+
+<a id="idea"></a>
+
 ## The idea
 
 Classical filters treat evidence as arriving in neutral, independent pieces. People and robots do not live in that
@@ -336,8 +342,6 @@ RMSE of the position estimate in metres:
 The benefit comes from the quantum sensor being **stable**: when its bias is as large as the MEMS sensor's, the benefit disappears
 (fused 297 m against 340 m, p = 0.51). The sensor numbers are assumptions; a real instrument has to be measured. See
 [`benchmarks/results/quantum_sensing/`](https://github.com/yeshwanthguru/Quantum-mind/tree/main/benchmarks/results/quantum_sensing).
-
-<a id="cobra"></a>
 
 ## QR-VLA: a one-motor vision-language-action prototype
 
@@ -447,6 +451,8 @@ conversation. With the same size and head, a bag of words fails on corrections (
 success of the one-motor VLA), and the bridge turns an LLM that contradicts the small model, invents words or rambles into a question to the person. The sentences are
 generated by a small grammar, the held-out combinations did not separate the models, the language-modelling loss did not improve grounding, and the local LLM is only
 scripted in the tests. See [`src/quantum_mind/cognition/README.md`](src/quantum_mind/cognition/README.md) and [tutorial 19](tutorials/19_robot_language_model.md).
+
+<a id="cobra"></a>
 
 ## Thread 3 in depth: COBRA, a context-rotated belief filter
 
@@ -681,6 +687,10 @@ own tests and a `requirements.txt`; tutorial 14 walks through it. Results are fo
 <a id="status"></a>
 
 ## Status and scope
+
+**Not yet tried outside simulation:** nothing here has run on a real robot, real motor, real quantum sensor or real quantum computer. The local-LLM
+pieces (`quantum-mind-chat`, the supervisor's LLM brain, the language bridge) have been tested only with scripted replies and a fake Ollama server, never
+with a real model. The one-motor dev-kit runtime talks to a three-method `MotorHardware` interface that only has a simulated implementation.
 
 | Area | What exists | What does not (yet) |
 |---|---|---|
