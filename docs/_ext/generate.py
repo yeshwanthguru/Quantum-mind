@@ -49,6 +49,7 @@ API = [
     ('quantum_mind.applications.personalisation', 'Personalised human models'),
     ('quantum_mind.applications.handover', 'Trust-aware hand-over'), ('quantum_mind.applications.fusion', 'Multimodal fusion'),
     ('quantum_mind.belief.cobra', 'COBRA belief filter'),
+    ('quantum_mind.cognition.core', 'Quantum-cognition core'),
     ('quantum_mind.computing.problems', 'Robot problems as QUBOs'), ('quantum_mind.computing.solvers', 'QUBO solvers'),
     ('quantum_mind.sensing.limits', 'Quantum sensing limits'), ('quantum_mind.sensing.sensors', 'Inertial sensor models'),
     ('quantum_mind.sensing.dead_reckoning', 'Dead reckoning with a Kalman filter'),
@@ -71,7 +72,8 @@ API = [
 API_GROUPS = [('Core', 'quantum_mind.core.'), ('Quantum-like families', 'quantum_mind.families.'),
               ('Applications', 'quantum_mind.applications.'),
               ('Quantum computing for robots', 'quantum_mind.computing.'), ('Quantum sensing', 'quantum_mind.sensing.'),
-              ('COBRA belief filter', 'quantum_mind.belief.'), ('Environments', 'quantum_mind.envs.'),
+              ('COBRA belief filter', 'quantum_mind.belief.'), ('Quantum-cognition core', 'quantum_mind.cognition.'),
+              ('Environments', 'quantum_mind.envs.'),
               ('Simulator', 'quantum_mind.quantum.'), ('Problems', 'quantum_mind.problems'),
               ('Circuits', 'quantum_mind.circuits.'), ('Bloch-sphere viewer', 'quantum_mind.viz.'), ('Data', 'quantum_mind.data'),
               ('Evaluation', 'quantum_mind.evaluation.'), ('Embodied AI: the one-motor VLA, agents and runtime', 'quantum_mind.embodied.')]

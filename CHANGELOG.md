@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.2.0 (unreleased)
+
+Version 3.2 adds the trainable quantum-cognition core, a monitoring and self-healing agent for the motor, a state-machine supervisor with an
+optional local-LLM decision layer, a hardware interface with an independent safety layer, and a complete API reference.
+
+### Added
+
+- `quantum_mind.cognition` (optional extra `cognition`: JAX and Optax): `QuantumCognitionCore`, a density-matrix belief updated by
+  context-dependent generalised measurements and trained by gradients, with its classical competitors on the same interface (`BayesCore`,
+  `ContextWeightedCore`, `MarkovContextCore`, `GRUCore`). With zero rotations it is exactly a Bayes filter (tested), projective measurements
+  obey the QQ equality (tested), and the rotations are penalised toward zero. `benchmarks/cognition_core_benchmark.py`.
+- `MotorAgent`: a monitoring and self-healing agent for the motor (encoder redundancy checks, single-fault diagnosis, online self-calibration,
+  estimator fallback, command re-linearisation, safe stop) with fault injection in `SensedMotor` and `benchmarks/motor_agent_benchmark.py`;
+  it helps on encoder faults and friction and is still weak on external pushes (0.52 success). Fixed: the state estimator's
+  transition matrix lacked the accelerometer-bias coupling; the state results were re-run (conclusions unchanged), and the workspace end stop is
+  now a hard stop with a consistent accelerometer reading.
+- `Supervisor` (the main brain): sub-agents for the motor, sensors, perception and a heartbeat report to a state machine (boot, calibrating,
+  nominal, degraded, hold, safe stop) with an explicit transition table; `RuleBrain` and `LocalLLMBrain` choose an action from the set allowed in
+  the current mode, hard rules and the safe stop cannot be overridden, and an invalid LLM reply falls back to the rules. `ollama_generate`
+  connects to a local Ollama server; no language model was run during development (tests use scripted replies).
+- `ControlRuntime`, `SafetyLayer`, `MotorHardware`, `SimulatedHardware`: a fixed-rate loop behind an independent safety filter (amplitude, slew
+  and soft-limit clamps, a latched stop, torque cut on any exception). Nothing has run on real hardware.
+- `docs/API.md` and the Sphinx API pages cover every subpackage, including `embodied` and `evaluation`; the README has an API section.
+
+### Fixed
+
+- The motor agent's false alarms on a healthy motor fell from 4.3% to 0.3% and push success rose from 0.35 to 0.52 (three consecutive jumps with an
+  acceleration-dependent threshold, encoder recovery, a joint fit to separate friction from a push, a longer persistence before a safe stop).
+
 ## 3.1.0 (2026-10-12)
 
 Version 3.1 completes the three threads of quantum robotics (computing and sensing join cognition) and adds QR-VLA, a one-motor
@@ -17,11 +46,6 @@ vision-language-action prototype that uses all three. Nothing from 3.0 is remove
   `SensedMotor`: Kalman fusion of the MEMS and quantum accelerometer models when the encoder drops out), an assignment slot
   (`assign_targets` on the computing QUBO solvers) and `QuantumRobotVLA`, which composes the three. `benchmarks/vla_state_benchmark.py`:
   the classical motor-model filter wins when the plant is as modelled; the quantum-accelerometer fusion wins under an unmodelled push.
-  `MotorAgent`: a monitoring and self-healing agent for the motor (encoder redundancy checks, single-fault diagnosis, online self-calibration,
-  estimator fallback, command re-linearisation, safe stop) with fault injection in `SensedMotor` and `benchmarks/motor_agent_benchmark.py`;
-  it helps on encoder faults and friction and is still weak on external pushes (0.52 success). Fixed: the state estimator's
-  transition matrix lacked the accelerometer-bias coupling; the state results were re-run (conclusions unchanged), and the workspace end stop is
-  now a hard stop with a consistent accelerometer reading.
 - `quantum_mind.computing` (thread 1, quantum computing for robot algorithms): `multi_robot_allocation`, `grasp_selection` and
   `slot_scheduling` as QUBOs with true objectives, feasibility checks and decoders; classical baselines (`exhaustive`,
   `greedy_descent`, `simulated_annealing`, `random_sampling`); `qaoa`, a thin adapter to Qiskit's `QAOAAnsatz` on an exact simulator

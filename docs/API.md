@@ -346,6 +346,30 @@ Belief filters that keep a robot's belief about a person as a density matrix.
 - **class `OnlineBelief(model, rho, prev)`**: A COBRA belief updated one frame at a time, as a robot would run it.
   - `update(self, frame)`: Fold one sensor frame into the belief and return the new probabilities.
 
+## `quantum_mind.cognition`
+
+Quantum cognition as a trainable model: a density-matrix belief with context-dependent measurements, and its classical competitors.
+
+- **class `BayesCore(*a, **kw)`**: The same evidence map without rotations or dephasing: a Bayes filter with a learned likelihood.
+- **class `ContextWeightedCore(n_hyp=3, n_features=3, n_context=2, *, steps=500, lr=0.03, batch=256, restarts=3, seed=0, val_fraction=0.15)`**: Classical context effect: each context scales how much its evidence counts, ``log p = a + sum_t lambda(c_t) (W x_t + b)``.
+  - `init(self, key)`:
+  - `probs(self, params, X, C, mask)`:
+- **class `GRUCore(*a, hidden=6, **kw)`**: A small GRU over the concatenated evidence and context, the generic recurrent baseline.
+  - `init(self, key)`:
+  - `probs(self, params, X, C, mask)`:
+- `hermitian(A)`: Hermitian matrix from a real square matrix: symmetric part plus ``i`` times the antisymmetric part.
+- **class `MarkovContextCore(n_hyp=3, n_features=3, n_context=2, *, steps=500, lr=0.03, batch=256, restarts=3, seed=0, val_fraction=0.15)`**: Classical analogue of a rotation: a context-dependent stochastic transition between hypotheses, then the evidence.
+  - `init(self, key)`:
+  - `probs(self, params, X, C, mask)`:
+- `measurement(w, U)`: The generalised measurement operator ``U diag(w) U^dagger``.
+- **class `QuantumCognitionCore(n_hyp=3, n_features=3, n_context=2, *, coherent=True, dephasing=True, rotation_penalty=0.01, **kw)`**: The quantum-cognition core (see the module docstring).
+  - `coherence(self, X, C, mask=None)`: l1 norm of the off-diagonal part of the final state: how much interference the model uses (0 for a Bayes filter).
+  - `init(self, key)`:
+  - `penalty(self, params)`:
+  - `probs(self, params, X, C, mask)`:
+  - `state(self, params, X, C, mask)`: Final density matrix of one sequence (``X`` of shape ``(T, F)``).
+- `update_state(rho, w, U)`: Unnormalised post-measurement state ``M rho M^dagger`` (its trace is the probability of the outcome).
+
 ## `quantum_mind.embodied`
 
 Embodied AI: a tiny vision-language-action (VLA) prototype for one motor, as a framework of replaceable slots.
