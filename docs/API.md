@@ -391,6 +391,31 @@ Quantum cognition as a trainable model: a density-matrix belief with context-dep
   - `perplexity(self, utterances)`: Per-word perplexity of the sentences under the language model (``<eos>`` included).
 - `update_state(rho, w, U)`: Unnormalised post-measurement state ``M rho M^dagger`` (its trace is the probability of the outcome).
 
+## `quantum_mind.chat`
+
+Chat with a local LLM: type a question, press Enter, read the streamed answer; in a terminal or in a browser tab on this machine.
+
+- `agreement(a, b)`: Word-overlap agreement (F1 of the content words, stop words dropped) between two answers, in [0, 1].
+- **class `ChatError`**: A problem the user can fix (no server, no model, no package), with the fix in the message.
+- **class `ChatSession(backend, system="You are a helpful, honest assistant running on the user's own computer. Answer clearly and briefly. If you are not sure, or the question needs information you do not have, say so instead of guessing.", max_turns=20, check=None, max_tokens=None)`**: A conversation with a backend.
+  - `answer(self, question)`: The whole answer to ``question`` as a string.
+  - `ask(self, question)`: Stream the answer to ``question`` piece by piece. The turn is added to the history when the stream ends or is closed.
+  - `generate(self, prompt, **options)`: One-off answer with no history, so a session can be used as the ``generate`` function of the library's LLM bridges.
+  - `messages(self, question=None)`:
+  - `reset(self)`: Forget the conversation.
+- **class `ConsistencyCheck(n: 'int' = 3, temperature: 'float' = 0.8, threshold: 'float' = 0.5) -> None`**: Ask again ``n - 1`` times at a higher temperature and compare the answers with the first one.
+  - `score(self, backend, messages, first, max_tokens=None)`: Mean agreement of ``first`` with ``n - 1`` fresh samples (``None`` when ``n < 2``).
+- `list_ollama_models(host='http://localhost:11434', timeout=5.0, allow_remote=False)`: Names of the models an Ollama server has pulled.
+- **class `LlamaCppBackend(model_path, n_ctx=4096, **kw)`**: A local GGUF model file run in-process by llama.cpp (``pip install llama-cpp-python``).
+  - `stream(self, messages, temperature=None, max_tokens=None, **_)`:
+- `main(argv=None, stdin=None, stdout=None)`:
+- `make_server(session, port=8765)`: A threading HTTP server bound to 127.0.0.1 for ``session`` (port 0 picks a free port).
+- **class `OllamaBackend(model='llama3.2', host='http://localhost:11434', timeout=300.0, allow_remote=False)`**: A model served by Ollama on this machine (``/api/chat`` with streaming).
+  - `stream(self, messages, temperature=None, max_tokens=None, **_)`:
+- **class `ScriptedBackend(replies=('(demo backend) I am a stand-in, not a language model. Install Ollama and a model to get real answers.',))`**: Canned replies, for tests and for trying the program with no model: ``ScriptedBackend(['first reply', 'second reply'])``.
+  - `stream(self, messages, temperature=None, max_tokens=None, **_)`:
+- `serve(session, port=8765)`: Serve the chat page until Ctrl-C.
+
 ## `quantum_mind.embodied`
 
 Embodied AI: a tiny vision-language-action (VLA) prototype for one motor, as a framework of replaceable slots.

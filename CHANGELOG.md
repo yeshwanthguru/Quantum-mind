@@ -13,6 +13,11 @@ optional local-LLM decision layer, a hardware interface with an independent safe
   obey the QQ equality (tested), and the rotations are penalised toward zero. `benchmarks/cognition_core_benchmark.py`: it never beats a classical
   model that matches the data exactly, beats Bayes wherever context matters, and beats a 237-parameter GRU (gap 0.013 against 0.064) only on
   non-commuting context generated from its own form.
+- `quantum_mind.chat` and the `quantum-mind-chat` command: type a question, press Enter, read the streamed answer from a local LLM (Ollama, or a GGUF file
+  through llama.cpp) in the terminal or in a browser tab on this machine (`--web`, 127.0.0.1 only). Conversation memory, `/commands`, an optional
+  self-consistency check (`--check`) that notes when repeated answers disagree, a refusal to send questions to a non-local host unless `--allow-remote`,
+  and the same backend as a `generate` function for the robot supervisor and LLM bridge. The library ships and trains no general language model; the tests use a
+  fake Ollama server speaking the streaming protocol because no model could be downloaded in the development environment.
 - `quantum_mind.cognition.language`, `corpus`, `bridge`, `dialogue`: a small robot-instruction language model trained from scratch (`RobotLanguageModel`, a
   causal transformer of about 29,000 parameters trained on the next word and on grounding the sentence in a camera strip; a bag-of-words encoder with the
   same head is the controlled baseline), a rule-based instruction corpus with corrections, synonyms, conjunctions and held-out combinations, `LLMBridge`

@@ -413,6 +413,32 @@ against 0.064) when the context is non-commuting, but a classical model that mat
 network. The non-commuting generator is built from the core's own form, so that win shows capacity, not that people are quantum. See
 [`src/quantum_mind/cognition/README.md`](src/quantum_mind/cognition/README.md) for the table and the reading.
 
+## Chat with a local LLM (type a question, press Enter)
+
+The library does not contain a general-purpose language model, and cannot train one: a model that answers any question is trained on web-scale text with
+clusters of GPUs. What it gives you is the chat program for **a model you run on your own machine**, with your questions never leaving it:
+
+```bash
+# 1. Install Ollama (https://ollama.com), then pull a model; a 3-billion-parameter one needs roughly 2 to 4 GB of memory
+ollama pull llama3.2
+
+# 2. Chat in the terminal: type a question, press Enter, the answer streams in
+pip install -e .                          # or: pip install quantum-mind (once a release with the chat is on PyPI)
+quantum-mind-chat                         # the same as: python -m quantum_mind.chat
+quantum-mind-chat --model qwen2.5 --check # another model; --check asks each question 3 times and says when the answers disagree
+quantum-mind-chat --web                   # the same chat in a browser tab at http://127.0.0.1:8765, this machine only
+quantum-mind-chat --list-models           # what Ollama has
+quantum-mind-chat --backend llamacpp --model-path ./model.gguf   # a GGUF file in-process (pip install llama-cpp-python)
+quantum-mind-chat --backend demo          # no model: canned answers, to see how it works
+```
+
+Inside the chat: `/help`, `/reset`, `/model NAME`, `/system TEXT`, `/check on|off`, `/save FILE`, `/quit`; Ctrl-C stops an answer being written.
+The same backend is the `generate` function of the library's robot supervisor and LLM bridge (`ChatSession.generate`).
+
+Limits to know: the quality of the answers is the quality of the model you pick (small models make things up); the `--check` note is a heuristic
+(word overlap between repeated answers), so a model can be consistently wrong and a right answer can be worded differently each time; and the tests use a fake
+Ollama server that speaks the same streaming protocol, because no model could be downloaded where this was written, so try it on your machine and tell me what breaks.
+
 ## A small robot language model
 
 `quantum_mind.cognition` also holds a language model trained from scratch (about 29,000 parameters, on a CPU) that grounds robot instructions in a camera strip, a bridge
@@ -501,6 +527,7 @@ The complete reference is generated from the docstrings, so it cannot drift from
 | `quantum_mind.computing` | thread 1: robot problems as QUBOs and their solvers | `multi_robot_allocation`, `simulated_annealing`, `qaoa`, `compare_solvers` |
 | `quantum_mind.sensing` | thread 2: quantum-limited sensors and dead reckoning | `atom_interferometer_sensitivity`, `mems_accelerometer`, `compare_sensor_suites` |
 | `quantum_mind.embodied` | QR-VLA: the one-motor VLA, the motor agent, the supervisor and the runtime | `TinyVLA`, `QuantumRobotVLA`, `MotorAgent`, `Supervisor`, `ControlRuntime` |
+| `quantum_mind.chat` | a chat program for a local LLM (terminal and browser), session memory, a self-consistency check | `ChatSession`, `OllamaBackend`, `ConsistencyCheck`, `main` |
 | `quantum_mind.evaluation` | metrics, paired statistics, run manifests | `paired_bootstrap_difference`, `paired_permutation_test` |
 | `quantum_mind.envs`, `quantum_mind.quantum`, `quantum_mind.circuits`, `quantum_mind.viz`, `quantum_mind.data` | simulated people, the state-vector simulator, circuits, the Bloch-sphere viewer, published data | see [`docs/API.md`](docs/API.md) |
 

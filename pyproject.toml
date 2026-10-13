@@ -43,12 +43,16 @@ Issues = "https://github.com/yeshwanthguru/Quantum-mind/issues"
 Documentation = "https://yeshwanthguru.github.io/Quantum-mind/docs/"
 Changelog = "https://yeshwanthguru.github.io/Quantum-mind/docs/about/changelog.html"
 
+[project.scripts]
+quantum-mind-chat = "quantum_mind.chat.cli:main"
+
 [project.optional-dependencies]
 qiskit = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40"]
 cloud = ["qiskit-ibm-runtime>=0.40", "amazon-braket-sdk>=1.80"]
 viz = ["matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8", "anywidget>=0.9", "seaborn>=0.12"]
 rl = ["gymnasium>=0.29"]
 cognition = ["jax>=0.4.30", "optax>=0.2"]
+llamacpp = ["llama-cpp-python>=0.2"]
 robotics = ["gymnasium>=0.29", "py_trees>=2.2"]
 all = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40", "amazon-braket-sdk>=1.80",
        "matplotlib>=3.7", "plotly>=5.18", "ipywidgets>=8", "anywidget>=0.9", "seaborn>=0.12",
