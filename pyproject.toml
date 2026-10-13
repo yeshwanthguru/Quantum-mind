@@ -45,7 +45,6 @@ Changelog = "https://yeshwanthguru.github.io/Quantum-mind/docs/about/changelog.h
 
 [project.scripts]
 quantum-mind-chat = "quantum_mind.chat.cli:main"
-quantum-mind-llm = "quantum_mind.llm.cli:main"
 
 [project.optional-dependencies]
 qiskit = ["qiskit>=2.0", "qiskit-aer>=0.17", "qiskit-ibm-runtime>=0.40"]

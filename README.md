@@ -413,29 +413,6 @@ against 0.064) when the context is non-commuting, but a classical model that mat
 network. The non-commuting generator is built from the core's own form, so that win shows capacity, not that people are quantum. See
 [`src/quantum_mind/cognition/README.md`](src/quantum_mind/cognition/README.md) for the table and the reading.
 
-## Train your own LLM from scratch (no pretrained model)
-
-`quantum_mind.llm` is a small GPT you train yourself on text you provide. It uses no other model's weights or tokenizer. Be realistic about what comes out:
-a model trained on your own files learns *your* text, not the world. It will not answer arbitrary questions the way a large hosted model does; that takes
-billions of tokens and many GPUs. On a single consumer GPU, the `small` preset on a few hundred MB of text gives a model that writes in the style of that
-text and answers questions that resemble your question-answer pairs.
-
-```bash
-pip install "quantum-mind[cognition]"        # adds JAX and Optax
-pip install -U "jax[cuda12]"                 # NVIDIA GPU build of JAX (skip for CPU)
-python -c "import jax; print(jax.devices())" # must list a CUDA device, otherwise it trains on the CPU
-
-# text: any folder of .txt/.md/.py/... ; optional questions: JSON lines {"question": ..., "answer": ...}
-quantum-mind-llm train --data ./my_text --qa ./qa.jsonl --out ./mymodel \
-    --preset small --vocab 8192 --dtype bfloat16 --batch 32 --accum 4 --steps 20000 --lr 6e-4
-quantum-mind-llm train --out ./mymodel --data ./my_text --resume ...   # continue after an interruption
-
-quantum-mind-llm sample --checkpoint ./mymodel --prompt "The robot"
-quantum-mind-chat --backend scratch --checkpoint ./mymodel              # type a question, press Enter
-```
-
-`--library` trains on this library's own docstrings as a demo corpus. Measured on a CPU at toy scale, see `benchmarks/results/own_llm/`.
-
 ## Chat with a local LLM (type a question, press Enter)
 
 The library does not contain a general-purpose language model, and cannot train one: a model that answers any question is trained on web-scale text with
