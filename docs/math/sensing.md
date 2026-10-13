@@ -54,6 +54,7 @@ The model is exact for every schedule within two flips of $x^0$. Choosing exactl
 $$ \min_x\ \sum_i \ell_i x_i+\sum_{i<j} b_{ij}x_ix_j\quad\text{s.t.}\ \sum_i x_i=k,\qquad \ell_i=a_i-\sum_{j\ne i}b_{ij}x^0_j, $$
 
 the cardinality-constrained QUBO of `grasp_selection` (Lucas, 2014 penalty encoding). Its minimiser becomes the next expansion point if
-$J$ improves, so the iteration never ends worse than its start. From the empty schedule the same formula is the inclusion-exclusion expansion,
-which fails when readings are almost redundant: if one reading does nearly all the work, $\sum_i F_i-\sum_{i<j}(F_i+F_j-F_{ij})$ cancels to
-about zero while the true gain is that of one reading.
+$J$ improves, so the iteration never ends worse than its start. One round from the empty schedule is the inclusion-exclusion expansion,
+$\sum_i F_i-\sum_{i<j}(F_i+F_j-F_{ij})$ for the variance reduction $F$; it is a poor model when readings are nearly redundant (if one
+reading does most of the work the sum cancels to about zero while the true gain is that of one reading), and in the benchmark a single
+round from the empty schedule has about 30% regret. Iterating the expand-and-solve loop removes the problem.

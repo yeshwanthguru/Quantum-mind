@@ -16,11 +16,11 @@ The method (:func:`schedule_interrogations`):
    (:meth:`InterrogationProblem.local_quadratic`). The model is exact for every schedule within two flips of :math:`x^0`, and
    choosing exactly :math:`k` slots under it is the library's :func:`~quantum_mind.computing.grasp_selection` QUBO, solved by any
    of its solvers (exact,
-   annealing, greedy descent, random sampling, Qiskit QAOA). From the empty schedule this is the inclusion-exclusion expansion,
-   which fails
-   when readings are nearly redundant (the first reading does most of the work), hence the expansion around a good schedule.
+   annealing, greedy descent, random sampling, Qiskit QAOA). One round from the empty schedule is the plain inclusion-exclusion expansion,
+   which is a poor model when readings are nearly redundant (the first reading does most of the work).
 3. **Iterate.** The QUBO's solution becomes the new expansion point if the exact objective improves; otherwise stop (a trust-region
-   style loop, so the result is never worse than the start). The start is the uniform spacing unless given.
+   style loop, so the result is never worse than the start). The iteration, not the start, is what matters: from the uniform spacing
+   or from the empty schedule it reaches the same schedules in the benchmark, while a single round from the empty schedule does not.
 4. **Polish (optional).** A swap local search on the exact objective.
 
 The QUBO is a local approximation, so this does not claim to find the exact optimum; the baselines (uniform spacing, greedy on the exact
@@ -271,7 +271,7 @@ def schedule_interrogations(problem, method='exact', start='uniform', rounds=3, 
     method : {'exact', 'annealing', 'greedy descent', 'random sampling', 'qaoa'}
         The QUBO solver (``'exact'`` enumerates the QUBO: exact for the model, not for the true objective).
     start : {'uniform', 'greedy', 'empty'} or list of int, optional
-        Where to expand first. ``'empty'`` with ``rounds=1`` is the plain inclusion-exclusion surrogate.
+        Where to expand first. ``'empty'`` with ``rounds=1`` is the plain inclusion-exclusion surrogate, a poor model on its own.
     rounds : int, optional
         Maximum number of expand-solve rounds; the loop stops as soon as the exact objective does not improve.
     polish : bool, optional
@@ -302,7 +302,7 @@ def schedule_interrogations(problem, method='exact', start='uniform', rounds=3, 
             break
         val = problem.variance(cand)
         used += 1
-        if val < cur - 1e-12 * max(cur, 1.0):
+        if not np.isfinite(cur) or val < cur - 1e-12 * max(cur, 1.0):
             idx, cur = sorted(cand), val
         else:
             break

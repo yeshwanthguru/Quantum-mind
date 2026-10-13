@@ -11,7 +11,7 @@ Setting B (24 slots, choose 6): too big to enumerate; methods are compared with 
 
 Methods: uniform spacing; random; greedy on the exact objective; a swap local search from the uniform schedule (a classical local
 search that
-uses no QUBO); the plain inclusion-exclusion QUBO from the empty schedule; and the local-quadratic QUBO iteration started from the uniform
+uses no QUBO); the plain inclusion-exclusion QUBO from the empty schedule (one round, then iterated); and the local-quadratic QUBO iteration started from the uniform
 schedule and solved by exact enumeration, simulated annealing, greedy descent, random sampling with the same number of shots (the null
 baseline for any sampling solver) and Qiskit QAOA (A only, exact simulator). Paired sign-flip tests on the per-mission objective.
 """
@@ -49,7 +49,8 @@ def run_setting(name, n_slots, k, missions, with_optimum, with_qaoa, with_exact_
         if with_optimum:
             res['exact optimum'] = pr.optimum().objective
         empty_solver = 'exact' if with_exact_qubo else 'annealing'
-        res['QUBO from the empty schedule (1 round)'] = schedule_interrogations(pr, empty_solver, start='empty', rounds=1).objective
+        res['QUBO from the empty schedule, 1 round'] = schedule_interrogations(pr, empty_solver, start='empty', rounds=1).objective
+        res['QUBO from the empty schedule, iterated'] = schedule_interrogations(pr, empty_solver, start='empty').objective
         if with_exact_qubo:
             res['local QUBO + exact solver'] = schedule_interrogations(pr, 'exact').objective
         res['local QUBO + annealing'] = schedule_interrogations(pr, 'annealing').objective

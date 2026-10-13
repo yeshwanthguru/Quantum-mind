@@ -61,6 +61,16 @@ def test_the_local_quadratic_model_is_exact_within_two_flips_and_the_qubo_orders
     assert qp.feasible(xa) and qp.feasible(xb)
 
 
+def test_iterating_from_the_empty_schedule_works_and_one_round_is_a_poorer_model():
+    pr = _mission(0, n=14, k=4)
+    opt = pr.optimum().objective
+    one = schedule_interrogations(pr, 'exact', start='empty', rounds=1)
+    many = schedule_interrogations(pr, 'exact', start='empty')
+    assert len(set(one.slots)) == pr.k and one.info['rounds_used'] == 1                  # regression: it used to fall back
+    assert one.slots != pr.uniform().slots
+    assert many.objective <= one.objective + 1e-12 and many.objective <= 1.02 * opt
+
+
 def test_the_iteration_never_ends_worse_than_its_start():
     for seed in range(3):
         pr = _mission(seed)
