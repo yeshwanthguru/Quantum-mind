@@ -1,0 +1,42 @@
+{
+ "kinds": {
+  "bag of words": {
+   "simple": 0.9385532446401189,
+   "polite": 0.9318850765659276,
+   "conjunction": 0.9970501474926253,
+   "correction": 0.5122066102756891,
+   "followup": 0.9199425297790365,
+   "heldout": 0.9933333333333333
+  },
+  "transformer, grounding only": {
+   "simple": 0.9927973158065369,
+   "polite": 0.9928502971056163,
+   "conjunction": 0.9911504424778762,
+   "correction": 0.9880575918964077,
+   "followup": 0.988858677627208,
+   "heldout": 0.9933333333333333
+  },
+  "transformer + language modelling": {
+   "simple": 0.9941921448855333,
+   "polite": 0.9928215449492046,
+   "conjunction": 0.9941002949852508,
+   "correction": 0.9863332811194653,
+   "followup": 0.9925093632958801,
+   "heldout": 0.9916666666666666
+  }
+ },
+ "dialogue": {
+  "bayes": {
+   "loss": 0.2548656513293584,
+   "acc": 0.8788888888888889
+  },
+  "context weights": {
+   "loss": 0.16124001145362854,
+   "acc": 0.9453333333333335
+  },
+  "quantum core": {
+   "loss": 0.19686990976333618,
+   "acc": 0.9255555555555556
+  }
+ }
+}
