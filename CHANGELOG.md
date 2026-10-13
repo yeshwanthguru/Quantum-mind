@@ -10,7 +10,9 @@ optional local-LLM decision layer, a hardware interface with an independent safe
 - `quantum_mind.cognition` (optional extra `cognition`: JAX and Optax): `QuantumCognitionCore`, a density-matrix belief updated by
   context-dependent generalised measurements and trained by gradients, with its classical competitors on the same interface (`BayesCore`,
   `ContextWeightedCore`, `MarkovContextCore`, `GRUCore`). With zero rotations it is exactly a Bayes filter (tested), projective measurements
-  obey the QQ equality (tested), and the rotations are penalised toward zero. `benchmarks/cognition_core_benchmark.py`.
+  obey the QQ equality (tested), and the rotations are penalised toward zero. `benchmarks/cognition_core_benchmark.py`: it never beats a classical
+  model that matches the data exactly, beats Bayes wherever context matters, and beats a 237-parameter GRU (gap 0.013 against 0.064) only on
+  non-commuting context generated from its own form.
 - `MotorAgent`: a monitoring and self-healing agent for the motor (encoder redundancy checks, single-fault diagnosis, online self-calibration,
   estimator fallback, command re-linearisation, safe stop) with fault injection in `SensedMotor` and `benchmarks/motor_agent_benchmark.py`;
   it helps on encoder faults and friction and is still weak on external pushes (0.52 success). Fixed: the state estimator's

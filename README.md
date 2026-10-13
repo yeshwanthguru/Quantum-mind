@@ -274,6 +274,18 @@ What the benchmarks say (all simulated; see `src/quantum_mind/embodied/README.md
 * **Motor agent:** `MotorAgent` monitors the joint, diagnoses encoder, friction, gain and push faults and heals them (estimator fallback, command re-linearisation, safe stop). In simulation it lifts success from 0 to 0.86 on an encoder offset and from 0.77 to 0.99 on a friction increase, with 0.3% false alarms on a healthy motor, but it is still weak on external pushes (0.52, diagnosis right about half the time).
 * Asking for help with conformal prediction has prior art in LLM planning (KnowNo, Ren et al., 2023); the grounding and behaviour cloning here are standard. The open step is data from real people and a real joint.
 
+## The quantum-cognition core
+
+`quantum_mind.cognition` is the trainable model behind thread 3: a belief held as a density matrix, updated by context-dependent generalised measurements
+`M = U(c) diag(w(x)) U(c)†`, trained by gradients (optional extra `cognition`, JAX and Optax), with four classical competitors on the same interface.
+With zero rotations it is exactly a Bayes filter, and the rotations are penalised toward zero, so quantum-like effects appear only when the data ask for them.
+
+In simulation (five generators with a known best-possible log-loss, 5 seeds, paired tests) it is a strong few-parameter generalist but not a winner everywhere:
+it recovers most of the context effect with 37 parameters, stays near Bayes when there is nothing to find, and clearly beats the 237-parameter GRU (gap 0.013
+against 0.064) when the context is non-commuting, but a classical model that matches the data exactly always beats it, and a GRU beats it on a random recurrent
+network. The non-commuting generator is built from the core's own form, so that win shows capacity, not that people are quantum. See
+[`src/quantum_mind/cognition/README.md`](src/quantum_mind/cognition/README.md) for the table and the reading.
+
 ## Thread 3 in depth: COBRA, a context-rotated belief filter
 
 COBRA keeps the robot's belief about a person as a **density matrix** over hypotheses (for example the person's
@@ -348,6 +360,7 @@ The complete reference is generated from the docstrings, so it cannot drift from
 | `quantum_mind.core` | model base class, fitting, model comparison, bootstrap | `Model`, `fit`, `compare`, `bootstrap` |
 | `quantum_mind.families` | the four families of quantum-like models | `order_effects`, `qlbn`, `dynamics`, `perception` |
 | `quantum_mind.belief` | COBRA, the context-rotated belief filter | `COBRA`, `OnlineBelief`, `min_cost_action` |
+| `quantum_mind.cognition` | the trainable quantum-cognition core and its classical competitors (extra `cognition`) | `QuantumCognitionCore`, `BayesCore`, `ContextWeightedCore`, `GRUCore` |
 | `quantum_mind.applications` | robot-facing tools: calibration, conformal sets, fusion, questioning, hand-over | `calibration.SplitConformalClassifier`, `calibration.TemperatureScaling`, `calibration.AdaptiveConformalSets` |
 | `quantum_mind.computing` | thread 1: robot problems as QUBOs and their solvers | `multi_robot_allocation`, `simulated_annealing`, `qaoa`, `compare_solvers` |
 | `quantum_mind.sensing` | thread 2: quantum-limited sensors and dead reckoning | `atom_interferometer_sensitivity`, `mems_accelerometer`, `compare_sensor_suites` |

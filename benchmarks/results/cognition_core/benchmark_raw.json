@@ -1,0 +1,87 @@
+{
+ "control": {
+  "Bayes": {
+   "gap": 0.004103230452165008
+  },
+  "Context weights": {
+   "gap": 0.004291081801056862
+  },
+  "Markov context": {
+   "gap": 0.011257654428482056
+  },
+  "GRU": {
+   "gap": 0.0475152425467968
+  },
+  "Quantum core": {
+   "gap": 0.00993801336735487
+  }
+ },
+ "context weights": {
+  "Bayes": {
+   "gap": 0.2611368000507355
+  },
+  "Context weights": {
+   "gap": 0.005466330866329372
+  },
+  "Markov context": {
+   "gap": 0.2551417678594589
+  },
+  "GRU": {
+   "gap": 0.045396022498607635
+  },
+  "Quantum core": {
+   "gap": 0.12194496393203735
+  }
+ },
+ "markov context": {
+  "Bayes": {
+   "gap": 0.2448383688926697
+  },
+  "Context weights": {
+   "gap": 0.23523261696100234
+  },
+  "Markov context": {
+   "gap": 0.007638452015817166
+  },
+  "GRU": {
+   "gap": 0.04582043513655663
+  },
+  "Quantum core": {
+   "gap": 0.13683700039982796
+  }
+ },
+ "quantum order": {
+  "Bayes": {
+   "gap": 0.1673828676342964
+  },
+  "Context weights": {
+   "gap": 0.10336769670248032
+  },
+  "Markov context": {
+   "gap": 0.15386228635907173
+  },
+  "GRU": {
+   "gap": 0.06433402597904206
+  },
+  "Quantum core": {
+   "gap": 0.013216627668589354
+  }
+ },
+ "random GRU": {
+  "Bayes": {
+   "gap": 0.15977403968572618
+  },
+  "Context weights": {
+   "gap": 0.14394842386245726
+  },
+  "Markov context": {
+   "gap": 0.11102312952280044
+  },
+  "GRU": {
+   "gap": 0.050019902735948564
+  },
+  "Quantum core": {
+   "gap": 0.12010963186621666
+  }
+ }
+}
