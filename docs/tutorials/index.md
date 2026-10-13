@@ -12,13 +12,15 @@ Where the classical method wins, the tutorial says so.
 ```{mermaid}
 flowchart LR
     accTitle: Reading order of the tutorials
-    accDescr: The introduction leads to four tracks: models of people (2, 3), the robot decision layer (4 to 7, then 12, 13 and the packaged hand-over use case 14), perception (8, 9) and the COBRA belief filter and viewer (10, 11), and the quantum computing and quantum sensing threads (15, 16).
+    accDescr: The introduction leads to four tracks: models of people (2, 3), the robot decision layer (4 to 7, then 12, 13 and the packaged hand-over use case 14), perception (8, 9) and the COBRA belief filter and viewer (10, 11), the quantum computing and quantum sensing threads (15, 16), the quantum-cognition core (17) and the QR-VLA with its agent and supervisor (18).
     T1["1 · Introduction"]:::a --> T2["2 · Question order"]:::h --> T3["3 · Trust on a qubit"]:::h
     T1 --> T4["4 · Ask or act"]:::r --> T5["5 · Calibration"]:::r --> T6["6 · Orchestration"]:::r --> T7["7 · Question planner"]:::r
     T5 --> T8["8 · Fusion"]:::p --> T9["9 · Bistable perception"]:::p
     T1 --> T10["10 · COBRA belief filter"]:::q --> T11["11 · Bloch sphere"]:::q
     T1 --> T15["15 · Quantum computing for robots"]:::q
     T1 --> T16["16 · Quantum sensing"]:::q
+    T10 --> T17["17 · Quantum-cognition core"]:::q
+    T12 --> T18["18 · QR-VLA, agent, supervisor"]:::r
     T7 --> T12["12 · End to end"]:::r
     T8 --> T12
     T3 --> T12 --> T13["13 · ROS 2"]:::r --> T14["14 · Hand-over package"]:::r
@@ -189,6 +191,22 @@ Robot problems as QUBOs, solved classically and with QAOA, against a random-samp
 
 Quantum limits, an atom-interferometer accelerometer and a Kalman filter that fuses it with a MEMS sensor.
 :::
+
+:::{grid-item-card} 17 · The quantum-cognition core
+:class-card: pillar-quantum
+:link: 17_quantum_cognition_core
+:link-type: doc
+
+A trainable density-matrix belief with context-dependent measurements, against Bayes, context weights and a GRU; when it helps and when it does not.
+:::
+
+:::{grid-item-card} 18 · QR-VLA: motor, agent and supervisor
+:class-card: pillar-quantum
+:link: 18_qr_vla_motor_agent
+:link-type: doc
+
+A tiny vision-language-action model for one motor that asks when unsure, a self-healing motor agent, a state-machine supervisor and a safety layer.
+:::
 ::::
 
 ```{toctree}
@@ -211,4 +229,6 @@ Quantum limits, an atom-interferometer accelerometer and a Kalman filter that fu
 14_trust_handover_package
 15_quantum_computing_for_robots
 16_quantum_sensing
+17_quantum_cognition_core
+18_qr_vla_motor_agent
 ```

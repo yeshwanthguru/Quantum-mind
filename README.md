@@ -103,6 +103,132 @@ and measured sensor data for threads 1 and 2, and independent replication by oth
 
 <a id="idea"></a>
 
+## Get started
+
+### 1. Install
+
+```bash
+pip install quantum-mind                  # from PyPI: the core (numpy, scipy)
+pip install "quantum-mind[all]"           # plus Qiskit, cloud back ends, the viewer and JAX (for the cognition core)
+```
+
+PyPI can lag behind this repository (the motor agent, supervisor, runtime and quantum-cognition core are in 3.2.0). To work with the latest code, clone it:
+
+```bash
+git clone https://github.com/yeshwanthguru/Quantum-mind.git
+cd Quantum-mind
+pip install -e ".[all,dev]"               # Python 3.10 or later; "[cognition]" alone adds just JAX and Optax
+```
+
+Check that it works:
+
+```bash
+python -c "import quantum_mind; print(quantum_mind.__version__)"
+python -m pytest -q tests/test_core.py    # a few seconds
+```
+
+### 2. Run your first model (one minute)
+
+Two questions were asked in both orders and the answers differ. Is it an order effect, and which model explains it? (These counts are made up
+for the example.)
+
+```python
+import numpy as np
+from quantum_mind import compare
+from quantum_mind.families.order_effects import QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel, qq_test
+
+counts = {'AB': np.array([212, 48, 61, 179]),   # A asked first: yes-yes, yes-no, no-yes, no-no
+          'BA': np.array([240, 33, 52, 175])}   # B asked first
+q, z, p = qq_test(counts)                       # parameter-free test of the quantum-like (projective) prediction
+print('QQ statistic %.3f, z = %.2f, p = %.3f' % (q, z, p))
+for r in compare([QuantumOrderModel4D, BayesOrderModel, AnchoringOrderModel], counts):
+    print('%-22s BIC %.1f' % (type(r.model).__name__, r.bic))
+```
+
+Output:
+
+```text
+QQ statistic 0.048, z = 1.92, p = 0.054
+BayesOrderModel        BIC 2378.8
+QuantumOrderModel4D    BIC 2382.0
+AnchoringOrderModel    BIC 2382.3
+```
+
+How to read it: a small `p` would reject every quantum-like (projective) model, here it does not at the 5% level; the lowest BIC wins, and on these counts the
+simple Bayes model is as good as the quantum-like one. The library reports this either way, because a quantum model is only worth using when it beats its
+classical rivals.
+
+### 3. Do a tutorial
+
+The tutorials are Markdown files in [`tutorials/`](tutorials/) that read on GitHub and run as notebooks. Pick one of three ways:
+
+```bash
+# (a) read them on GitHub, or on the website where every number and figure is real output:
+#     https://yeshwanthguru.github.io/Quantum-mind/docs/tutorials/index.html
+
+# (b) run one as a notebook
+python tutorials/_convert.py notebooks_out          # writes one .ipynb per tutorial (needs nbformat, included in "[dev]")
+jupyter lab notebooks_out/02_question_order.ipynb   # run the cells top to bottom
+
+# (c) run a tutorial's code straight from the shell (no Jupyter)
+python - <<'PY'
+import re
+src = open('tutorials/02_question_order.md').read()
+ns = {}
+for block in re.findall(r"```python\n(.*?)```", src, re.S):
+    exec(block, ns)
+PY
+```
+
+A good path, from the basics to the newest parts (each takes from seconds to about two minutes):
+
+| Step | Tutorial | You learn |
+|---|---|---|
+| 1 | [`01_introduction`](tutorials/01_introduction.md) | beliefs as vectors, questions as projectors, why order matters |
+| 2 | [`02_question_order`](tutorials/02_question_order.md) | fit the Clinton-Gore poll, run the QQ test, compare against classical rivals |
+| 3 | [`04_ask_or_act`](tutorials/04_ask_or_act.md) | decide when a robot should ask a person instead of guessing |
+| 4 | [`10_context_belief_filter`](tutorials/10_context_belief_filter.md) | COBRA, a belief whose update depends on context |
+| 5 | [`17_quantum_cognition_core`](tutorials/17_quantum_cognition_core.md) | the trainable core (needs `[cognition]`), when it helps and when it does not |
+| 6 | [`18_qr_vla_motor_agent`](tutorials/18_qr_vla_motor_agent.md) | a one-motor VLA that asks, a self-healing agent, a supervisor and a safety layer |
+| 7 | [`15`](tutorials/15_quantum_computing_for_robots.md), [`16`](tutorials/16_quantum_sensing.md) | the other two threads: robot problems on QAOA and a quantum accelerometer |
+
+### 4. Run an example script
+
+```bash
+python examples/20_one_motor_vla.py       # train the tiny VLA and run the closed loop (about a minute)
+```
+
+```text
+policy                 success   questions    (ambiguous scenes only: success)
+oracle                 1.000     0.00         1.000
+BC baseline            0.205     0.00         0.029
+TinyVLA, act           0.660     0.00         0.015
+TinyVLA, ask gate      0.965     0.33         0.897
+```
+
+The other scripts are in [`examples/`](examples/): COBRA (17), robot problems on QAOA (18), a quantum accelerometer (19), and more.
+
+### 5. Fit the quantum-cognition core to your own data
+
+```python
+import numpy as np
+from quantum_mind.cognition import QuantumCognitionCore, BayesCore
+
+# Replace these arrays with your own sequences (here: random placeholders, so both models will sit at chance).
+rng = np.random.default_rng(0)
+X = rng.standard_normal((600, 3, 3)).astype('float32')                 # (sequences, clues, evidence features)
+C = np.eye(2, dtype='float32')[rng.integers(0, 2, (600, 3))]           # (sequences, clues, context): which context each clue came in
+y = rng.integers(0, 3, 600)                                            # which of 3 hypotheses turned out true
+
+train, test = slice(0, 450), slice(450, 600)
+for model in (BayesCore(3, 3, 2, steps=150, restarts=1), QuantumCognitionCore(3, 3, 2, steps=150, restarts=1)):
+    model.fit(X[train], C[train], y[train])
+    print('%-22s held-out log-loss %.3f' % (type(model).__name__, model.log_loss(X[test], C[test], y[test])))
+```
+
+Chance for 3 hypotheses is 1.099. On real data the question is whether the quantum core beats `BayesCore` and the classical context models on held-out
+log-loss; if its rotations stay near zero (`model.rotation_size`) the data show no quantum-like order effect. [Tutorial 17](tutorials/17_quantum_cognition_core.md) walks through it.
+
 ## The idea
 
 Classical filters treat evidence as arriving in neutral, independent pieces. People and robots do not live in that
@@ -487,7 +613,7 @@ src/quantum_mind/
 ├── evaluation/     metrics, paired statistics, manifests, provenance
 └── data/           published aggregate data sets
 benchmarks/         COBRA context-intent · robot quantum computing · quantum sensing · HRI decision
-examples/           19 scripts        tutorials/   16 tutorials + a packaged hand-over use case
+examples/           20 scripts        tutorials/   18 tutorials + a packaged hand-over use case
 docs/               Sphinx documentation, atlas, mathematics        notebooks/   2 Jupyter notebooks
 integrations/ros2/  ROS 2 node (quantum_mind_ros)        site/   project website (built by CI)
 ```
@@ -536,13 +662,14 @@ own tests and a `requirements.txt`; tutorial 14 walks through it. Results are fo
 | `[qiskit]` | qiskit, qiskit-aer, qiskit-ibm-runtime | circuits, Aer, IBM fake-backend noise, `circuit_trajectory` |
 | `[cloud]` | qiskit-ibm-runtime, amazon-braket-sdk | IBM Quantum and Amazon Braket hardware |
 | `[viz]` | matplotlib, plotly, ipywidgets, anywidget, seaborn | Bloch-sphere viewer, animations, live widget |
-| `[all]` | all of the above | |
+| `[cognition]` | jax, optax | the trainable quantum-cognition core (`quantum_mind.cognition`) |
+| `[all]` | all of the above, including `[cognition]` | |
 | `[dev]` | pytest, pytest-cov, ruff, nbclient, build, twine | tests, coverage, linting, notebooks, packaging |
 
 From a clone: `pip install -e ".[all,dev]"`. Python 3.10 or later.
 
 ```bash
-python3 -m pytest -q --cov=quantum_mind     # 146 tests (CI requires at least 80% line coverage)
+python3 -m pytest -q --cov=quantum_mind     # the test suite (CI requires at least 80% line coverage)
 python3 benchmarks/context_intent_benchmark.py          # the COBRA benchmark, about 10 to 20 minutes on 4 cores
 python3 benchmarks/robot_quantum_computing_benchmark.py # robot problems on QAOA and classical solvers
 python3 benchmarks/quantum_sensing_benchmark.py         # the quantum accelerometer study, a few minutes
