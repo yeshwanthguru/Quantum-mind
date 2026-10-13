@@ -13,6 +13,10 @@ optional local-LLM decision layer, a hardware interface with an independent safe
   obey the QQ equality (tested), and the rotations are penalised toward zero. `benchmarks/cognition_core_benchmark.py`: it never beats a classical
   model that matches the data exactly, beats Bayes wherever context matters, and beats a 237-parameter GRU (gap 0.013 against 0.064) only on
   non-commuting context generated from its own form.
+- `quantum_mind.sensing.scheduling` (thread 1 applied to thread 2): `InterrogationProblem`, `schedule_interrogations`, `random_mission`. Which interrogation
+  slots of a slow quantum accelerometer to use under a budget: the exact objective is the Kalman covariance (checked against a 400-run Monte Carlo of
+  the filter, within 1%), a local quadratic model of it around a schedule is a QUBO that the computing solvers search, and the loop is iterated
+  while the exact objective improves. Example 21, atlas entry, math page and `benchmarks/sensor_scheduling_benchmark.py`.
 - `MotorAgent`: a monitoring and self-healing agent for the motor (encoder redundancy checks, single-fault diagnosis, online self-calibration,
   estimator fallback, command re-linearisation, safe stop) with fault injection in `SensedMotor` and `benchmarks/motor_agent_benchmark.py`;
   it helps on encoder faults and friction and is still weak on external pushes (0.52 success). Fixed: the state estimator's

@@ -613,7 +613,7 @@ src/quantum_mind/
 ├── evaluation/     metrics, paired statistics, manifests, provenance
 └── data/           published aggregate data sets
 benchmarks/         COBRA context-intent · robot quantum computing · quantum sensing · HRI decision
-examples/           20 scripts        tutorials/   18 tutorials + a packaged hand-over use case
+examples/           21 scripts        tutorials/   18 tutorials + a packaged hand-over use case
 docs/               Sphinx documentation, atlas, mathematics        notebooks/   2 Jupyter notebooks
 integrations/ros2/  ROS 2 node (quantum_mind_ros)        site/   project website (built by CI)
 ```

@@ -212,7 +212,7 @@ The layers, every model family, circuits, hardware and the viewer.
 :link: auto_examples/index
 :link-type: doc
 
-20 runnable scripts on quantum-like models, COBRA, robotics, perception and the viewer.
+21 runnable scripts on quantum-like models, COBRA, robotics, perception and the viewer.
 :::
 
 :::{grid-item-card} {fas}`laptop-code` Notebooks

@@ -263,6 +263,18 @@ PAGES['sensing'] = ('Quantum sensing for robots',
       'each sensor alone; the fused suite against MEMS only (paired test)',
       'Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. Journal of Basic Engineering, 82, 35-45.',
       '16_quantum_sensing'),
+    M('Scheduling the quantum sensor with a QUBO', ['quantum_mind.sensing.InterrogationProblem', 'quantum_mind.sensing.Schedule',
+                                                   'quantum_mind.sensing.schedule_interrogations', 'quantum_mind.sensing.random_mission'],
+      'Which interrogation slots of a slow quantum accelerometer to use under a budget. The exact objective is the Kalman covariance; '
+      'a local quadratic model of it around a good schedule is a QUBO that the thread 1 solvers search, iterated while the exact objective improves.',
+      '''flowchart LR
+    s0["start: uniform spacing"]:::in --> q["exact variance of every flip and pair<br/>= local quadratic QUBO"]:::op
+    q --> sol["QUBO solver<br/>exact · annealing · greedy · QAOA"]:::op --> chk{"exact objective<br/>improved?"}:::op
+    chk -- yes --> q
+    chk -- no --> out["schedule"]:::out''',
+      'uniform spacing, random, greedy on the exact objective, a swap local search, random sampling with the same shots, the exact optimum',
+      'Lucas, A. (2014). Ising formulations of many NP problems. Frontiers in Physics, 2, 5; Nemhauser, G. L., Wolsey, L. A., & Fisher, M. L. (1978). An analysis of approximations for maximizing submodular set functions. Mathematical Programming, 14, 265-294.',
+      None),
 ])
 
 
@@ -548,6 +560,7 @@ ORIGIN = {
     'Quantum sensing limits': ('published', None),
     'Inertial sensor models': ('published', None),
     'Multi-rate Kalman dead reckoning': ('extended', 'several accelerometers with their own rates and bias walks in one filter, and a paired comparison of sensor suites'),
+    'Scheduling the quantum sensor with a QUBO': ('extended', 'a local quadratic QUBO built from exact Kalman-covariance flips and iterated, to schedule a slow quantum accelerometer; the ingredients (sensor selection, QUBO encodings, local search) are established'),
     # robot decision layer
     'Human-model ensemble': ('unique', None),
     'Ask or act': ('unique', None),
@@ -638,6 +651,7 @@ CATEGORY = {
     'Quantum sensing limits': 'quantum',
     'Inertial sensor models': 'mixed',
     'Multi-rate Kalman dead reckoning': 'mixed',
+    'Scheduling the quantum sensor with a QUBO': 'mixed',
     # robot decision layer
     'Human-model ensemble': 'mixed',
     'Ask or act': 'classical',

@@ -503,10 +503,23 @@ Quantum sensing for robots: sensor models with their quantum limits, and fusion 
 - `atom_interferometer_sensitivity(n_atoms, interrogation_time, contrast=0.5, wavelength=7.8024e-07, scaling='sql')`: Single-shot acceleration sensitivity of a light-pulse atom interferometer.
 - `compare_sensor_suites(sensors, suites, duration=300.0, dt=0.01, accel_std=0.5, accel_tau=2.0, fix_period=None, fix_std=0.1, seeds=range(0, 10))`: Run the same simulated trajectories through several sensor suites.
 - **class `DeadReckoningData(dt: 'float', pos: 'np.ndarray', accel: 'np.ndarray', readings: 'dict', fixes: 'np.ndarray', sensors: 'list', accel_std: 'float', accel_tau: 'float', fix_period: 'float', fix_std: 'float') -> None`**: A simulated trajectory with the measurements of every sensor.
+- **class `InterrogationProblem(slot_times, contrast, weights, k, duration=120.0, dt=0.1, accel_std=0.5, accel_tau=2.0, mems=None, quantum=None, min_contrast=0.3)`**: Choose ``k`` interrogation slots of a quantum accelerometer on a mission, to minimise weighted position error.
+  - `greedy(self)`: Forward selection on the exact objective: add the slot that lowers it most, k times.
+  - `local_quadratic(self, base)`: Quadratic model of the weighted variance around the schedule ``base``, exact within two flips of it.
+  - `monte_carlo(self, slots, seeds=range(0, 20))`: Weighted RMS position error of the actual filter on simulated trajectories (an independent check of :meth:`objective`).
+  - `objective(self, slots)`: Weighted RMS position standard deviation (m) over the mission for a set of slot indices (lower is better).
+  - `optimum(self)`: The exact optimum by enumerating every k-subset of the usable slots (small problems only).
+  - `qubo(self, base)`: The slot-selection QUBO around ``base`` (a :class:`~quantum_mind.computing.RobotProblem` over the usable slots).
+  - `random(self, seed=0)`:
+  - `uniform(self)`: Evenly spaced usable slots (the strong, simple baseline).
+  - `variance(self, slots)`: Weighted position variance (m^2) for a set of slot indices: the quantity the QUBO model expands (``objective`` is its root).
 - `mems_accelerometer(rate_hz=100.0, noise_density_ug=100.0, bias_walk=0.0002, bias_std0=0.02)`: A MEMS accelerometer: fast, noisy, with a drifting bias (illustrative values).
 - `phase_sensitivity(n_probes, repeats=1, scaling='sql')`: Smallest phase resolvable with ``n_probes`` probes repeated ``repeats`` times.
+- `random_mission(seed, n_slots=14, k=4, duration=120.0, dt=0.1, unusable=0.25, **kw)`: A random mission: slots spread over the window, some with too little contrast, and two phases where accuracy matters most.
 - `RB87_WAVELENGTH_M` (constant)
 - `run_filter(data, use=None, use_fixes=False)`: Run the multi-rate Kalman filter on a simulated trajectory.
+- **class `Schedule(slots: 'list', objective: 'float', method: 'str', info: 'dict' = <factory>) -> None`**: A chosen set of slots.
+- `schedule_interrogations(problem, method='exact', start='uniform', rounds=3, polish=False, seed=0, **solver_kw)`: Schedule the quantum sensor: iterate a local quadratic QUBO solved by a thread 1 solver.
 - **class `Sensor(name: 'str', rate_hz: 'float', noise_std: 'float', bias_walk: 'float', bias_std0: 'float') -> None`**: One accelerometer.
 - `simulate_dead_reckoning(sensors, duration=300.0, dt=0.01, accel_std=0.5, accel_tau=2.0, fix_period=None, fix_std=0.1, seed=0)`: Simulate a trajectory and the readings of every sensor.
 

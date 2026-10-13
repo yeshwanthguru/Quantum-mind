@@ -18,3 +18,6 @@ from .sensors import Sensor, atom_interferometer_accelerometer, mems_acceleromet
 __all__ = ['DeadReckoningData', 'Sensor', 'compare_sensor_suites', 'run_filter', 'simulate_dead_reckoning',
            'phase_sensitivity', 'atom_interferometer_sensitivity', 'RB87_WAVELENGTH_M', 'mems_accelerometer',
            'atom_interferometer_accelerometer']
+from .scheduling import InterrogationProblem, Schedule, random_mission, schedule_interrogations   # noqa: E402
+
+__all__ += ['InterrogationProblem', 'Schedule', 'schedule_interrogations', 'random_mission']

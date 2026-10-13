@@ -53,6 +53,7 @@ API = [
     ('quantum_mind.computing.problems', 'Robot problems as QUBOs'), ('quantum_mind.computing.solvers', 'QUBO solvers'),
     ('quantum_mind.sensing.limits', 'Quantum sensing limits'), ('quantum_mind.sensing.sensors', 'Inertial sensor models'),
     ('quantum_mind.sensing.dead_reckoning', 'Dead reckoning with a Kalman filter'),
+    ('quantum_mind.sensing.scheduling', 'Scheduling the quantum sensor with a QUBO'),
     ('quantum_mind.envs.hri', 'Environments with simulated people'),
     ('quantum_mind.quantum.statevector', 'State-vector simulator'), ('quantum_mind.problems', 'QUBO container'),
     ('quantum_mind.circuits.builders', 'Circuit builders'), ('quantum_mind.circuits.backends', 'Running circuits'),
