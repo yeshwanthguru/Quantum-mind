@@ -28,7 +28,8 @@ optional local-LLM decision layer, a hardware interface with an independent safe
 - `quantum_mind.sensing.scheduling` (thread 1 applied to thread 2): `InterrogationProblem`, `schedule_interrogations`, `random_mission`. Which interrogation
   slots of a slow quantum accelerometer to use under a budget: the exact objective is the Kalman covariance (checked against a 400-run Monte Carlo of
   the filter, within 1%), a local quadratic model of it around a schedule is a QUBO that the computing solvers search, and the loop is iterated
-  while the exact objective improves. Example 21, atlas entry, math page and `benchmarks/sensor_scheduling_benchmark.py`.
+  while the exact objective improves. Example 21, atlas entry, math page and `benchmarks/sensor_scheduling_benchmark.py` (results in `benchmarks/results/sensor_scheduling/`).
+  Result: on 14 slots (choose 4, 20 missions) the iterated and local QUBO with an exact solver reach the optimum within 0.2%, but so do greedy and swap local search on the exact objective; annealing +5.4%, QAOA depth 2 +0.8%. At 24 slots the QUBO methods are 0 to 6% worse than greedy, and one round from the empty schedule is worse than uniform spacing. The QUBO does not beat strong classical baselines.
 - `MotorAgent`: a monitoring and self-healing agent for the motor (encoder redundancy checks, single-fault diagnosis, online self-calibration,
   estimator fallback, command re-linearisation, safe stop) with fault injection in `SensedMotor` and `benchmarks/motor_agent_benchmark.py`;
   it helps on encoder faults and friction and is still weak on external pushes (0.52 success). Fixed: the state estimator's
